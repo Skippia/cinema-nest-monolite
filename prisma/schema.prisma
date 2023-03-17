@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Language {
+  EN
+  RU
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
+  name       String
+  lastName   String
+  password   String
+  bookings   Booking[]
+  role       Role        @default(USER)
+  gender     Gender
+  language   Language
+  rtSessions RTSession[]
+}
+
+model RTSession {
+  id           Int      @id @default(autoincrement())
+  refreshToken String
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  User         User?    @relation(fields: [userId], references: [id])
+  userId       Int?
+}
+
+model Cinema {
+  id            Int             @id @default(autoincrement())
+  name          String
+  address       String
+  city          String
+  movies        MovieOnCinema[]
+  movieSessions MovieSession[]
+  seats         SeatOnCinema[]
+}
+
+model MovieOnCinema {
+  cinema   Cinema @relation(fields: [cinemaId], references: [id])
+  cinemaId Int
+  movie    Movie  @relation(fields: [movieId], references: [id])
+  movieId  String
+
+  @@id([cinemaId, movieId])
+}
+
+model Movie {
+  id            String             @id @default(uuid())
+  cinemas       MovieOnCinema[]
+  movieSessions MovieSession[]
+}
+
+model MovieSession {
+  id         Int       @id @default(autoincrement())
+  start_date DateTime
+  end_date   DateTime
+  movie      Movie     @relation(fields: [movieId], references: [id])
+  movieId    String
+  cinema     Cinema    @relation(fields: [cinemaId], references: [id])
+  cinemaId   Int
+  bookings   Booking[]
+}
+
+model Booking {
+  id             Int             @id @default(autoincrement())
+  userId         Int
+  totalPrice     Float
+  user           User            @relation(fields: [userId], references: [id])
+  movieSession   MovieSession    @relation(fields: [movieSessionId], references: [id])
+  movieSessionId Int
+  seat           SeatOnBooking[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model SeatOnBooking {
+  booking   Booking @relation(fields: [bookingId], references: [id])
+  bookingId Int
+  seat      Seat    @relation(fields: [seatId], references: [id])
+  seatId    Int
+
+  @@id([bookingId, seatId])
+}
+
+model Seat {
+  id      Int             @id @default(autoincrement())
+  booking SeatOnBooking[]
+  cinema  SeatOnCinema[]
+  row     Int
+  col     Int
+
+  @@unique([row, col])
+}
+
+model SeatOnCinema {
+  seat      Seat    @relation(fields: [seatId], references: [id])
+  seatId    Int
+  cinema    Cinema  @relation(fields: [cinemaId], references: [id])
+  cinemaId  Int
+  available Boolean @default(true)
+
+  @@id([seatId, cinemaId])
+}
