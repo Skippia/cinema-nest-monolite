@@ -64,6 +64,9 @@ jobs:
       - name: Remove dist
         run: yarn prebuild
 
+      - name: Generate prisma types
+        run: npx prisma generate
+
       - name: Build project
         run: yarn build
 
