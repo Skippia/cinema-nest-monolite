@@ -61,8 +61,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - name: Remove dist
+        run: yarn prebuild
+
       - name: Build project
         run: yarn build
+
+      - name: Remove map files
+        run: yarn postbuild
 
   test:
     name: Testing
