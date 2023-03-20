@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { Seat, SeatOnCinema } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { generateSeatSchema, recoverySeatSchema } from '../utils/seatsInCinema/helpers'
@@ -40,28 +40,23 @@ export class SeatsOnCinemaService {
   async addSeatsSchemaToCinema(cinemaId: number, seats: Seat[]): Promise<ISeatPos[]> {
     const seatCinemaElements = seats.reduce((acc, cur) => [...acc, { cinemaId, seatId: cur.id }], [] as SeatOnCinema[])
 
-    try {
-      /**
-       * In createMany is impossible to return created records
-       * */
-      const data = await this.prisma.$transaction(
-        seatCinemaElements.map((seatCinemaElement) =>
-          this.prisma.seatOnCinema.create({
-            data: seatCinemaElement,
-            include: {
-              seat: true,
-            },
-          }),
-        ),
-      )
-      return data.map((seatFull) => ({
-        row: seatFull.seat.row,
-        col: seatFull.seat.col,
-      }))
-    } catch (e) {
-      Logger.error(e)
-      return []
-    }
+    /**
+     * In createMany is impossible to return created records
+     * */
+    const data = await this.prisma.$transaction(
+      seatCinemaElements.map((seatCinemaElement) =>
+        this.prisma.seatOnCinema.create({
+          data: seatCinemaElement,
+          include: {
+            seat: true,
+          },
+        }),
+      ),
+    )
+    return data.map((seatFull) => ({
+      row: seatFull.seat.row,
+      col: seatFull.seat.col,
+    }))
   }
 
   /**
@@ -71,33 +66,28 @@ export class SeatsOnCinemaService {
     const realSeats: Seat[] = []
 
     for (const { col, row } of seats) {
-      try {
-        /**
-         * Try to get all needed seats accrording to the seat schema
-         */
-        let realSeat = await this.prisma.seat.findUnique({
-          where: {
-            row_col: {
-              col,
-              row,
-            },
+      /**
+       * Try to get all needed seats accrording to the seat schema
+       */
+      let realSeat = await this.prisma.seat.findUnique({
+        where: {
+          row_col: {
+            col,
+            row,
           },
+        },
+      })
+
+      /**
+       * If such seat yet doesn't exist - create it
+       */
+      if (!realSeat) {
+        realSeat = await this.prisma.seat.create({
+          data: { col, row },
         })
-
-        /**
-         * If such seat yet doesn't exist - create it
-         */
-        if (!realSeat) {
-          realSeat = await this.prisma.seat.create({
-            data: { col, row },
-          })
-        }
-
-        realSeats.push(realSeat)
-      } catch (e) {
-        Logger.error(e)
-        return []
       }
+
+      realSeats.push(realSeat)
     }
 
     return realSeats
