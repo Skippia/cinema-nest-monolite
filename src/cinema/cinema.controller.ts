@@ -8,7 +8,6 @@ import {
   Delete,
   NotFoundException,
   ParseIntPipe,
-  Logger,
   UseFilters,
 } from '@nestjs/common'
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
@@ -30,14 +29,16 @@ export class CinemaController {
 
   @Post('cinema')
   @ApiCreatedResponse({ type: FindCinemaDto })
-  createCinema(@Body() dto: CreateCinemaDto) {
-    return this.cinemaService.createCinema(dto)
+  async createCinema(@Body() dto: CreateCinemaDto) {
+    const newCinema = await this.cinemaService.createCinema(dto)
+    return newCinema
   }
 
   @Get('cinemas')
   @ApiOkResponse({ type: FindCinemaDto, isArray: true })
-  findAllCinemas() {
-    return this.cinemaService.findAllCinemas()
+  async findAllCinemas() {
+    const cinemas = await this.cinemaService.findAllCinemas()
+    return cinemas
   }
 
   @Get('cinemas/:cinemaId')
@@ -54,13 +55,15 @@ export class CinemaController {
 
   @Patch('cinemas/:cinemaId')
   @ApiOkResponse({ type: FindCinemaDto })
-  updateCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number, @Body() dto: UpdateCinemaDto) {
-    return this.cinemaService.updateCinema(cinemaId, dto)
+  async updateCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number, @Body() dto: UpdateCinemaDto) {
+    const updadedCinema = await this.cinemaService.updateCinema(cinemaId, dto)
+    return updadedCinema
   }
 
   @Delete('cinemas/:cinemaId')
   @ApiOkResponse({ type: FindCinemaDto })
-  removeCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
-    return this.cinemaService.removeCinema(cinemaId)
+  async removeCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
+    const removedCinema = await this.cinemaService.removeCinema(cinemaId)
+    return removedCinema
   }
 }
