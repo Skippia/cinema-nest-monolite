@@ -14,22 +14,25 @@ export class SeatsInCinemaController {
 
   @Post(':cinemaId')
   @ApiCreatedResponse({ type: FindCinemaSeatingSchemaDto, isArray: true })
-  createCinemaSeatingSchema(
+  async createCinemaSeatingSchema(
     @Body() dto: CreateCinemaSeatingSchemaDto,
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
   ) {
-    return this.seatsInCinemaService.createCinemaSeatingSchema(cinemaId, dto)
+    const newCinemaSeatingSchema = await this.seatsInCinemaService.createCinemaSeatingSchema(cinemaId, dto)
+    return newCinemaSeatingSchema
   }
 
   @Delete(':cinemaId')
   @ApiOkResponse({ type: DeleteManyDto })
-  resetCinemaSeatingSchema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
-    return this.seatsInCinemaService.resetCinemaSeatingSchema(cinemaId)
+  async resetCinemaSeatingSchema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
+    const countDeletedSeatsInSeatingSchema = await this.seatsInCinemaService.resetCinemaSeatingSchema(cinemaId)
+    return countDeletedSeatsInSeatingSchema
   }
 
   @Get(':cinemaId')
   @ApiOkResponse({ type: FindCinemaSeatingSchemaDto, isArray: true })
-  findCinemaSeatingSchema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
-    return this.seatsInCinemaService.findCinemaSeatingSchema(cinemaId)
+  async findCinemaSeatingSchema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
+    const cinemaSeatinsSchema = await this.seatsInCinemaService.findCinemaSeatingSchema(cinemaId)
+    return cinemaSeatinsSchema
   }
 }
