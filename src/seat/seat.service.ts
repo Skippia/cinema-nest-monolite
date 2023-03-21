@@ -7,26 +7,26 @@ import { UpdateSeatDto } from './dto/update-seat.dto'
 export class SeatService {
   constructor(private prisma: PrismaService) {}
 
-  createSeat(seatData: CreateSeatDto) {
-    return this.prisma.seat.create({ data: seatData })
+  async createSeat(seatData: CreateSeatDto) {
+    return await this.prisma.seat.create({ data: seatData })
   }
 
-  findAllSeats() {
-    return this.prisma.seat.findMany()
+  async findAllSeats() {
+    return await this.prisma.seat.findMany()
   }
 
-  findOneSeat(id: number) {
-    return this.prisma.seat.findUnique({ where: { id } })
+  async findOneSeat(id: number) {
+    return await this.prisma.seat.findUnique({ where: { id } })
   }
 
-  updateSeat(id: number, updateSeatData: UpdateSeatDto) {
-    return this.prisma.seat.update({
+  async updateSeat(id: number, updateSeatData: UpdateSeatDto) {
+    return await this.prisma.seat.update({
       where: { id },
       data: updateSeatData,
     })
   }
 
-  removeSeat(id: number) {
-    return this.prisma.seat.delete({ where: { id } })
+  async removeSeat(id: number) {
+    return await this.prisma.seat.delete({ where: { id } })
   }
 }

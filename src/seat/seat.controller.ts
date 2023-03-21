@@ -49,13 +49,13 @@ export class SeatController {
 
   @Patch('seats/:seatId')
   @ApiOkResponse({ type: FindSeatDto })
-  update(@Param('seatId', ParseIntPipe) seatId: number, @Body() dto: UpdateSeatDto) {
+  updateSeat(@Param('seatId', ParseIntPipe) seatId: number, @Body() dto: UpdateSeatDto) {
     return this.seatService.updateSeat(seatId, dto)
   }
 
   @Delete('seats/:seatId')
   @ApiOkResponse({ type: FindSeatDto })
-  remove(@Param('seatId', ParseIntPipe) seatId: number) {
+  removeSeat(@Param('seatId', ParseIntPipe) seatId: number) {
     return this.seatService.removeSeat(seatId)
   }
 }
