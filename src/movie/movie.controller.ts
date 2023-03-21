@@ -14,17 +14,17 @@ export class MovieController {
 
   @Get()
   @ApiOkResponse({ type: FindMovieDto, isArray: true })
-  findAll() {
+  findAllMovies() {
     return this.movieService.findAllMovies()
   }
 
   @Get(':movieId')
   @ApiOkResponse({ type: FindMovieDto })
-  findOne(@Param('movieId') movieId: string) {
+  findOneMovie(@Param('movieId') movieId: string) {
     return this.movieService.findOneMovie(movieId)
   }
   /**
-   * MovieOnCinema operations
+   * MovieInCinema operations
    */
 
   @Post('movies-in-cinema')
@@ -35,19 +35,19 @@ export class MovieController {
 
   @Get('movies-in-cinema/:cinemaId')
   @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
-  findMoviesOnCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
-    return this.movieService.findMoviesOnCinema(cinemaId)
+  findMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
+    return this.movieService.findMoviesInCinema(cinemaId)
   }
 
   @Delete('movies-in-cinema/:cinemaId/:movieId')
   @ApiOkResponse({ type: FindMovieDto })
-  deleteMovieOnCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number, @Param('movieId') movieId: string) {
-    return this.movieService.deleteMovieOnCinema(cinemaId, movieId)
+  deleteMovieFromCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number, @Param('movieId') movieId: string) {
+    return this.movieService.deleteMovieFromCinema(cinemaId, movieId)
   }
 
   @Delete('movies-in-cinema/:cinemaId')
   @ApiOkResponse({ type: DeleteManyDto })
-  resetMoviesOnCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
-    return this.movieService.resetMoviesOnCinema(cinemaId)
+  resetMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
+    return this.movieService.resetMoviesInCinema(cinemaId)
   }
 }

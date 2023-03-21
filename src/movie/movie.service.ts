@@ -39,7 +39,7 @@ export class MovieService {
     return newMovieIds.map((m) => this.findOneMovie(m.movieId))
   }
 
-  async findMoviesOnCinema(cinemaId: number) {
+  async findMoviesInCinema(cinemaId: number) {
     const movieIds = await this.prisma.movieOnCinema.findMany({
       where: {
         cinemaId,
@@ -52,7 +52,7 @@ export class MovieService {
     return movieIds.map((m) => this.findOneMovie(m.movieId))
   }
 
-  async deleteMovieOnCinema(cinemaId: number, movieId: string) {
+  async deleteMovieFromCinema(cinemaId: number, movieId: string) {
     const removedMovieId = await this.prisma.movieOnCinema.delete({
       where: {
         cinemaId_movieId: {
@@ -68,8 +68,8 @@ export class MovieService {
     return this.findOneMovie(removedMovieId.movieId)
   }
 
-  resetMoviesOnCinema(cinemaId: number) {
-    return this.prisma.movieOnCinema.deleteMany({
+  async resetMoviesInCinema(cinemaId: number) {
+    return await this.prisma.movieOnCinema.deleteMany({
       where: {
         cinemaId,
       },
