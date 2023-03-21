@@ -7,26 +7,26 @@ import { UpdateCinemaDto } from './dto/CinemaDtos/update-cinema.dto'
 export class CinemaService {
   constructor(private prisma: PrismaService) {}
 
-  createCinema(cinemaData: CreateCinemaDto) {
-    return this.prisma.cinema.create({ data: cinemaData })
+  async createCinema(cinemaData: CreateCinemaDto) {
+    return await this.prisma.cinema.create({ data: cinemaData })
   }
 
-  findAllCinemas() {
-    return this.prisma.cinema.findMany()
+  async findAllCinemas() {
+    return await this.prisma.cinema.findMany()
   }
 
-  findOneCinema(id: number) {
-    return this.prisma.cinema.findUnique({ where: { id } })
+  async findOneCinema(id: number) {
+    return await this.prisma.cinema.findUnique({ where: { id } })
   }
 
-  updateCinema(id: number, updateCinemaData: UpdateCinemaDto) {
-    return this.prisma.cinema.update({
+  async updateCinema(id: number, updateCinemaData: UpdateCinemaDto) {
+    return await this.prisma.cinema.update({
       where: { id },
       data: updateCinemaData,
     })
   }
 
-  removeCinema(id: number) {
-    return this.prisma.cinema.delete({ where: { id } })
+  async removeCinema(id: number) {
+    return await this.prisma.cinema.delete({ where: { id } })
   }
 }

@@ -43,17 +43,13 @@ export class CinemaController {
   @Get('cinemas/:cinemaId')
   @ApiOkResponse({ type: FindCinemaDto })
   async findOneCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
-    try {
-      const cinema = await this.cinemaService.findOneCinema(cinemaId)
+    const cinema = await this.cinemaService.findOneCinema(cinemaId)
 
-      if (!cinema) {
-        throw new NotFoundException(`Could not find cinema with ${cinemaId}.`)
-      }
-
-      return cinema
-    } catch (e) {
-      Logger.error(e)
+    if (!cinema) {
+      throw new NotFoundException(`Could not find cinema with ${cinemaId}.`)
     }
+
+    return cinema
   }
 
   @Patch('cinemas/:cinemaId')
