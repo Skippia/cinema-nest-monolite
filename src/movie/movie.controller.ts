@@ -15,13 +15,15 @@ export class MovieController {
   @Get()
   @ApiOkResponse({ type: FindMovieDto, isArray: true })
   findAllMovies() {
-    return this.movieService.findAllMovies()
+    const movies = this.movieService.findAllMovies()
+    return movies
   }
 
   @Get(':movieId')
   @ApiOkResponse({ type: FindMovieDto })
   findOneMovie(@Param('movieId') movieId: string) {
-    return this.movieService.findOneMovie(movieId)
+    const movie = this.movieService.findOneMovie(movieId)
+    return movie
   }
   /**
    * MovieInCinema operations
@@ -29,25 +31,29 @@ export class MovieController {
 
   @Post('movies-in-cinema')
   @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
-  addMoviesToCinema(@Body() dto: AddMovieToCinemaDto) {
-    return this.movieService.addMoviesToCinema(dto)
+  async addMoviesToCinema(@Body() dto: AddMovieToCinemaDto) {
+    const addedMoviesToCinema = await this.movieService.addMoviesToCinema(dto)
+    return addedMoviesToCinema
   }
 
   @Get('movies-in-cinema/:cinemaId')
   @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
-  findMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
-    return this.movieService.findMoviesInCinema(cinemaId)
+  async findMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
+    const moviesInCinema = await this.movieService.findMoviesInCinema(cinemaId)
+    return moviesInCinema
   }
 
   @Delete('movies-in-cinema/:cinemaId/:movieId')
   @ApiOkResponse({ type: FindMovieDto })
-  deleteMovieFromCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number, @Param('movieId') movieId: string) {
-    return this.movieService.deleteMovieFromCinema(cinemaId, movieId)
+  async deleteMovieFromCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number, @Param('movieId') movieId: string) {
+    const deletedMovieFromCinema = await this.movieService.deleteMovieFromCinema(cinemaId, movieId)
+    return deletedMovieFromCinema
   }
 
   @Delete('movies-in-cinema/:cinemaId')
   @ApiOkResponse({ type: DeleteManyDto })
-  resetMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
-    return this.movieService.resetMoviesInCinema(cinemaId)
+  async resetMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
+    const countDeletedMoviesFromCinema = await this.movieService.resetMoviesInCinema(cinemaId)
+    return countDeletedMoviesFromCinema
   }
 }
