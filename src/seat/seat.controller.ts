@@ -25,14 +25,16 @@ export class SeatController {
 
   @Post('seat')
   @ApiCreatedResponse({ type: FindSeatDto })
-  createSeat(@Body() dto: CreateSeatDto) {
-    return this.seatService.createSeat(dto)
+  async createSeat(@Body() dto: CreateSeatDto) {
+    const newSeat = await this.seatService.createSeat(dto)
+    return newSeat
   }
 
   @Get('seats')
   @ApiOkResponse({ type: FindSeatDto, isArray: true })
-  findAllSeats() {
-    return this.seatService.findAllSeats()
+  async findAllSeats() {
+    const seats = await this.seatService.findAllSeats()
+    return seats
   }
 
   @Get('seats/:seatId')
@@ -49,13 +51,15 @@ export class SeatController {
 
   @Patch('seats/:seatId')
   @ApiOkResponse({ type: FindSeatDto })
-  updateSeat(@Param('seatId', ParseIntPipe) seatId: number, @Body() dto: UpdateSeatDto) {
-    return this.seatService.updateSeat(seatId, dto)
+  async updateSeat(@Param('seatId', ParseIntPipe) seatId: number, @Body() dto: UpdateSeatDto) {
+    const updadedSeat = await this.seatService.updateSeat(seatId, dto)
+    return updadedSeat
   }
 
   @Delete('seats/:seatId')
   @ApiOkResponse({ type: FindSeatDto })
-  removeSeat(@Param('seatId', ParseIntPipe) seatId: number) {
-    return this.seatService.removeSeat(seatId)
+  async removeSeat(@Param('seatId', ParseIntPipe) seatId: number) {
+    const removedSeat = await this.seatService.removeSeat(seatId)
+    return removedSeat
   }
 }
