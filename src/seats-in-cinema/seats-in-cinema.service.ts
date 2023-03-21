@@ -6,7 +6,7 @@ import { ISeatPos, ISeatSchemaOutput } from '../utils/seatsInCinema/types'
 import { CreateCinemaSeatingSchemaDto } from './dto/create-cinema-seating-plan.dto'
 
 @Injectable()
-export class SeatsOnCinemaService {
+export class SeatsInCinemaService {
   constructor(private prisma: PrismaService) {}
 
   async createCinemaSeatingSchema(
@@ -19,7 +19,7 @@ export class SeatsOnCinemaService {
     const seatsSchema = generateSeatSchema(seatsSchemaData)
 
     /**
-     * Replace seats to real seats from db
+     * Replace seats for real seats from db
      */
     const realSeatsSchema = await this.replacePositionsToRealSeats(seatsSchema)
 
@@ -38,7 +38,10 @@ export class SeatsOnCinemaService {
    * Helper for createCinemaSeatingSchema
    */
   async addSeatsSchemaToCinema(cinemaId: number, seats: Seat[]): Promise<ISeatPos[]> {
-    const seatCinemaElements = seats.reduce((acc, cur) => [...acc, { cinemaId, seatId: cur.id }], [] as SeatOnCinema[])
+    const seatCinemaElements = seats.reduce(
+      (acc, seat) => [...acc, { cinemaId, seatId: seat.id }],
+      [] as SeatOnCinema[],
+    )
 
     /**
      * In createMany is impossible to return created records
@@ -67,7 +70,7 @@ export class SeatsOnCinemaService {
 
     for (const { col, row } of seats) {
       /**
-       * Try to get all needed seats accrording to the seat schema
+       * Try to get all needed seats according to the seat schema
        */
       let realSeat = await this.prisma.seat.findUnique({
         where: {
@@ -93,7 +96,7 @@ export class SeatsOnCinemaService {
     return realSeats
   }
 
-  async findCinemaSeatingSchema(cinemaId: number) {
+  async findCinemaSeatingSchema(cinemaId: number): Promise<ISeatSchemaOutput> {
     const seats = await this.prisma.seatOnCinema.findMany({
       where: {
         cinemaId,
@@ -111,8 +114,8 @@ export class SeatsOnCinemaService {
     )
   }
 
-  resetCinemaSeatingSchema(cinemaId: number) {
-    return this.prisma.seatOnCinema.deleteMany({
+  async resetCinemaSeatingSchema(cinemaId: number) {
+    return await this.prisma.seatOnCinema.deleteMany({
       where: {
         cinemaId,
       },
