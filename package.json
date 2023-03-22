@@ -6,6 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prebuild": "rimraf ./dist",
+		"postbuild": "rimraf ./dist/**/*.map",
     "build": "nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
