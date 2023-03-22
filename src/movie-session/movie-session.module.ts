@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common'
 import { MovieSessionService } from './movie-session.service'
 import { MovieSessionController } from './movie-session.controller'
-import { PrismaModule } from 'src/prisma/prisma.module'
-import { MovieModule } from 'src/movie/movie.module'
+import { PrismaModule } from '../prisma/prisma.module'
+import { MovieModule } from '../movie/movie.module'
 
 @Module({
   controllers: [MovieSessionController],

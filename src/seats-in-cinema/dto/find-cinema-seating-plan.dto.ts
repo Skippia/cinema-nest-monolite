@@ -1,6 +1,6 @@
 import { IsEnum, IsInt, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
-import { SeatType } from 'src/utils/seatsInCinema/types'
+import { SeatType } from '../../utils/seatsInCinema/types'
 
 export class FindCinemaSeatingSchemaDto {
   @IsInt()

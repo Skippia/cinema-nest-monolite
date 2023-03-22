@@ -15,7 +15,7 @@ import { CreateSeatDto } from './dto/create-seat.dto'
 import { UpdateSeatDto } from './dto/update-seat.dto'
 import { FindSeatDto } from './dto/find-seat.dto'
 import { SeatService } from './seat.service'
-import { PrismaClientExceptionFilter } from 'src/prisma/prisma-client-exception'
+import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 
 @Controller('/')
 @ApiTags('Seat')
