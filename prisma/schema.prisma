@@ -120,7 +120,6 @@ model SeatOnCinema {
   seatId    Int
   cinema    Cinema  @relation(fields: [cinemaId], references: [id])
   cinemaId  Int
-  available Boolean @default(true)
 
   @@id([seatId, cinemaId])
 }
