@@ -15,6 +15,17 @@ export class MovieService {
     return movies.find((movie) => movie.id === movieId)
   }
 
+  async checkIfMovieAvailableForCinema(movieId: string, cinemaId: number) {
+    return !!(await this.prisma.movieOnCinema.findUnique({
+      where: {
+        cinemaId_movieId: {
+          movieId,
+          cinemaId,
+        },
+      },
+    }))
+  }
+
   async addMoviesToCinema(moviesToCinemaData: AddMovieToCinemaDto) {
     const { movieIds, cinemaId } = moviesToCinemaData
     const transformedMoviesToCinemaData = movieIds.map((movieId) => ({
