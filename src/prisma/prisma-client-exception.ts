@@ -3,7 +3,7 @@ import { BaseExceptionFilter } from '@nestjs/core'
 import { Prisma } from '@prisma/client'
 import { Response } from 'express'
 
-const generateResponse = (response: Response<any, Record<string, any>>, status: HttpStatus, message: string) =>
+const generateErrorResponse = (response: Response<any, Record<string, any>>, status: HttpStatus, message: string) =>
   response.status(status).json({
     statusCode: status,
     message: message,
@@ -17,7 +17,7 @@ function conflictErrorHandler(
 ) {
   const status = HttpStatus.CONFLICT
   const message = exception.message
-  return generateResponse(response, status, formatMessageString(message))
+  return generateErrorResponse(response, status, formatMessageString(message))
 }
 
 function throwNotFoundHandler(
@@ -26,7 +26,7 @@ function throwNotFoundHandler(
 ) {
   const status = HttpStatus.NOT_FOUND
   const message = (exception.meta?.cause as string) || exception.message
-  return generateResponse(response, status, formatMessageString(message))
+  return generateErrorResponse(response, status, formatMessageString(message))
 }
 
 const mapErrorHandlers = {
