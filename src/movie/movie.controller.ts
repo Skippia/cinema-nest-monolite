@@ -36,6 +36,16 @@ export class MovieController {
     return addedMoviesToCinema
   }
 
+  @Get('movies-in-cinema/:cinemaId/:movieId')
+  @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
+  async checkIfMovieAvailableForCinema(
+    @Param('movieId') movieId: string,
+    @Param('cinemaId', ParseIntPipe) cinemaId: number,
+  ) {
+    const isMovieAvailableForCinema = await this.movieService.checkIfMovieAvailableForCinema(movieId, cinemaId)
+    return isMovieAvailableForCinema
+  }
+
   @Get('movies-in-cinema/:cinemaId')
   @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
   async findMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
