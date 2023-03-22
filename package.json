@@ -6,6 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "studio": "npx prisma studio",
+    "prisma:format": "npx prisma format",
+    "migrate:create": "npx prisma migrate dev --create-only",
+    "migrate": "npx prisma migrate dev",
     "prebuild": "rimraf ./dist",
 		"postbuild": "rimraf ./dist/**/*.map",
     "build": "nest build",
