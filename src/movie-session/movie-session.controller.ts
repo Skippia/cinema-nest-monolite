@@ -77,7 +77,7 @@ export class MovieSessionController {
     return removedMovieSession
   }
 
-  @Delete(':cinemaId')
+  @Delete('cinema/:cinemaId')
   @ApiOkResponse({ type: DeleteManyDto })
   async resetMoviesSessions(@Param('cinemaId', ParseIntPipe) cinemaId: number) {
     const countDeletedMoviesSessionsFromCinema = await this.movieSessionService.resetMoviesSessions(cinemaId)
