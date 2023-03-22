@@ -6,9 +6,10 @@ import { SeatModule } from './seat/seat.module'
 import { MovieModule } from './movie/movie.module'
 import { CinemaModule } from './cinema/cinema.module'
 import { SeatsInCinemaModule } from './seats-in-cinema/seats-in-cinema.module'
+import { MovieSessionModule } from './movie-session/movie-session.module'
 
 @Module({
-  imports: [PrismaModule, SeatModule, MovieModule, CinemaModule, SeatsInCinemaModule],
+  imports: [PrismaModule, SeatModule, MovieModule, CinemaModule, SeatsInCinemaModule, MovieSessionModule],
   controllers: [AppController],
   providers: [AppService],
 })
