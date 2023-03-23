@@ -4,7 +4,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common'
 import * as request from 'supertest'
 import { AppModule } from '../src/app.module'
 
-describe('Movie endoints (e2e)', () => {
+describe('Movies in cinema endoints (e2e)', () => {
   let app: INestApplication
   let prisma: PrismaService
 
@@ -94,24 +94,6 @@ describe('Movie endoints (e2e)', () => {
   afterAll(async () => {
     await prisma.clearDatabase()
     await app.close()
-  })
-
-  describe('GET /movies', () => {
-    it('should return the movies', async () => {
-      const { status, body } = await request(app.getHttpServer()).get('/movies')
-
-      expect(status).toBe(200)
-      expect(body).toStrictEqual(expect.arrayContaining([movieShape]))
-    })
-  })
-
-  describe('GET /movies/:movieId', () => {
-    it('should return the movie by id', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/movies/${movieId1}`)
-
-      expect(status).toBe(200)
-      expect(body).toStrictEqual(movieShape)
-    })
   })
 
   describe('GET /movies-in-cinema/:cinemaId/:movieId', () => {
