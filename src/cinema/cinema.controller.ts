@@ -15,7 +15,7 @@ import { CinemaService } from './cinema.service'
 import { CreateCinemaDto } from './dto/CinemaDtos/create-cinema.dto'
 import { UpdateCinemaDto } from './dto/CinemaDtos/update-cinema.dto'
 import { FindCinemaDto } from './dto/CinemaDtos/find-cinema.dto'
-import { PrismaClientExceptionFilter } from 'src/prisma/prisma-client-exception'
+import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 
 @Controller('/')
 @ApiTags('Cinema')

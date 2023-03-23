@@ -2,9 +2,9 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseFilters } 
 import { MovieService } from './movie.service'
 import { FindMovieDto } from './dto/find-movie.dto'
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
-import { AddMovieToCinemaDto } from 'src/movie/dto/MovieCinemaDtos/add-movie-to-cinema.dto'
-import { DeleteManyDto } from 'src/utils/commonDtos/delete-many.dto'
-import { PrismaClientExceptionFilter } from 'src/prisma/prisma-client-exception'
+import { AddMovieToCinemaDto } from '../movie/dto/MovieCinemaDtos/add-movie-to-cinema.dto'
+import { DeleteManyDto } from '../utils/commonDtos/delete-many.dto'
+import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 
 @Controller('movies')
 @ApiTags('Movie')
@@ -37,7 +37,7 @@ export class MovieController {
   }
 
   @Get('movies-in-cinema/:cinemaId/:movieId')
-  @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
+  @ApiOkResponse({ type: Boolean })
   async checkIfMovieAvailableForCinema(
     @Param('movieId') movieId: string,
     @Param('cinemaId', ParseIntPipe) cinemaId: number,

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { SeatService } from './seat.service'
 import { SeatController } from './seat.controller'
-import { PrismaModule } from 'src/prisma/prisma.module'
+import { PrismaModule } from '../prisma/prisma.module'
 
 @Module({
   controllers: [SeatController],

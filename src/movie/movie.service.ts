@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { AddMovieToCinemaDto } from 'src/movie/dto/MovieCinemaDtos/add-movie-to-cinema.dto'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { AddMovieToCinemaDto } from '../movie/dto/MovieCinemaDtos/add-movie-to-cinema.dto'
+import { PrismaService } from '../prisma/prisma.service'
 import * as movies from '../../data/movies.json'
 
 @Injectable()

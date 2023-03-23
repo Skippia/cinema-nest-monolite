@@ -16,9 +16,9 @@ import { CreateMovieSessionDto } from './dto/create-movie-session.dto'
 import { UpdateMovieSessionDto } from './dto/update-movie-session.dto'
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { FindMovieSessionDto } from './dto/find-movie-session.dto'
-import { DeleteManyDto } from 'src/utils/commonDtos/delete-many.dto'
-import { PrismaClientExceptionFilter } from 'src/prisma/prisma-client-exception'
-import { MovieService } from 'src/movie/movie.service'
+import { DeleteManyDto } from '../utils/commonDtos/delete-many.dto'
+import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
+import { MovieService } from '../movie/movie.service'
 
 @Controller('movies-sessions')
 @ApiTags('Movies sessions')
