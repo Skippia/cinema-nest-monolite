@@ -46,24 +46,25 @@ CREATE TABLE "Cinema" (
 -- CreateTable
 CREATE TABLE "MovieOnCinema" (
     "cinemaId" INTEGER NOT NULL,
-    "movieId" TEXT NOT NULL,
+    "movieId" INTEGER NOT NULL,
 
     CONSTRAINT "MovieOnCinema_pkey" PRIMARY KEY ("cinemaId","movieId")
 );
 
 -- CreateTable
-CREATE TABLE "Movie" (
-    "id" TEXT NOT NULL,
+CREATE TABLE "MovieRecord" (
+    "id" SERIAL NOT NULL,
+    "imdbId" TEXT NOT NULL,
 
-    CONSTRAINT "Movie_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "MovieRecord_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "MovieSession" (
     "id" SERIAL NOT NULL,
-    "start_date" TIMESTAMP(3) NOT NULL,
-    "end_date" TIMESTAMP(3) NOT NULL,
-    "movieId" TEXT NOT NULL,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "movieId" INTEGER NOT NULL,
     "cinemaId" INTEGER NOT NULL,
 
     CONSTRAINT "MovieSession_pkey" PRIMARY KEY ("id")
@@ -73,7 +74,7 @@ CREATE TABLE "MovieSession" (
 CREATE TABLE "Booking" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
-    "totalPrice" REAL NOT NULL,
+    "totalPrice" DOUBLE PRECISION NOT NULL,
     "movieSessionId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -102,13 +103,18 @@ CREATE TABLE "Seat" (
 CREATE TABLE "SeatOnCinema" (
     "seatId" INTEGER NOT NULL,
     "cinemaId" INTEGER NOT NULL,
-    "available" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "SeatOnCinema_pkey" PRIMARY KEY ("seatId","cinemaId")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Cinema_name_address_city_key" ON "Cinema"("name", "address", "city");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MovieRecord_imdbId_key" ON "MovieRecord"("imdbId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Seat_row_col_key" ON "Seat"("row", "col");
@@ -120,10 +126,10 @@ ALTER TABLE "RTSession" ADD CONSTRAINT "RTSession_userId_fkey" FOREIGN KEY ("use
 ALTER TABLE "MovieOnCinema" ADD CONSTRAINT "MovieOnCinema_cinemaId_fkey" FOREIGN KEY ("cinemaId") REFERENCES "Cinema"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MovieOnCinema" ADD CONSTRAINT "MovieOnCinema_movieId_fkey" FOREIGN KEY ("movieId") REFERENCES "Movie"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "MovieOnCinema" ADD CONSTRAINT "MovieOnCinema_movieId_fkey" FOREIGN KEY ("movieId") REFERENCES "MovieRecord"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MovieSession" ADD CONSTRAINT "MovieSession_movieId_fkey" FOREIGN KEY ("movieId") REFERENCES "Movie"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "MovieSession" ADD CONSTRAINT "MovieSession_movieId_fkey" FOREIGN KEY ("movieId") REFERENCES "MovieRecord"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MovieSession" ADD CONSTRAINT "MovieSession_cinemaId_fkey" FOREIGN KEY ("cinemaId") REFERENCES "Cinema"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

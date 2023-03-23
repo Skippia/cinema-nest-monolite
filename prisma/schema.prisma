@@ -56,30 +56,33 @@ model Cinema {
   movies        MovieOnCinema[]
   movieSessions MovieSession[]
   seats         SeatOnCinema[]
+
+  @@unique([name, address, city])
 }
 
 model MovieOnCinema {
-  cinema   Cinema @relation(fields: [cinemaId], references: [id])
+  cinema   Cinema      @relation(fields: [cinemaId], references: [id])
   cinemaId Int
-  movie    Movie  @relation(fields: [movieId], references: [id])
-  movieId  String
+  movie    MovieRecord @relation(fields: [movieId], references: [id])
+  movieId  Int
 
   @@id([cinemaId, movieId])
 }
 
-model Movie {
-  id            String          @id @default(uuid())
+model MovieRecord {
+  id            Int             @id @default(autoincrement())
+  imdbId        String          @unique
   cinemas       MovieOnCinema[]
   movieSessions MovieSession[]
 }
 
 model MovieSession {
-  id        Int       @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   startDate DateTime
   endDate   DateTime
-  movie     Movie     @relation(fields: [movieId], references: [id])
-  movieId   String
-  cinema    Cinema    @relation(fields: [cinemaId], references: [id])
+  movie     MovieRecord @relation(fields: [movieId], references: [id])
+  movieId   Int
+  cinema    Cinema      @relation(fields: [cinemaId], references: [id])
   cinemaId  Int
   bookings  Booking[]
 }
