@@ -3,3 +3,4 @@
 
 npx validate-branch-name
 yarn lint
+yarn prisma:format
