@@ -8,6 +8,7 @@ import { CinemaModule } from './cinema/cinema.module'
 import { SeatsInCinemaModule } from './seats-in-cinema/seats-in-cinema.module'
 import { MovieSessionModule } from './movie-session/movie-session.module'
 import { ConfigModule } from '@nestjs/config'
+import { MoviesInCinemaModule } from './movies-in-cinema/movies-in-cinema.module'
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ConfigModule } from '@nestjs/config'
     CinemaModule,
     SeatsInCinemaModule,
     MovieSessionModule,
+    MoviesInCinemaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

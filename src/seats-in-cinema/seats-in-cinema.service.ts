@@ -7,7 +7,7 @@ import { CreateCinemaSeatingSchemaDto } from './dto/create-cinema-seating-plan.d
 
 @Injectable()
 export class SeatsInCinemaService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async createCinemaSeatingSchema(
     cinemaId: number,

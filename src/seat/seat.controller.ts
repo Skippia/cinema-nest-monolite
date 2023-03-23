@@ -16,6 +16,7 @@ import { UpdateSeatDto } from './dto/update-seat.dto'
 import { FindSeatDto } from './dto/find-seat.dto'
 import { SeatService } from './seat.service'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
+import { Seat } from '@prisma/client'
 
 @Controller('/')
 @ApiTags('Seat')
@@ -25,21 +26,23 @@ export class SeatController {
 
   @Post('seat')
   @ApiCreatedResponse({ type: FindSeatDto })
-  async createSeat(@Body() dto: CreateSeatDto) {
+  async createSeat(@Body() dto: CreateSeatDto): Promise<Seat> {
     const newSeat = await this.seatService.createSeat(dto)
+
     return newSeat
   }
 
   @Get('seats')
   @ApiOkResponse({ type: FindSeatDto, isArray: true })
-  async findAllSeats() {
+  async findAllSeats(): Promise<Seat[]> {
     const seats = await this.seatService.findAllSeats()
+
     return seats
   }
 
   @Get('seats/:seatId')
   @ApiOkResponse({ type: FindSeatDto })
-  async findOneSeat(@Param('seatId', ParseIntPipe) seatId: number) {
+  async findOneSeat(@Param('seatId', ParseIntPipe) seatId: number): Promise<Seat> {
     const seat = await this.seatService.findOneSeat(seatId)
 
     if (!seat) {
@@ -51,15 +54,17 @@ export class SeatController {
 
   @Patch('seats/:seatId')
   @ApiOkResponse({ type: FindSeatDto })
-  async updateSeat(@Param('seatId', ParseIntPipe) seatId: number, @Body() dto: UpdateSeatDto) {
+  async updateSeat(@Param('seatId', ParseIntPipe) seatId: number, @Body() dto: UpdateSeatDto): Promise<Seat> {
     const updadedSeat = await this.seatService.updateSeat(seatId, dto)
+
     return updadedSeat
   }
 
   @Delete('seats/:seatId')
   @ApiOkResponse({ type: FindSeatDto })
-  async removeSeat(@Param('seatId', ParseIntPipe) seatId: number) {
+  async removeSeat(@Param('seatId', ParseIntPipe) seatId: number): Promise<Seat> {
     const removedSeat = await this.seatService.removeSeat(seatId)
+
     return removedSeat
   }
 }

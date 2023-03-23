@@ -72,8 +72,6 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
 
-    console.log(exception.code)
-
     if (Object.keys(mapErrorHandlers).includes(exception.code)) {
       const errorHandler = mapErrorHandlers[exception.code as keyof typeof mapErrorHandlers]
       errorHandler(response, exception)

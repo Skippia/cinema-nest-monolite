@@ -32,7 +32,9 @@
       "Paul McCrane",
       "Renee Blaine",
       "Scott Mann"
-    ]
+    ],
+    "duration": 146,
+    "countries": ["Spain"]
   },
   {
     "title": "The Godfather",
@@ -64,7 +66,9 @@
       "Al Martino",
       "Morgana King",
       "Lenny Montana"
-    ]
+    ],
+    "duration": 109,
+    "countries": ["Indonesia", "United Kingdom"]
   },
   {
     "title": "The Dark Knight",
@@ -96,7 +100,9 @@
       "Keith Szarabajka",
       "Colin McFarlane",
       "Joshua Harto"
-    ]
+    ],
+    "duration": 147,
+    "countries": ["Spain", "France", "United Kingdom"]
   },
   {
     "title": "The Godfather Part II",
@@ -128,7 +134,9 @@
       "Morgana King",
       "Marianna Hill",
       "Leopoldo Trieste"
-    ]
+    ],
+    "duration": 153,
+    "countries": ["Japan", "Brazil", "South Korea"]
   },
   {
     "title": "12 Angry Men",
@@ -160,7 +168,9 @@
       "Billy Nelson",
       "John Savoca",
       "Walter Stocker"
-    ]
+    ],
+    "duration": 112,
+    "countries": ["Australia", "South Korea"]
   },
   {
     "title": "Schindler's List",
@@ -192,7 +202,9 @@
       "Adi Nitzan",
       "Michael Schneider",
       "Miri Fabian"
-    ]
+    ],
+    "duration": 151,
+    "countries": ["France", "Indonesia"]
   },
   {
     "title": "The Lord of the Rings: The Return of the King",
@@ -228,7 +240,9 @@
       "Richard Edge",
       "Jason Fitch",
       "Bernard Hill"
-    ]
+    ],
+    "duration": 117,
+    "countries": ["Germany", "Indonesia"]
   },
   {
     "title": "Pulp Fiction",
@@ -260,7 +274,9 @@
       "Jerome Patrick Hoban",
       "Michael Gilden",
       "Gary Shorelle"
-    ]
+    ],
+    "duration": 125,
+    "countries": ["China", "South Korea", "United States"]
   },
   {
     "title": "The Lord of the Rings: The Fellowship of the Ring",
@@ -296,7 +312,9 @@
       "Christopher Lee",
       "Lawrence Makoare",
       "Andy Serkis"
-    ]
+    ],
+    "duration": 146,
+    "countries": ["Australia", "Canada"]
   },
   {
     "title": "The Good, the Bad and the Ugly",
@@ -328,7 +346,9 @@
       "Aldo Sambrell",
       "Al Mulock",
       "Sergio Mendizábal"
-    ]
+    ],
+    "duration": 89,
+    "countries": ["Germany"]
   },
   {
     "title": "Forrest Gump",
@@ -360,7 +380,9 @@
       "Peter Dobson",
       "Siobhan Fallon Hogan",
       "Alexander Zemeckis"
-    ]
+    ],
+    "duration": 144,
+    "countries": ["South Korea"]
   },
   {
     "title": "Fight Club",
@@ -392,7 +414,9 @@
       "Dierdre Downing-Jackson",
       "Bob Stephenson",
       "Charlie Dell"
-    ]
+    ],
+    "duration": 143,
+    "countries": ["Turkey", "United Kingdom", "France"]
   },
   {
     "title": "Inception",
@@ -424,7 +448,9 @@
       "Taylor Geare",
       "Johnathan Geare",
       "Tohoru Masamune"
-    ]
+    ],
+    "duration": 101,
+    "countries": ["Brazil", "Australia"]
   },
   {
     "title": "The Lord of the Rings: The Two Towers",
@@ -456,7 +482,9 @@
       "Bruce Hopkins",
       "Paris Howe Strewe",
       "Christopher Lee"
-    ]
+    ],
+    "duration": 120,
+    "countries": ["Brazil", "Australia", "Canada"]
   },
   {
     "title": "Star Wars: Episode V - The Empire Strikes Back",
@@ -488,7 +516,9 @@
       "Kenneth Colley",
       "Julian Glover",
       "Michael Sheard"
-    ]
+    ],
+    "duration": 86,
+    "countries": ["Brazil"]
   },
   {
     "title": "The Matrix",
@@ -520,7 +550,9 @@
       "Ada Nicodemou",
       "Deni Gordon",
       "Rowan Witt"
-    ]
+    ],
+    "duration": 91,
+    "countries": ["Japan"]
   },
   {
     "title": "Goodfellas",
@@ -552,7 +584,9 @@
       "Suzanne Shepherd",
       "Debi Mazar",
       "Margo Winkler"
-    ]
+    ],
+    "duration": 135,
+    "countries": ["France", "China"]
   },
   {
     "title": "One Flew Over the Cuckoo's Nest",
@@ -584,7 +618,9 @@
       "Sydney Lassick",
       "Kay Lee",
       "Christopher Lloyd"
-    ]
+    ],
+    "duration": 109,
+    "countries": ["Indonesia"]
   },
   {
     "title": "Se7en",
@@ -616,7 +652,9 @@
       "Bob Collins",
       "Jimmy Dale Hartsell",
       "Richard Roundtree"
-    ]
+    ],
+    "duration": 81,
+    "countries": ["United Kingdom", "Indonesia"]
   },
   {
     "title": "Seven Samurai",
@@ -648,7 +686,9 @@
       "Kichijirô Ueda",
       "Jun Tatara",
       "Atsushi Watanabe"
-    ]
+    ],
+    "duration": 125,
+    "countries": ["India", "Italy", "Italy"]
   },
   {
     "title": "It's a Wonderful Life",
@@ -680,7 +720,9 @@
       "Charles Williams",
       "Sarah Edwards",
       "William Edmunds"
-    ]
+    ],
+    "duration": 129,
+    "countries": ["Australia"]
   },
   {
     "title": "The Silence of the Lambs",
@@ -712,7 +754,9 @@
       "Jim Roche",
       "Brooke Smith",
       "Ted Levine"
-    ]
+    ],
+    "duration": 104,
+    "countries": ["China", "Mexico"]
   },
   {
     "title": "City of God",
@@ -744,7 +788,9 @@
       "Gustavo Engrácia",
       "Darlan Cunha",
       "Robson Rocha"
-    ]
+    ],
+    "duration": 134,
+    "countries": ["Spain"]
   },
   {
     "title": "Saving Private Ryan",
@@ -776,7 +822,9 @@
       "Daniel Cerqueira",
       "Demetri Goritsas",
       "Ian Porter"
-    ]
+    ],
+    "duration": 153,
+    "countries": ["Australia"]
   },
   {
     "title": "Life Is Beautiful",
@@ -808,7 +856,9 @@
       "Massimo Bianchi",
       "Jürgen Bohn",
       "Verena Buratti"
-    ]
+    ],
+    "duration": 157,
+    "countries": ["Germany", "South Korea"]
   },
   {
     "title": "Interstellar",
@@ -840,7 +890,9 @@
       "David Gyasi",
       "Josh Stewart",
       "Casey Affleck"
-    ]
+    ],
+    "duration": 150,
+    "countries": ["Turkey", "China", "Japan"]
   },
   {
     "title": "The Green Mile",
@@ -872,7 +924,9 @@
       "William Sadler",
       "Mack Miles",
       "Rai Tasco"
-    ]
+    ],
+    "duration": 142,
+    "countries": ["China", "China"]
   },
   {
     "title": "Star Wars: Episode IV - A New Hope",
@@ -904,7 +958,9 @@
       "Denis Lawson",
       "Garrick Hagon",
       "Jack Klaff"
-    ]
+    ],
+    "duration": 109,
+    "countries": ["United Kingdom"]
   },
   {
     "title": "Terminator 2: Judgment Day",
@@ -936,7 +992,9 @@
       "Shane Wilder",
       "Michael Edwards",
       "Jared Lounsbery"
-    ]
+    ],
+    "duration": 122,
+    "countries": ["United Kingdom", "South Korea"]
   },
   {
     "title": "Back to the Future",
@@ -968,7 +1026,9 @@
       "Donald Fullilove",
       "Lisa Freeman",
       "Cristen Kauffman"
-    ]
+    ],
+    "duration": 93,
+    "countries": ["Japan", "Turkey", "South Korea"]
   },
   {
     "title": "Spirited Away",
@@ -1000,7 +1060,9 @@
       "Shigeru Wakita",
       "Shirô Saitô",
       "Michiko Yamamoto"
-    ]
+    ],
+    "duration": 134,
+    "countries": ["Italy", "South Korea"]
   },
   {
     "title": "Psycho",
@@ -1032,7 +1094,9 @@
       "Prudence Beers",
       "Kit Carson",
       "Francis De Sales"
-    ]
+    ],
+    "duration": 148,
+    "countries": ["India", "China", "Canada"]
   },
   {
     "title": "The Pianist",
@@ -1064,7 +1128,9 @@
       "Ben Harlan",
       "Thomas Lawinky",
       "Joachim Paul Assböck"
-    ]
+    ],
+    "duration": 92,
+    "countries": ["South Korea", "Japan"]
   },
   {
     "title": "Parasite",
@@ -1096,7 +1162,9 @@
       "Hwang In Kyung",
       "Ahn Seong-Bong",
       "Kim Jin Hyung"
-    ]
+    ],
+    "duration": 91,
+    "countries": ["United Kingdom"]
   },
   {
     "title": "Léon: The Professional",
@@ -1128,7 +1196,9 @@
       "Eric Challier",
       "Luc Bernard",
       "Maïwenn"
-    ]
+    ],
+    "duration": 81,
+    "countries": ["Indonesia", "Japan"]
   },
   {
     "title": "The Lion King",
@@ -1160,7 +1230,9 @@
       "Frank Welker",
       "Cathy Cavadini",
       "Judi M. Durand"
-    ]
+    ],
+    "duration": 131,
+    "countries": ["Mexico"]
   },
   {
     "title": "Gladiator",
@@ -1192,7 +1264,9 @@
       "Omid Djalili",
       "Nicholas McGaughey",
       "Chris Kell"
-    ]
+    ],
+    "duration": 134,
+    "countries": ["France", "Brazil", "Australia"]
   },
   {
     "title": "American History X",
@@ -1224,7 +1298,9 @@
       "Keram Malicki-Sánchez",
       "Giuseppe Andrews",
       "Michelle Christine White"
-    ]
+    ],
+    "duration": 99,
+    "countries": ["Mexico", "Brazil"]
   },
   {
     "title": "The Departed",
@@ -1260,7 +1336,9 @@
       "Thomas B. Duffy",
       "Richard Hughes",
       "J.C. MacKenzie"
-    ]
+    ],
+    "duration": 159,
+    "countries": ["Italy", "Italy", "India"]
   },
   {
     "title": "The Usual Suspects",
@@ -1292,7 +1370,9 @@
       "Clark Gregg",
       "Morgan Hunter",
       "Ken Daly"
-    ]
+    ],
+    "duration": 142,
+    "countries": ["France", "South Korea"]
   },
   {
     "title": "The Prestige",
@@ -1324,7 +1404,9 @@
       "Monty Stuart",
       "Ron Perkins",
       "Ricky Jay"
-    ]
+    ],
+    "duration": 109,
+    "countries": ["Spain", "United Kingdom", "Indonesia"]
   },
   {
     "title": "Whiplash",
@@ -1356,7 +1438,9 @@
       "Tarik Lowe",
       "Tyler Kimball",
       "Rogelio Douglas Jr."
-    ]
+    ],
+    "duration": 152,
+    "countries": ["Spain", "Italy", "Germany"]
   },
   {
     "title": "Casablanca",
@@ -1388,7 +1472,9 @@
       "Enrique Acosta",
       "Ed Agresti",
       "Arnet Amos"
-    ]
+    ],
+    "duration": 87,
+    "countries": ["Germany", "Germany", "Turkey"]
   },
   {
     "title": "The Intouchables",
@@ -1424,7 +1510,9 @@
       "Dorothée Brière",
       "Marie-Laure Descoureaux",
       "Émilie Caen"
-    ]
+    ],
+    "duration": 92,
+    "countries": ["India", "United States"]
   },
   {
     "title": "Harakiri",
@@ -1456,7 +1544,9 @@
       "Jô Azumi",
       "Nakajirô Tomita",
       "Shichisaburô Amatsu"
-    ]
+    ],
+    "duration": 109,
+    "countries": ["Australia", "Mexico"]
   },
   {
     "title": "Grave of the Fireflies",
@@ -1488,7 +1578,9 @@
       "Shirô Tamaki",
       "Tadashi Nakamura",
       "Mika Sekita"
-    ]
+    ],
+    "duration": 84,
+    "countries": ["United States", "Turkey"]
   },
   {
     "title": "Modern Times",
@@ -1520,7 +1612,9 @@
       "Sammy Stein",
       "Juana Sutton",
       "Ted Oliver"
-    ]
+    ],
+    "duration": 129,
+    "countries": ["France", "China"]
   },
   {
     "title": "Once Upon a Time in the West",
@@ -1552,7 +1646,9 @@
       "Frank Braña",
       "Marilù Carteny",
       "Saturno Cerra"
-    ]
+    ],
+    "duration": 86,
+    "countries": ["South Korea", "Mexico", "Brazil"]
   },
   {
     "title": "Rear Window",
@@ -1584,7 +1680,9 @@
       "Barbara Bailey",
       "Benny Bartlett",
       "Nick Borgani"
-    ]
+    ],
+    "duration": 129,
+    "countries": ["South Korea", "France"]
   },
   {
     "title": "Alien",
@@ -1608,7 +1706,9 @@
       "Bolaji Badejo",
       "Helen Horton",
       "Eddie Powell"
-    ]
+    ],
+    "duration": 145,
+    "countries": ["Turkey", "Spain", "Japan"]
   },
   {
     "title": "City Lights",
@@ -1640,7 +1740,9 @@
       "Betty Blair",
       "Buster Brodie",
       "Jeanne Carpenter"
-    ]
+    ],
+    "duration": 136,
+    "countries": ["China"]
   },
   {
     "title": "Cinema Paradiso",
@@ -1672,7 +1774,9 @@
       "Nellina Laganà",
       "Turi Giuffrida",
       "Mariella Lo Giudice"
-    ]
+    ],
+    "duration": 134,
+    "countries": ["Canada", "France"]
   },
   {
     "title": "Apocalypse Now",
@@ -1704,7 +1808,9 @@
       "Ron McQueen",
       "Tom Mason",
       "Cynthia Wood"
-    ]
+    ],
+    "duration": 82,
+    "countries": ["South Korea"]
   },
   {
     "title": "Memento",
@@ -1732,7 +1838,9 @@
       "Marianne Muellerleile",
       "Larry Holden",
       "Buzz Visconti"
-    ]
+    ],
+    "duration": 117,
+    "countries": ["Canada", "France", "Spain"]
   },
   {
     "title": "Indiana Jones and the Raiders of the Lost Ark",
@@ -1764,7 +1872,9 @@
       "Matthew Scurfield",
       "Malcolm Weaver",
       "Sonny Caldinez"
-    ]
+    ],
+    "duration": 85,
+    "countries": ["United States"]
   },
   {
     "title": "Django Unchained",
@@ -1796,7 +1906,9 @@
       "Escalante Lundy",
       "Miriam F. Glover",
       "Don Johnson"
-    ]
+    ],
+    "duration": 101,
+    "countries": ["United States"]
   },
   {
     "title": "WALL·E",
@@ -1828,7 +1940,9 @@
       "Jess Harnell",
       "Sherry Lynn",
       "Mickie McGowan"
-    ]
+    ],
+    "duration": 120,
+    "countries": ["Turkey", "Brazil", "Japan"]
   },
   {
     "title": "The Lives of Others",
@@ -1860,7 +1974,9 @@
       "Hubertus Hartmann",
       "Thomas Arnold",
       "Hinnerk Schönemann"
-    ]
+    ],
+    "duration": 94,
+    "countries": ["Spain"]
   },
   {
     "title": "Sunset Blvd.",
@@ -1892,7 +2008,9 @@
       "Ray Evans",
       "Jay Livingston",
       "Fred Aldrich"
-    ]
+    ],
+    "duration": 84,
+    "countries": ["Brazil", "Turkey"]
   },
   {
     "title": "Paths of Glory",
@@ -1924,7 +2042,9 @@
       "John Stein",
       "Harold Benedict",
       "Leon Briggs"
-    ]
+    ],
+    "duration": 147,
+    "countries": ["Australia"]
   },
   {
     "title": "The Shining",
@@ -1960,7 +2080,9 @@
       "Louise Burns",
       "Robin Pappas",
       "Alison Coleridge"
-    ]
+    ],
+    "duration": 139,
+    "countries": ["Italy", "Italy", "Indonesia"]
   },
   {
     "title": "The Great Dictator",
@@ -1992,7 +2114,9 @@
       "Florence Wright",
       "Eddie Gribbon",
       "Rudolph Anders"
-    ]
+    ],
+    "duration": 123,
+    "countries": ["United Kingdom", "Turkey"]
   },
   {
     "title": "Avengers: Infinity War",
@@ -2028,7 +2152,9 @@
       "Sebastian Stan",
       "Idris Elba",
       "Danai Gurira"
-    ]
+    ],
+    "duration": 141,
+    "countries": ["Turkey", "Turkey", "Australia"]
   },
   {
     "title": "Witness for the Prosecution",
@@ -2064,7 +2190,9 @@
       "Walter Bacon",
       "Eddie Baker",
       "Benjie Bancroft"
-    ]
+    ],
+    "duration": 127,
+    "countries": ["Italy", "Turkey"]
   },
   {
     "title": "Aliens",
@@ -2096,7 +2224,9 @@
       "Trevor Steedman",
       "Paul Maxwell",
       "Valerie Colgan"
-    ]
+    ],
+    "duration": 102,
+    "countries": ["Mexico"]
   },
   {
     "title": "American Beauty",
@@ -2128,7 +2258,9 @@
       "Kent Faulcon",
       "Brenda Wehle",
       "Lisa Cloud"
-    ]
+    ],
+    "duration": 98,
+    "countries": ["United States", "India"]
   },
   {
     "title": "Spider-Man: Into the Spider-Verse",
@@ -2160,7 +2292,9 @@
       "Edwin R. Habacon",
       "Oscar Isaac",
       "Greta Lee"
-    ]
+    ],
+    "duration": 113,
+    "countries": ["China", "Italy"]
   },
   {
     "title": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
@@ -2192,7 +2326,9 @@
       "Paul Tamarin",
       "Laurence Herder",
       "Gordon Tanner"
-    ]
+    ],
+    "duration": 149,
+    "countries": ["Australia"]
   },
   {
     "title": "The Dark Knight Rises",
@@ -2224,7 +2360,9 @@
       "Aliash Tepina",
       "Nestor Carbonell",
       "Brett Cullen"
-    ]
+    ],
+    "duration": 119,
+    "countries": ["Germany", "China", "Germany"]
   },
   {
     "title": "Oldboy",
@@ -2261,7 +2399,9 @@
       "Jung Ae Kwak",
       "San Kim",
       "Chae-soo Jang"
-    ]
+    ],
+    "duration": 137,
+    "countries": ["United States"]
   },
   {
     "title": "Joker",
@@ -2293,7 +2433,9 @@
       "Dante Pereira-Olson",
       "Carrie Louise Putrello",
       "Sharon Washington"
-    ]
+    ],
+    "duration": 155,
+    "countries": ["Mexico", "Canada", "Indonesia"]
   },
   {
     "title": "Amadeus",
@@ -2325,7 +2467,9 @@
       "Peter DiGesu",
       "Richard Frank",
       "Patrick Hines"
-    ]
+    ],
+    "duration": 95,
+    "countries": ["Indonesia"]
   },
   {
     "title": "Inglourious Basterds",
@@ -2357,7 +2501,9 @@
       "Martin Wuttke",
       "Mike Myers",
       "Julie Dreyfus"
-    ]
+    ],
+    "duration": 112,
+    "countries": ["Spain", "Turkey"]
   },
   {
     "title": "Toy Story",
@@ -2393,7 +2539,9 @@
       "Greg Berg",
       "Lisa Bradley",
       "Kendall Cunningham"
-    ]
+    ],
+    "duration": 155,
+    "countries": ["Mexico"]
   },
   {
     "title": "Coco",
@@ -2429,7 +2577,9 @@
       "Carla Medina",
       "Dyana Ortelli",
       "Luis Valdez"
-    ]
+    ],
+    "duration": 134,
+    "countries": ["France", "Germany"]
   },
   {
     "title": "Braveheart",
@@ -2461,7 +2611,9 @@
       "Peter Hanly",
       "Stephen Billington",
       "Barry McGovern"
-    ]
+    ],
+    "duration": 143,
+    "countries": ["Italy", "Canada"]
   },
   {
     "title": "The Boat",
@@ -2493,7 +2645,9 @@
       "Konrad Becker",
       "Lutz Schnell",
       "Martin Hemme"
-    ]
+    ],
+    "duration": 138,
+    "countries": ["Turkey"]
   },
   {
     "title": "Avengers: Endgame",
@@ -2529,7 +2683,9 @@
       "Tessa Thompson",
       "Rene Russo",
       "Elizabeth Olsen"
-    ]
+    ],
+    "duration": 140,
+    "countries": ["Indonesia"]
   },
   {
     "title": "Princess Mononoke",
@@ -2561,7 +2717,9 @@
       "Debi Derryberry",
       "Alex Fernandez",
       "Jack Fletcher"
-    ]
+    ],
+    "duration": 90,
+    "countries": ["South Korea", "Brazil"]
   },
   {
     "title": "Top Gun: Maverick",
@@ -2577,7 +2735,23 @@
       "Jack Epps Jr. (based on characters created by)",
       "Peter Craig (story by)"
     ],
-    "id": "tt1745960"
+    "actors": [
+      "Marlon Brando",
+      "Al Pacino",
+      "James Caan",
+      "Diane Keaton",
+      "Abe Vigoda",
+      "Talia Shire",
+      "Gianni Russo",
+      "John Cazale",
+      "Rudy Bond",
+      "Al Martino",
+      "Morgana King",
+      "Lenny Montana"
+    ],
+    "id": "tt1745960",
+    "duration": 145,
+    "countries": ["Japan", "China"]
   },
   {
     "title": "Once Upon a Time in America",
@@ -2593,7 +2767,26 @@
       "Leonardo Benvenuti (screenplay by)",
       "Piero De Bernardi (screenplay by)"
     ],
-    "id": "tt0087843"
+    "actors": [
+      "Marlon Brando",
+      "Al Pacino",
+      "James Caan",
+      "Diane Keaton",
+      "Richard S. Castellano",
+      "Robert Duvall",
+      "Sterling Hayden",
+      "John Marley",
+      "Richard Conte",
+      "Al Lettieri",
+      "Abe Vigoda",
+      "Talia Shire",
+      "Gianni Russo",
+      "Morgana King",
+      "Lenny Montana"
+    ],
+    "id": "tt0087843",
+    "duration": 120,
+    "countries": ["Indonesia", "Australia"]
   },
   {
     "title": "Good Will Hunting",
@@ -2625,7 +2818,9 @@
       "Vik Sahay",
       "Shannon Egleson",
       "Rob Lyons"
-    ]
+    ],
+    "duration": 98,
+    "countries": ["Canada", "India"]
   },
   {
     "title": "Your Name.",
@@ -2657,7 +2852,9 @@
       "Miyu Tsuji",
       "Shin'ya Hamazoe",
       "Kanami Satô"
-    ]
+    ],
+    "duration": 95,
+    "countries": ["France"]
   },
   {
     "title": "Requiem for a Dream",
@@ -2689,7 +2886,9 @@
       "Ajay Naidu",
       "Sean Gullette",
       "Samia Shoaib"
-    ]
+    ],
+    "duration": 141,
+    "countries": ["Australia"]
   },
   {
     "title": "Toy Story 3",
@@ -2721,7 +2920,9 @@
       "Bud Luckey",
       "Bea Miller",
       "Javier Fernández-Peña"
-    ]
+    ],
+    "duration": 112,
+    "countries": ["Germany", "Canada", "Italy"]
   },
   {
     "title": "Singin' in the Rain",
@@ -2753,7 +2954,9 @@
       "David Bair",
       "Jimmy Bates",
       "Mary Bayless"
-    ]
+    ],
+    "duration": 101,
+    "countries": ["France"]
   },
   {
     "title": "3 Idiots",
@@ -2789,7 +2992,9 @@
       "Jayant Kripalani",
       "Arun Bali",
       "Shoaib Ahmed"
-    ]
+    ],
+    "duration": 150,
+    "countries": ["Germany", "Indonesia"]
   },
   {
     "title": "High and Low",
@@ -2821,7 +3026,9 @@
       "Masao Shimizu",
       "Masahiko Shimazu",
       "Toshio Egi"
-    ]
+    ],
+    "duration": 114,
+    "countries": ["Turkey"]
   },
   {
     "title": "Star Wars: Episode VI - Return of the Jedi",
@@ -2853,7 +3060,9 @@
       "Michael Carter",
       "Denis Lawson",
       "Tim Rose"
-    ]
+    ],
+    "duration": 103,
+    "countries": ["India"]
   },
   {
     "title": "2001: A Space Odyssey",
@@ -2885,7 +3094,9 @@
       "Edwina Carroll",
       "Penny Brahms",
       "Heather Downham"
-    ]
+    ],
+    "duration": 141,
+    "countries": ["Brazil", "United States", "Spain"]
   },
   {
     "title": "Eternal Sunshine of the Spotless Mind",
@@ -2917,7 +3128,9 @@
       "Josh Flitter",
       "Lola Daehler",
       "Deirdre O'Connell"
-    ]
+    ],
+    "duration": 93,
+    "countries": ["India"]
   },
   {
     "title": "Capernaum",
@@ -2949,7 +3162,9 @@
       "Riman Al Rafeea",
       "Legamett Alamou",
       "Majd Nabil Alhalabi"
-    ]
+    ],
+    "duration": 136,
+    "countries": ["Canada", "Turkey", "Turkey"]
   },
   {
     "title": "Reservoir Dogs",
@@ -2984,7 +3199,9 @@
       "Robert Ruth",
       "Lawrence Bender",
       "Linda Kaye"
-    ]
+    ],
+    "duration": 94,
+    "countries": ["Turkey"]
   },
   {
     "title": "The Hunt",
@@ -3016,7 +3233,9 @@
       "Josefine Gråbøl",
       "Bjarne Henriksen",
       "Nicolai Dahl Hamilton"
-    ]
+    ],
+    "duration": 128,
+    "countries": ["Turkey", "Brazil"]
   },
   {
     "title": "Citizen Kane",
@@ -3052,7 +3271,9 @@
       "Harry Shannon",
       "Sonny Bupp",
       "Buddy Swan"
-    ]
+    ],
+    "duration": 156,
+    "countries": ["Brazil", "South Korea"]
   },
   {
     "title": "Lawrence of Arabia",
@@ -3084,7 +3305,9 @@
       "Howard Marion-Crawford",
       "Jack Gwillim",
       "Hugh Miller"
-    ]
+    ],
+    "duration": 150,
+    "countries": ["Mexico"]
   },
   {
     "title": "M",
@@ -3116,7 +3339,9 @@
       "Karl Platen",
       "Rosa Valetti",
       "Hertha von Walther"
-    ]
+    ],
+    "duration": 81,
+    "countries": ["France"]
   },
   {
     "title": "Come and See",
@@ -3148,7 +3373,9 @@
       "Valery Kravchenko",
       "Evgeniy Kryzhanovskiy",
       "N. Lisichenok"
-    ]
+    ],
+    "duration": 141,
+    "countries": ["India", "Mexico"]
   },
   {
     "title": "North by Northwest",
@@ -3180,7 +3407,9 @@
       "Ken Lynch",
       "Stanley Adams",
       "John Alban"
-    ]
+    ],
+    "duration": 127,
+    "countries": ["India", "China", "Germany"]
   },
   {
     "title": "Vertigo",
@@ -3216,6 +3445,8 @@
       "Margaret Brayton",
       "Paul Bryar",
       "Boyd Cabeen"
-    ]
+    ],
+    "duration": 98,
+    "countries": ["United Kingdom"]
   }
 ]
