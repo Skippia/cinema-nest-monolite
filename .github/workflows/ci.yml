@@ -98,6 +98,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Testing project
-        run: yarn test
+      - name: Testing (unit tests) project
+        run: yarn test:unit
+
+      - name: Testing (unit tests) project
+        run: yarn test:e2e:restart
         
