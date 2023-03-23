@@ -1,80 +1,25 @@
 import { Injectable } from '@nestjs/common'
-import { AddMovieToCinemaDto } from '../movie/dto/MovieCinemaDtos/add-movie-to-cinema.dto'
 import { PrismaService } from '../prisma/prisma.service'
 import * as movies from '../../data/movies.json'
+import { Movie } from './dto/types'
 
 @Injectable()
 export class MovieService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAllMovies() {
+  findAllMovies(): Movie[] {
     return movies
   }
 
-  findOneMovie(movieId: string) {
-    return movies.find((movie) => movie.id === movieId)
-  }
-
-  async checkIfMovieAvailableForCinema(movieId: string, cinemaId: number) {
-    return !!(await this.prisma.movieOnCinema.findUnique({
+  async findOneMovie(id: number): Promise<Movie | undefined> {
+    const movieRecord = await this.prisma.movieRecord.findUnique({
       where: {
-        cinemaId_movieId: {
-          movieId,
-          cinemaId,
-        },
-      },
-    }))
-  }
-
-  async addMoviesToCinema(moviesToCinemaData: AddMovieToCinemaDto) {
-    const { movieIds, cinemaId } = moviesToCinemaData
-    const transformedMoviesToCinemaData = movieIds.map((movieId) => ({
-      movieId,
-      cinemaId,
-    }))
-
-    /**
-     * In createMany is impossible to return created records
-     * */
-    const newMoviesInCinema = await this.prisma.$transaction(
-      transformedMoviesToCinemaData.map((movieToCinema) =>
-        this.prisma.movieOnCinema.create({
-          data: movieToCinema,
-        }),
-      ),
-    )
-
-    return newMoviesInCinema.map((m) => this.findOneMovie(m.movieId))
-  }
-
-  async findMoviesInCinema(cinemaId: number) {
-    const moviesInCinema = await this.prisma.movieOnCinema.findMany({
-      where: {
-        cinemaId,
+        id,
       },
     })
 
-    return moviesInCinema.map((m) => this.findOneMovie(m.movieId))
-  }
-
-  async deleteMovieFromCinema(cinemaId: number, movieId: string) {
-    const deletedMovieFromCinema = await this.prisma.movieOnCinema.delete({
-      where: {
-        cinemaId_movieId: {
-          cinemaId,
-          movieId,
-        },
-      },
-    })
-
-    return this.findOneMovie(deletedMovieFromCinema.movieId)
-  }
-
-  async resetMoviesInCinema(cinemaId: number) {
-    return await this.prisma.movieOnCinema.deleteMany({
-      where: {
-        cinemaId,
-      },
-    })
+    if (movieRecord) {
+      return movies.find((movie) => movie.id === movieRecord.imdbId)
+    }
   }
 }

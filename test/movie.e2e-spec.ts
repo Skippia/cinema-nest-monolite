@@ -28,8 +28,8 @@ describe('Movie endoints (e2e)', () => {
 
   let cinemaId: number
 
-  let movieId1: string
-  let movieId2: string
+  let movieId1: number
+  let movieId2: number
 
   /**
    * Create:
@@ -41,14 +41,14 @@ describe('Movie endoints (e2e)', () => {
     /**
      * Add movies to db
      */
-    const newMovie1 = await prisma.movie.create({
+    const newMovie1 = await prisma.movieRecord.create({
       data: {
-        id: imdbId1,
+        imdbId: imdbId1,
       },
     })
-    const newMovie2 = await prisma.movie.create({
+    const newMovie2 = await prisma.movieRecord.create({
       data: {
-        id: imdbId2,
+        imdbId: imdbId2,
       },
     })
     movieId1 = newMovie1.id
@@ -114,11 +114,9 @@ describe('Movie endoints (e2e)', () => {
     })
   })
 
-  describe('GET /movies/movies-in-cinema/:cinemaId/:movieId', () => {
+  describe('GET /movies-in-cinema/:cinemaId/:movieId', () => {
     it('should return if movie is available for cinema (true)', async () => {
-      const { status, text } = await request(app.getHttpServer()).get(
-        `/movies/movies-in-cinema/${cinemaId}/${movieId1}`,
-      )
+      const { status, text } = await request(app.getHttpServer()).get(`/movies-in-cinema/${cinemaId}/${movieId1}`)
 
       expect(status).toBe(200)
       //TODO?: change format from string -> kinda { isAvailable: boolean}
@@ -126,7 +124,7 @@ describe('Movie endoints (e2e)', () => {
     })
 
     it('should return if movie is available for cinema (false)', async () => {
-      const { status, text } = await request(app.getHttpServer()).get(`/movies/movies-in-cinema/${cinemaId}/xyz`)
+      const { status, text } = await request(app.getHttpServer()).get(`/movies-in-cinema/${cinemaId}/999`)
 
       expect(status).toBe(200)
       //TODO?: change format from string -> kinda { isAvailable: boolean}
@@ -134,9 +132,9 @@ describe('Movie endoints (e2e)', () => {
     })
   })
 
-  describe('GET /movies/movies-in-cinema/:cinemaId', () => {
+  describe('GET /movies-in-cinema/:cinemaId', () => {
     it('should return the movies for cinema', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/movies/movies-in-cinema/${cinemaId}`)
+      const { status, body } = await request(app.getHttpServer()).get(`/movies-in-cinema/${cinemaId}`)
 
       expect(status).toBe(200)
       expect(body).toHaveLength(1)
@@ -144,7 +142,7 @@ describe('Movie endoints (e2e)', () => {
     })
   })
 
-  describe('POST /movies/movies-in-cinema', () => {
+  describe('POST /movies-in-cinema', () => {
     it('should create a movie', async () => {
       /**
        * Remove all movies in cinema
@@ -158,7 +156,7 @@ describe('Movie endoints (e2e)', () => {
       const beforeCount = await prisma.movieOnCinema.count()
 
       const { status, body } = await request(app.getHttpServer())
-        .post('/movies/movies-in-cinema')
+        .post('/movies-in-cinema')
         .send({
           cinemaId,
           movieIds: [movieId1],
@@ -176,7 +174,7 @@ describe('Movie endoints (e2e)', () => {
       const beforeCount = await prisma.movieOnCinema.count()
 
       const { status, body } = await request(app.getHttpServer())
-        .post('/movies/movies-in-cinema')
+        .post('/movies-in-cinema')
         .send({
           cinemaId,
           movieIds: [movieId1],
@@ -190,31 +188,29 @@ describe('Movie endoints (e2e)', () => {
     })
   })
 
-  describe('DELETE /movies/movies-in-cinema/:cinemaId/:movieId', () => {
+  describe('DELETE /movies-in-cinema/:cinemaId/:movieId', () => {
     it('should delete a movie', async () => {
-      const { status, body } = await request(app.getHttpServer()).delete(
-        `/movies/movies-in-cinema/${cinemaId}/${movieId1}`,
-      )
+      const { status, body } = await request(app.getHttpServer()).delete(`/movies-in-cinema/${cinemaId}/${movieId1}`)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(movieShape)
     })
   })
 
-  describe('DELETE /movies/movies-in-cinema/:cinemaId', () => {
+  describe('DELETE /movies-in-cinema/:cinemaId', () => {
     it('should remove all movies for cinema', async () => {
       /**
        * Create sevaral movies for cinema
        */
       await prisma.movieOnCinema.createMany({
         data: [
-          { cinemaId, movieId: imdbId1 },
-          { cinemaId, movieId: imdbId2 },
+          { cinemaId, movieId: movieId1 },
+          { cinemaId, movieId: movieId2 },
         ],
       })
       const beforeCount = await prisma.movieOnCinema.count()
 
-      const { status, body } = await request(app.getHttpServer()).delete(`/movies/movies-in-cinema/${cinemaId}`)
+      const { status, body } = await request(app.getHttpServer()).delete(`/movies-in-cinema/${cinemaId}`)
 
       const afterCount = await prisma.movieOnCinema.count()
 
