@@ -37,7 +37,7 @@ export class MovieController {
   }
 
   @Get('movies-in-cinema/:cinemaId/:movieId')
-  @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
+  @ApiOkResponse({ type: Boolean })
   async checkIfMovieAvailableForCinema(
     @Param('movieId') movieId: string,
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
