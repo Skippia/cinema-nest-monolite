@@ -4,9 +4,8 @@ import { IsArray, IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 
 export class FindMovieDto {
   @IsInt()
-  @IsNotEmpty()
   @ApiProperty()
-  id: string
+  id: number
 
   @IsString()
   @IsNotEmpty()

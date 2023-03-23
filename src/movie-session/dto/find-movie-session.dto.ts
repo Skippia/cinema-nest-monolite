@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { MovieSession } from '@prisma/client'
 import { Type } from 'class-transformer'
-import { IsInt, IsString, IsNotEmpty, IsDate } from 'class-validator'
+import { IsInt, IsDate } from 'class-validator'
 
 export class FindMovieSessionDto implements MovieSession {
   @IsInt()
@@ -18,10 +18,9 @@ export class FindMovieSessionDto implements MovieSession {
   @ApiProperty()
   endDate: Date
 
-  @IsString()
-  @IsNotEmpty()
+  @IsInt()
   @ApiProperty()
-  movieId: string
+  movieId: number
 
   @IsInt()
   @ApiProperty()

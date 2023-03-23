@@ -11,5 +11,5 @@ export class AddMovieToCinemaDto {
   @IsNotEmpty()
   @Type(() => String)
   @ApiProperty({ isArray: true, type: String })
-  movieIds: string[]
+  movieIds: number[]
 }
