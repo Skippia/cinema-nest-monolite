@@ -6,6 +6,12 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "db:restart": "yarn docker:down && yarn docker:up && sleep 1",
+    "pretest:e2e:run": "yarn db:restart && dotenv -e .env.test -- prisma migrate reset --force",
+    "test:e2e:run": "dotenv -e .env.test -- jest -i --no-cache --watch --config ./test/jest-e2e.json",
+    "test:e2e": "dotenv -e .env.test -- jest -i --no-cache --config ./test/jest-e2e.json",
     "prebuild": "rimraf ./dist",
     "postbuild": "rimraf ./dist/**/*.map",
     "build": "nest build",
@@ -19,7 +25,6 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
     "prepare": "husky install"
   },
   "dependencies": {

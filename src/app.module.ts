@@ -7,9 +7,20 @@ import { MovieModule } from './movie/movie.module'
 import { CinemaModule } from './cinema/cinema.module'
 import { SeatsInCinemaModule } from './seats-in-cinema/seats-in-cinema.module'
 import { MovieSessionModule } from './movie-session/movie-session.module'
+import { ConfigModule } from '@nestjs/config'
 
 @Module({
-  imports: [PrismaModule, SeatModule, MovieModule, CinemaModule, SeatsInCinemaModule, MovieSessionModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    PrismaModule,
+    SeatModule,
+    MovieModule,
+    CinemaModule,
+    SeatsInCinemaModule,
+    MovieSessionModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
