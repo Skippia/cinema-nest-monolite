@@ -16,7 +16,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return healthcheck', () => {
-      expect(appController.checkHealth).toBe('healthcheck')
+      expect(appController.checkHealth()).toBe('healthcheck')
     })
   })
 })
