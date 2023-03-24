@@ -15,14 +15,17 @@ function conflictErrorHandler(
   response: Response<any, Record<string, any>>,
   exception: Prisma.PrismaClientKnownRequestError,
 ) {
-  const status = HttpStatus.CONFLICT
+  const statusCode = HttpStatus.CONFLICT
 
-  const customMessage = 'Unique violation for foreign key'
-  const detailedErrorMessage = (exception.meta?.cause as string) || extractUsefulInformationFromError(exception.message)
+  const messageError = 'Unique violation for foreign key'
+  const messageDetails = (exception.meta?.cause as string) || extractUsefulInformationFromError(exception.message)
 
-  return generateErrorResponse(response, status, formatMessageString(customMessage), {
-    details: formatMessageString(detailedErrorMessage),
-  })
+  return generateErrorResponse(
+    response,
+    statusCode,
+    formatMessageString(messageError),
+    formatMessageString(messageDetails),
+  )
 }
 
 /**
@@ -32,15 +35,18 @@ function fkFailedErrorHandler(
   response: Response<any, Record<string, any>>,
   exception: Prisma.PrismaClientKnownRequestError,
 ) {
-  const status = HttpStatus.BAD_REQUEST
+  const statusCode = HttpStatus.BAD_REQUEST
 
-  const customMessage = 'Operation with not existing foreign key'
-  const detailedErrorMessage =
+  const messageError = 'Operation with not existing foreign key'
+  const messageDetails =
     (exception.meta?.['field_name'] as string) || extractUsefulInformationFromError(exception.message)
 
-  return generateErrorResponse(response, status, formatMessageString(customMessage), {
-    details: formatMessageString(detailedErrorMessage),
-  })
+  return generateErrorResponse(
+    response,
+    statusCode,
+    formatMessageString(messageError),
+    formatMessageString(messageDetails),
+  )
 }
 
 /**
@@ -50,14 +56,17 @@ function throwNotFoundHandler(
   response: Response<any, Record<string, any>>,
   exception: Prisma.PrismaClientKnownRequestError,
 ) {
-  const status = HttpStatus.NOT_FOUND
+  const statusCode = HttpStatus.NOT_FOUND
 
-  const customMessage = 'Resource not found'
-  const detailedErrorMessage = (exception.meta?.cause as string) || extractUsefulInformationFromError(exception.message)
+  const messageError = 'Not found'
+  const messageDetails = (exception.meta?.cause as string) || extractUsefulInformationFromError(exception.message)
 
-  return generateErrorResponse(response, status, formatMessageString(customMessage), {
-    details: formatMessageString(detailedErrorMessage),
-  })
+  return generateErrorResponse(
+    response,
+    statusCode,
+    formatMessageString(messageError),
+    formatMessageString(messageDetails),
+  )
 }
 
 const mapErrorHandlers = {
