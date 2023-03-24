@@ -4,14 +4,14 @@ import { IsInt } from 'class-validator'
 
 export class FindSeatDto implements Seat {
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   id: number
 
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   row: number
 
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   col: number
 }
