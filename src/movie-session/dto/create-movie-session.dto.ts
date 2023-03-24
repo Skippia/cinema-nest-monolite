@@ -6,19 +6,19 @@ import { IsInt, IsDate } from 'class-validator'
 export class CreateMovieSessionDto implements Omit<MovieSession, 'id'> {
   @Type(() => Date)
   @IsDate()
-  @ApiProperty()
+  @ApiProperty({ example: '2023-03-24T10:25:01.504Z' })
   startDate: Date
 
   @Type(() => Date)
   @IsDate()
-  @ApiProperty()
+  @ApiProperty({ example: '2023-03-24T10:25:01.504Z' })
   endDate: Date
 
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   movieId: number
 
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   cinemaId: number
 }

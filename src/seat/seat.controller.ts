@@ -67,9 +67,9 @@ export class SeatController {
   @Delete('seats/:seatId')
   @ApiOperation({ description: 'Delete seat by seatId' })
   @ApiOkResponse({ type: FindSeatDto })
-  async removeSeat(@Param('seatId', ParseIntPipe) seatId: number): Promise<Seat> {
-    const removedSeat = await this.seatService.removeSeat(seatId)
+  async deleteSeat(@Param('seatId', ParseIntPipe) seatId: number): Promise<Seat> {
+    const deletedSeat = await this.seatService.deleteSeat(seatId)
 
-    return removedSeat
+    return deletedSeat
   }
 }

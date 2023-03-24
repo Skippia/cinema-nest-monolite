@@ -69,11 +69,11 @@ export class CinemaController {
   }
 
   @Delete('cinemas/:cinemaId')
-  @ApiOperation({ description: 'Remove cinema by cinemaId' })
+  @ApiOperation({ description: 'Delete cinema by cinemaId' })
   @ApiOkResponse({ type: FindCinemaDto })
-  async removeCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<Cinema> {
-    const removedCinema = await this.cinemaService.removeCinema(cinemaId)
+  async deleteCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<Cinema> {
+    const deletedCinema = await this.cinemaService.deleteCinema(cinemaId)
 
-    return removedCinema
+    return deletedCinema
   }
 }

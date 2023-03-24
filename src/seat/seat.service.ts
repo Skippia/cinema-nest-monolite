@@ -27,7 +27,7 @@ export class SeatService {
     })
   }
 
-  async removeSeat(id: number): Promise<Seat> {
+  async deleteSeat(id: number): Promise<Seat> {
     return await this.prisma.seat.delete({ where: { id } })
   }
 }
