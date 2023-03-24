@@ -4,12 +4,12 @@ import { IsArray, IsInt, IsNotEmpty } from 'class-validator'
 
 export class AddMovieToCinemaDto {
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   cinemaId: number
 
   @IsArray()
   @IsNotEmpty()
   @Type(() => String)
-  @ApiProperty({ isArray: true, type: String })
+  @ApiProperty({ isArray: true, type: String, example: [1, 2] })
   movieIds: number[]
 }

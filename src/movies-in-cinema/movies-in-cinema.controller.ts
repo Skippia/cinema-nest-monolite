@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, UseFilters } from '@nestjs/common'
 import { MoviesInCinemaService } from './movies-in-cinema.service'
-import { ApiTags, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger'
+import { ApiTags, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger'
 import { Prisma } from '@prisma/client'
 import { FindMovieDto } from '../movie/dto/find-movie.dto'
 import { Movie } from '../movie/dto/types'
@@ -23,6 +23,7 @@ export class MoviesInCinemaController {
    */
 
   @Post()
+  @ApiOperation({ description: 'Add movies (by movieId-s) to cinema by cinemaId' })
   @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
   async addMoviesToCinema(@Body() dto: AddMovieToCinemaDto): Promise<(Movie | undefined)[]> {
     const addedMoviesToCinema = await this.moviesInCinemaService.addMoviesToCinema(dto)
@@ -35,6 +36,7 @@ export class MoviesInCinemaController {
   }
 
   @Get(':cinemaId/:movieId')
+  @ApiOperation({ description: 'Get if movie (by movieId) is available for cinema (by cinemaId)' })
   @ApiOkResponse({ type: Boolean })
   async checkIfMovieAvailableForCinema(
     @Param('movieId', ParseIntPipe) movieId: number,
@@ -46,6 +48,7 @@ export class MoviesInCinemaController {
   }
 
   @Get(':cinemaId')
+  @ApiOperation({ description: 'Get all available movies for cinema by cinemaId' })
   @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
   async findMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<(Movie | undefined)[]> {
     const moviesInCinema = await this.moviesInCinemaService.findMoviesInCinema(cinemaId)
@@ -58,6 +61,7 @@ export class MoviesInCinemaController {
   }
 
   @Delete(':cinemaId/:movieId')
+  @ApiOperation({ description: 'Delete movie (by movieId) from cinema (by cinemaId)' })
   @ApiOkResponse({ type: FindMovieDto })
   async deleteMovieFromCinema(
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
@@ -71,6 +75,7 @@ export class MoviesInCinemaController {
   }
 
   @Delete(':cinemaId')
+  @ApiOperation({ description: 'Delete all movies from cinema (by cinemaId)' })
   @ApiOkResponse({ type: DeleteManyDto })
   async resetMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<Prisma.BatchPayload> {
     const countDeletedMoviesFromCinema = await this.moviesInCinemaService.resetMoviesInCinema(cinemaId)

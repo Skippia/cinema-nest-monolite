@@ -4,10 +4,10 @@ import { IsInt } from 'class-validator'
 
 export class FindMovieInCinemaDto implements MovieOnCinema {
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   cinemaId: number
 
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   movieId: number
 }
