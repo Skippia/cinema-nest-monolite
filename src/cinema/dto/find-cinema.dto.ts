@@ -4,24 +4,24 @@ import { IsInt, IsString, MaxLength, MinLength } from 'class-validator'
 
 export class FindCinemaDto implements Cinema {
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   id: number
 
   @IsString()
   @MinLength(2)
   @MaxLength(64)
-  @ApiProperty()
+  @ApiProperty({ example: 'Dom Kino' })
   name: string
 
   @IsString()
   @MinLength(2)
   @MaxLength(64)
-  @ApiProperty()
+  @ApiProperty({ example: 'Plotnikova 42' })
   address: string
 
   @IsString()
   @MinLength(2)
   @MaxLength(64)
-  @ApiProperty()
+  @ApiProperty({ example: 'Minsk' })
   city: string
 }

@@ -5,18 +5,18 @@ export class CreateCinemaDto {
   @IsString()
   @MinLength(2)
   @MaxLength(64)
-  @ApiProperty()
+  @ApiProperty({ example: 'Dom Kino' })
   name: string
 
   @IsString()
   @MinLength(2)
   @MaxLength(64)
-  @ApiProperty()
+  @ApiProperty({ example: 'Plotnikova 42' })
   address: string
 
   @IsString()
   @MinLength(2)
   @MaxLength(64)
-  @ApiProperty()
+  @ApiProperty({ example: 'Minsk' })
   city: string
 }
