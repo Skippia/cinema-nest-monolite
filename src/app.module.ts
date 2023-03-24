@@ -9,6 +9,7 @@ import { SeatsInCinemaModule } from './seats-in-cinema/seats-in-cinema.module'
 import { MovieSessionModule } from './movie-session/movie-session.module'
 import { ConfigModule } from '@nestjs/config'
 import { MoviesInCinemaModule } from './movies-in-cinema/movies-in-cinema.module'
+import { MovieReviewsModule } from './movie-reviews/movie-reviews.module'
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MoviesInCinemaModule } from './movies-in-cinema/movies-in-cinema.module
     SeatsInCinemaModule,
     MovieSessionModule,
     MoviesInCinemaModule,
+    MovieReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -165,7 +165,7 @@ describe('Movies in cinema endoints (e2e)', () => {
       const afterCount = await prisma.movieOnCinema.count()
 
       expect(status).toBe(409)
-      expect(body.message).toEqual('Unique violation for foreign key')
+      expect(body.error).toEqual('Unique violation for foreign key')
       expect(afterCount - beforeCount).toBe(0)
     })
   })

@@ -4,13 +4,15 @@ import { Response } from 'express'
 // TODO: add error DTO
 export const generateErrorResponse = (
   response: Response<any, Record<string, any>>,
-  status: HttpStatus,
-  message: string,
+  statusCode: HttpStatus,
+  messageError: string,
+  messageDetails: string,
   additional?: Record<string, unknown>,
 ) =>
-  response.status(status).json({
-    statusCode: status,
-    message: message,
+  response.status(statusCode).json({
+    statusCode,
+    error: messageError,
+    message: messageDetails,
     ...additional,
   })
 
@@ -23,5 +25,6 @@ export function extractUsefulInformationFromError(messageError: string) {
   if (Array.isArray(message)) {
     return message[0]
   }
+
   return messageError
 }
