@@ -33,11 +33,11 @@ class MatrixSeatPositions implements IMatrixSeatPos {
 
 export class CreateCinemaSeatingSchemaDto {
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 4 })
   colLength: number
 
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 3 })
   rowLength: number
 
   @ValidateNested({ each: true })
@@ -45,12 +45,32 @@ export class CreateCinemaSeatingSchemaDto {
   @IsNotEmpty()
   @Type(() => SeatPosition)
   @IsOptional()
-  @ApiPropertyOptional({ isArray: true, type: SeatPosition })
+  @ApiPropertyOptional({
+    isArray: true,
+    type: SeatPosition,
+    example: [
+      { row: 1, col: 1 },
+      { row: 1, col: 4 },
+      { row: 3, col: 1 },
+      { row: 3, col: 4 },
+    ],
+  })
   positionsExclude?: SeatPosition[]
 
   @ValidateNested({ each: true })
   @Type(() => MatrixSeatPositions)
   @IsOptional()
-  @ApiPropertyOptional({ isArray: true, type: MatrixSeatPositions })
+  @ApiPropertyOptional({
+    isArray: true,
+    type: MatrixSeatPositions,
+    example: [
+      {
+        colStart: 2,
+        colEnd: 3,
+        rowStart: 2,
+        rowEnd: 2,
+      },
+    ],
+  })
   areasExclude?: MatrixSeatPositions[]
 }

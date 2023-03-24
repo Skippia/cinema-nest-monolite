@@ -1,5 +1,5 @@
 import { Controller, UseFilters, Post, Body, Param, ParseIntPipe, Delete, Get } from '@nestjs/common'
-import { ApiTags, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger'
+import { ApiTags, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger'
 import { ISeatSchemaOutput } from '../utils/seatsInCinema/types'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { DeleteManyDto } from '../utils/commonDtos/delete-many.dto'
@@ -15,6 +15,7 @@ export class SeatsInCinemaController {
   constructor(private readonly seatsInCinemaService: SeatsInCinemaService) {}
 
   @Post(':cinemaId')
+  @ApiOperation({ description: 'Create cinema seating schema for cinema by cinemaId' })
   @ApiCreatedResponse({ type: FindCinemaSeatingSchemaDto, isArray: true })
   async createCinemaSeatingSchema(
     @Body() dto: CreateCinemaSeatingSchemaDto,
@@ -26,6 +27,7 @@ export class SeatsInCinemaController {
   }
 
   @Delete(':cinemaId')
+  @ApiOperation({ description: 'Delete cinema seating schema for cinema by cinemaId' })
   @ApiOkResponse({ type: DeleteManyDto })
   async resetCinemaSeatingSchema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<Prisma.BatchPayload> {
     const countDeletedSeatsInSeatingSchema = await this.seatsInCinemaService.resetCinemaSeatingSchema(cinemaId)
@@ -34,6 +36,7 @@ export class SeatsInCinemaController {
   }
 
   @Get(':cinemaId')
+  @ApiOperation({ description: 'Get cinema seating schema for cinema by cinemaId' })
   @ApiOkResponse({ type: FindCinemaSeatingSchemaDto, isArray: true })
   async findCinemaSeatingSchema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<ISeatSchemaOutput> {
     const cinemaSeatinsSchema = await this.seatsInCinemaService.findCinemaSeatingSchema(cinemaId)
