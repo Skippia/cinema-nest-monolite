@@ -156,13 +156,13 @@ describe('helpers for SeatOnCinema service', () => {
   /**
    * excludeAreaSeatsPositions function
    */
-  it('should return filtered positions (removed excluded matrix coordinates)', () => {
+  it('should return filtered positions (deleted excluded matrix coordinates)', () => {
     const allPositions = [...excludedFalsePositions, ...excludedTruePositions]
 
     expect(excludeAreaSeatsPositions(allPositions, excludeMatrices, [])).toEqual(excludedFalsePositions)
   })
 
-  it('should return filtered positions (removed excluded matrix coordinates and point coordinates)', () => {
+  it('should return filtered positions (deleted excluded matrix coordinates and point coordinates)', () => {
     const correctedExcludedFalsePositions = excludedFalsePositions.filter(
       (pos) => !exludedPointPositions.some((elem) => elem.col === pos.col && elem.row === pos.row),
     )

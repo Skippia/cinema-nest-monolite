@@ -1,3 +1,5 @@
+type ImdbId = string
+
 export interface Movie {
   title: string
   rating: number
@@ -8,7 +10,7 @@ export interface Movie {
   genres: string[]
   authors: string[]
   writers: string[]
-  id: string
+  id: ImdbId
   actors: string[]
   duration: number
   countries: string[]

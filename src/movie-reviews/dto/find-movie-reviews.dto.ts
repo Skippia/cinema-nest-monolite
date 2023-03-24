@@ -5,24 +5,24 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 class Author {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ example: 'TheLittleSongbird' })
   name: string
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ example: '/user/ur20552756/' })
   id: string
 }
 
 class InterestingVotes {
   @IsNumber()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 29 })
   down?: number
 
   @IsNumber()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 93 })
   up?: number
 }
 
@@ -39,17 +39,20 @@ class Review {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ example: 'You love it or  you hate it, personally I loved it' })
   title: string
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    example:
+      'Perhaps a little too long, but Fight Club is just a very well-made, brilliantly written and superlatively...',
+  })
   text: string
 
   @Type(() => Date)
   @IsDateString()
-  @ApiProperty()
+  @ApiProperty({ example: '2021-06-15' })
   date: Date
 }
 

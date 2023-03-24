@@ -27,7 +27,7 @@ export class CinemaService {
     })
   }
 
-  async removeCinema(id: number): Promise<Cinema> {
+  async deleteCinema(id: number): Promise<Cinema> {
     return await this.prisma.cinema.delete({ where: { id } })
   }
 }

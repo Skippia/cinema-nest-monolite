@@ -1,27 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Cinema } from '@prisma/client'
-import { IsInt, IsString, MaxLength, MinLength } from 'class-validator'
+import { IsInt } from 'class-validator'
+import { CreateCinemaDto } from './create-cinema.dto'
 
-export class FindCinemaDto implements Cinema {
+export class FindCinemaDto extends CreateCinemaDto implements Cinema {
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   id: number
-
-  @IsString()
-  @MinLength(2)
-  @MaxLength(64)
-  @ApiProperty()
-  name: string
-
-  @IsString()
-  @MinLength(2)
-  @MaxLength(64)
-  @ApiProperty()
-  address: string
-
-  @IsString()
-  @MinLength(2)
-  @MaxLength(64)
-  @ApiProperty()
-  city: string
 }

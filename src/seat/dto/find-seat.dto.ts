@@ -1,17 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Seat } from '@prisma/client'
 import { IsInt } from 'class-validator'
+import { CreateSeatDto } from './create-seat.dto'
 
-export class FindSeatDto implements Seat {
+export class FindSeatDto extends CreateSeatDto implements Seat {
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   id: number
-
-  @IsInt()
-  @ApiProperty()
-  row: number
-
-  @IsInt()
-  @ApiProperty()
-  col: number
 }

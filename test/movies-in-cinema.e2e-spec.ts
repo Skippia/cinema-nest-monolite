@@ -127,7 +127,7 @@ describe('Movies in cinema endoints (e2e)', () => {
   describe('POST /movies-in-cinema', () => {
     it('should create a movie', async () => {
       /**
-       * Remove all movies in cinema
+       * Delete all movies in cinema
        */
       await prisma.movieOnCinema.deleteMany({
         where: {
@@ -180,7 +180,7 @@ describe('Movies in cinema endoints (e2e)', () => {
   })
 
   describe('DELETE /movies-in-cinema/:cinemaId', () => {
-    it('should remove all movies for cinema', async () => {
+    it('should delete all movies for cinema', async () => {
       /**
        * Create sevaral movies for cinema
        */

@@ -1,4 +1,4 @@
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Controller, Get, NotFoundException, Param, ParseIntPipe } from '@nestjs/common'
 import { MovieReviewsService } from './movie-reviews.service'
 import { FindMovieReviewsDto } from './dto/find-movie-reviews.dto'
@@ -11,6 +11,7 @@ export class MovieReviewsController {
 
   @Get()
   @ApiOkResponse({ type: FindMovieReviewsDto, isArray: true })
+  @ApiOperation({ description: 'Get all reviews' })
   findAllMoviesReviews(): MovieReviews[] {
     const allMoviesReviews = this.movieReviewsService.findAllMoviesReviews()
 
@@ -18,6 +19,7 @@ export class MovieReviewsController {
   }
 
   @Get(':movieId')
+  @ApiOperation({ description: 'Get reviews for movie by movieId (from MovieRecord)' })
   @ApiOkResponse({ type: FindMovieReviewsDto })
   async findReviewsByMovie(@Param('movieId', ParseIntPipe) movieId: number): Promise<MovieReviews> {
     const movieReviews = await this.movieReviewsService.findReviewsByMovie(movieId)

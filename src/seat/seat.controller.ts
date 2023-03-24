@@ -10,7 +10,7 @@ import {
   ParseIntPipe,
   UseFilters,
 } from '@nestjs/common'
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CreateSeatDto } from './dto/create-seat.dto'
 import { UpdateSeatDto } from './dto/update-seat.dto'
 import { FindSeatDto } from './dto/find-seat.dto'
@@ -25,6 +25,7 @@ export class SeatController {
   constructor(private readonly seatService: SeatService) {}
 
   @Post('seat')
+  @ApiOperation({ description: 'Create a new seat' })
   @ApiCreatedResponse({ type: FindSeatDto })
   async createSeat(@Body() dto: CreateSeatDto): Promise<Seat> {
     const newSeat = await this.seatService.createSeat(dto)
@@ -33,6 +34,7 @@ export class SeatController {
   }
 
   @Get('seats')
+  @ApiOperation({ description: 'Get all seasts' })
   @ApiOkResponse({ type: FindSeatDto, isArray: true })
   async findAllSeats(): Promise<Seat[]> {
     const seats = await this.seatService.findAllSeats()
@@ -41,6 +43,7 @@ export class SeatController {
   }
 
   @Get('seats/:seatId')
+  @ApiOperation({ description: 'Get one seat by seatId' })
   @ApiOkResponse({ type: FindSeatDto })
   async findOneSeat(@Param('seatId', ParseIntPipe) seatId: number): Promise<Seat> {
     const seat = await this.seatService.findOneSeat(seatId)
@@ -53,6 +56,7 @@ export class SeatController {
   }
 
   @Patch('seats/:seatId')
+  @ApiOperation({ description: 'Update seat by seatId' })
   @ApiOkResponse({ type: FindSeatDto })
   async updateSeat(@Param('seatId', ParseIntPipe) seatId: number, @Body() dto: UpdateSeatDto): Promise<Seat> {
     const updadedSeat = await this.seatService.updateSeat(seatId, dto)
@@ -61,10 +65,11 @@ export class SeatController {
   }
 
   @Delete('seats/:seatId')
+  @ApiOperation({ description: 'Delete seat by seatId' })
   @ApiOkResponse({ type: FindSeatDto })
-  async removeSeat(@Param('seatId', ParseIntPipe) seatId: number): Promise<Seat> {
-    const removedSeat = await this.seatService.removeSeat(seatId)
+  async deleteSeat(@Param('seatId', ParseIntPipe) seatId: number): Promise<Seat> {
+    const deletedSeat = await this.seatService.deleteSeat(seatId)
 
-    return removedSeat
+    return deletedSeat
   }
 }

@@ -26,7 +26,7 @@ export class MovieSessionService {
     return await this.prisma.movieSession.update({ where: { id }, data: updateMovieSessionDto })
   }
 
-  async removeMovieSession(id: number): Promise<MovieSession> {
+  async deleteMovieSession(id: number): Promise<MovieSession> {
     return await this.prisma.movieSession.delete({ where: { id } })
   }
 

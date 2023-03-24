@@ -4,15 +4,19 @@ import { SeatType } from '../../utils/seatsInCinema/types'
 
 export class FindCinemaSeatingSchemaDto {
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   col: number
 
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   row: number
 
   @IsString()
   @IsEnum(SeatType)
-  @ApiProperty({ enumName: 'SeatType', enum: SeatType })
+  @ApiProperty({
+    enumName: 'SeatType',
+    enum: SeatType,
+    example: SeatType.EMPTY,
+  })
   type: SeatType
 }

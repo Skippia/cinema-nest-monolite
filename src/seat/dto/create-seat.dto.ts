@@ -3,10 +3,10 @@ import { IsInt } from 'class-validator'
 
 export class CreateSeatDto {
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   col: number
 
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   row: number
 }
