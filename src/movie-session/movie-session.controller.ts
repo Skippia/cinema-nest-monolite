@@ -28,9 +28,9 @@ import { DeleteManyDto } from '../utils/commonDtos/delete-many.dto'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { MoviesInCinemaService } from '../movies-in-cinema/movies-in-cinema.service'
 import { MovieSession, Prisma } from '@prisma/client'
-import { BadRequestDto } from 'src/utils/commonDtos/errors/bad-request.dto'
-import { ConflictRequestDto } from 'src/utils/commonDtos/errors/conflict-request.dto'
-import { NotFoundResponseDto } from 'src/utils/commonDtos/errors/not-found-response.dto'
+import { BadRequestDto } from '../utils/commonDtos/errors/bad-request.dto'
+import { ConflictRequestDto } from '../utils/commonDtos/errors/conflict-request.dto'
+import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
 
 @Controller('movies-sessions')
 @ApiTags('Movies sessions')

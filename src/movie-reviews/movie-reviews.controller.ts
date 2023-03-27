@@ -3,7 +3,7 @@ import { Controller, Get, NotFoundException, Param, ParseIntPipe } from '@nestjs
 import { MovieReviewsService } from './movie-reviews.service'
 import { FindMovieReviewsDto } from './dto/find-movie-reviews.dto'
 import { MovieReviews } from './dto/types'
-import { NotFoundResponseDto } from 'src/utils/commonDtos/errors/not-found-response.dto'
+import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
 
 @Controller('movies-reviews')
 @ApiTags('Reviews for movies')

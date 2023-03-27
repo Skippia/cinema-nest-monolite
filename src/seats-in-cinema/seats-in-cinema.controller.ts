@@ -15,9 +15,9 @@ import { CreateCinemaSeatingSchemaDto } from './dto/create-cinema-seating-plan.d
 import { FindCinemaSeatingSchemaDto } from './dto/find-cinema-seating-plan.dto'
 import { SeatsInCinemaService } from './seats-in-cinema.service'
 import { Prisma } from '@prisma/client'
-import { BadRequestDto } from 'src/utils/commonDtos/errors/bad-request.dto'
-import { ConflictRequestDto } from 'src/utils/commonDtos/errors/conflict-request.dto'
-import { NotFoundResponseDto } from 'src/utils/commonDtos/errors/not-found-response.dto'
+import { BadRequestDto } from '../utils/commonDtos/errors/bad-request.dto'
+import { ConflictRequestDto } from '../utils/commonDtos/errors/conflict-request.dto'
+import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
 
 @Controller('/seats-in-cinema')
 @ApiTags('Seats in cinema')

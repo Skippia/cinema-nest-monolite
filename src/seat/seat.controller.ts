@@ -25,9 +25,9 @@ import { FindSeatDto } from './dto/find-seat.dto'
 import { SeatService } from './seat.service'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { Seat } from '@prisma/client'
-import { NotFoundResponseDto } from 'src/utils/commonDtos/errors/not-found-response.dto'
-import { ConflictRequestDto } from 'src/utils/commonDtos/errors/conflict-request.dto'
-import { BadRequestDto } from 'src/utils/commonDtos/errors/bad-request.dto'
+import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
+import { ConflictRequestDto } from '../utils/commonDtos/errors/conflict-request.dto'
+import { BadRequestDto } from '../utils/commonDtos/errors/bad-request.dto'
 
 @Controller('/')
 @ApiTags('Seat')

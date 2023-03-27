@@ -4,7 +4,7 @@ import { FindMovieDto } from './dto/find-movie.dto'
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { Movie } from './dto/types'
-import { NotFoundResponseDto } from 'src/utils/commonDtos/errors/not-found-response.dto'
+import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
 
 @Controller('movies')
 @ApiTags('Movie')

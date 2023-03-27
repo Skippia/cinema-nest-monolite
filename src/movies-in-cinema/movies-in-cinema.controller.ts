@@ -16,10 +16,10 @@ import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { DeleteManyDto } from '../utils/commonDtos/delete-many.dto'
 import { AddMovieToCinemaDto } from './dto/add-movie-to-cinema.dto'
 import { MovieService } from '../movie/movie.service'
-import { BadRequestDto } from 'src/utils/commonDtos/errors/bad-request.dto'
-import { ConflictRequestDto } from 'src/utils/commonDtos/errors/conflict-request.dto'
-import { NotFoundResponseDto } from 'src/utils/commonDtos/errors/not-found-response.dto'
-import { CinemaService } from 'src/cinema/cinema.service'
+import { BadRequestDto } from '../utils/commonDtos/errors/bad-request.dto'
+import { ConflictRequestDto } from '../utils/commonDtos/errors/conflict-request.dto'
+import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
+import { CinemaService } from '../cinema/cinema.service'
 
 @Controller('movies-in-cinema')
 @ApiTags('Movies in cinema')

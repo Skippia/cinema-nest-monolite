@@ -1,10 +1,12 @@
+import { HttpError } from './../../../app.constants'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsInt, IsString, IsNotEmpty } from 'class-validator'
+import { HttpStatus } from '@nestjs/common'
 
 export class ConflictRequestDto {
   @IsInt()
   @IsNotEmpty()
-  @ApiProperty({ example: 409 })
+  @ApiProperty({ example: HttpStatus.CONFLICT })
   statusCode: number
 
   @IsString()
@@ -14,6 +16,6 @@ export class ConflictRequestDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'Unique violation for foreign key' })
+  @ApiProperty({ example: HttpError.CONFLICT })
   error: string
 }
