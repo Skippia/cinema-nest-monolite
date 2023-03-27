@@ -11,7 +11,6 @@ describe('Movies in cinema endoints (e2e)', () => {
   const imdbId1 = 'tt0068646'
   const imdbId2 = 'tt0111161'
 
-  //TODO: add duration, contries fields
   const movieShape = expect.objectContaining({
     id: expect.any(String),
     title: expect.any(String),
@@ -24,6 +23,8 @@ describe('Movies in cinema endoints (e2e)', () => {
     actors: expect.arrayContaining([expect.any(String)]),
     genres: expect.arrayContaining([expect.any(String)]),
     authors: expect.arrayContaining([expect.any(String)]),
+    duration: expect.any(Number),
+    countries: expect.arrayContaining([expect.any(String)]),
   })
 
   let cinemaId: number
