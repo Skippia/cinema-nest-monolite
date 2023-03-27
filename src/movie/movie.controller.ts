@@ -1,9 +1,10 @@
 import { Controller, Get, NotFoundException, Param, ParseIntPipe, UseFilters } from '@nestjs/common'
 import { MovieService } from './movie.service'
 import { FindMovieDto } from './dto/find-movie.dto'
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { Movie } from './dto/types'
+import { NotFoundResponseDto } from 'src/utils/commonDtos/errors/not-found-response.dto'
 
 @Controller('movies')
 @ApiTags('Movie')
@@ -22,6 +23,7 @@ export class MovieController {
 
   @Get(':movieId')
   @ApiOperation({ description: 'Get one movie by movieId (from MovieRecord)' })
+  @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: FindMovieDto })
   async findOneMovie(@Param('movieId', ParseIntPipe) movieId: number): Promise<Movie> {
     const movie = await this.movieService.findOneMovie(movieId)

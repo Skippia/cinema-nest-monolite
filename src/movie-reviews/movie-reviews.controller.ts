@@ -1,8 +1,9 @@
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Controller, Get, NotFoundException, Param, ParseIntPipe } from '@nestjs/common'
 import { MovieReviewsService } from './movie-reviews.service'
 import { FindMovieReviewsDto } from './dto/find-movie-reviews.dto'
 import { MovieReviews } from './dto/types'
+import { NotFoundResponseDto } from 'src/utils/commonDtos/errors/not-found-response.dto'
 
 @Controller('movies-reviews')
 @ApiTags('Reviews for movies')
@@ -20,6 +21,7 @@ export class MovieReviewsController {
 
   @Get(':movieId')
   @ApiOperation({ description: 'Get reviews for movie by movieId (from MovieRecord)' })
+  @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: FindMovieReviewsDto })
   async findReviewsByMovie(@Param('movieId', ParseIntPipe) movieId: number): Promise<MovieReviews> {
     const movieReviews = await this.movieReviewsService.findReviewsByMovie(movieId)

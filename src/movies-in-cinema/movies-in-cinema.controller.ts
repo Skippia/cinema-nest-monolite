@@ -1,6 +1,14 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, UseFilters } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, UseFilters, NotFoundException } from '@nestjs/common'
 import { MoviesInCinemaService } from './movies-in-cinema.service'
-import { ApiTags, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiNotFoundResponse,
+} from '@nestjs/swagger'
 import { Prisma } from '@prisma/client'
 import { FindMovieDto } from '../movie/dto/find-movie.dto'
 import { Movie } from '../movie/dto/types'
@@ -8,6 +16,10 @@ import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { DeleteManyDto } from '../utils/commonDtos/delete-many.dto'
 import { AddMovieToCinemaDto } from './dto/add-movie-to-cinema.dto'
 import { MovieService } from '../movie/movie.service'
+import { BadRequestDto } from 'src/utils/commonDtos/errors/bad-request.dto'
+import { ConflictRequestDto } from 'src/utils/commonDtos/errors/conflict-request.dto'
+import { NotFoundResponseDto } from 'src/utils/commonDtos/errors/not-found-response.dto'
+import { CinemaService } from 'src/cinema/cinema.service'
 
 @Controller('movies-in-cinema')
 @ApiTags('Movies in cinema')
@@ -16,14 +28,13 @@ export class MoviesInCinemaController {
   constructor(
     private readonly moviesInCinemaService: MoviesInCinemaService,
     private readonly movieService: MovieService,
+    private readonly cinemaService: CinemaService,
   ) {}
-
-  /**
-   * MovieInCinema operations
-   */
 
   @Post()
   @ApiOperation({ description: 'Add movies (by movieId-s) to cinema by cinemaId' })
+  @ApiBadRequestResponse({ type: BadRequestDto })
+  @ApiConflictResponse({ type: ConflictRequestDto })
   @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
   async addMoviesToCinema(@Body() dto: AddMovieToCinemaDto): Promise<(Movie | undefined)[]> {
     const addedMoviesToCinema = await this.moviesInCinemaService.addMoviesToCinema(dto)
@@ -49,8 +60,15 @@ export class MoviesInCinemaController {
 
   @Get(':cinemaId')
   @ApiOperation({ description: 'Get all available movies for cinema by cinemaId' })
+  @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
   async findMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<(Movie | undefined)[]> {
+    const cinema = await this.cinemaService.findOneCinema(cinemaId)
+
+    if (!cinema) {
+      throw new NotFoundException(`Could not find cinema with ${cinemaId}.`)
+    }
+
     const moviesInCinema = await this.moviesInCinemaService.findMoviesInCinema(cinemaId)
 
     const detailedMoviesInCinema = await Promise.all(
@@ -62,6 +80,7 @@ export class MoviesInCinemaController {
 
   @Delete(':cinemaId/:movieId')
   @ApiOperation({ description: 'Delete movie (by movieId) from cinema (by cinemaId)' })
+  @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: FindMovieDto })
   async deleteMovieFromCinema(
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
