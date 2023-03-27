@@ -98,19 +98,17 @@ describe('Movies in cinema endoints (e2e)', () => {
 
   describe('GET /movies-in-cinema/:cinemaId/:movieId', () => {
     it('should return if movie is available for cinema (true)', async () => {
-      const { status, text } = await request(app.getHttpServer()).get(`/movies-in-cinema/${cinemaId}/${movieId1}`)
+      const { status, body } = await request(app.getHttpServer()).get(`/movies-in-cinema/${cinemaId}/${movieId1}`)
 
       expect(status).toBe(200)
-      //TODO?: change format from string -> kinda { isAvailable: boolean}
-      expect(text).toEqual('true')
+      expect(body).toStrictEqual({ isAvailable: true })
     })
 
     it('should return if movie is available for cinema (false)', async () => {
-      const { status, text } = await request(app.getHttpServer()).get(`/movies-in-cinema/${cinemaId}/999`)
+      const { status, body } = await request(app.getHttpServer()).get(`/movies-in-cinema/${cinemaId}/999`)
 
       expect(status).toBe(200)
-      //TODO?: change format from string -> kinda { isAvailable: boolean}
-      expect(text).toEqual('false')
+      expect(body).toStrictEqual({ isAvailable: false })
     })
   })
 

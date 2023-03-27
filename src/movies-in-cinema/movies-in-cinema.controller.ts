@@ -8,6 +8,7 @@ import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { DeleteManyDto } from '../utils/commonDtos/delete-many.dto'
 import { AddMovieToCinemaDto } from './dto/add-movie-to-cinema.dto'
 import { MovieService } from '../movie/movie.service'
+import { MovieIsAvailableForCinemaDto } from './dto/movie-is-available-for-cinema.dto'
 
 @Controller('movies-in-cinema')
 @ApiTags('Movies in cinema')
@@ -37,14 +38,14 @@ export class MoviesInCinemaController {
 
   @Get(':cinemaId/:movieId')
   @ApiOperation({ description: 'Get if movie (by movieId) is available for cinema (by cinemaId)' })
-  @ApiOkResponse({ type: Boolean })
+  @ApiOkResponse({ type: MovieIsAvailableForCinemaDto })
   async checkIfMovieAvailableForCinema(
     @Param('movieId', ParseIntPipe) movieId: number,
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
-  ): Promise<boolean> {
+  ): Promise<{ isAvailable: boolean }> {
     const isMovieAvailableForCinema = await this.moviesInCinemaService.checkIfMovieAvailableForCinema(movieId, cinemaId)
 
-    return isMovieAvailableForCinema
+    return { isAvailable: isMovieAvailableForCinema }
   }
 
   @Get(':cinemaId')
