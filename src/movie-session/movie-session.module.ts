@@ -1,3 +1,4 @@
+import { MovieService } from './../movie/movie.service'
 import { Module } from '@nestjs/common'
 import { MovieSessionService } from './movie-session.service'
 import { MovieSessionController } from './movie-session.controller'
@@ -6,7 +7,7 @@ import { MoviesInCinemaService } from '../movies-in-cinema/movies-in-cinema.serv
 
 @Module({
   controllers: [MovieSessionController],
-  providers: [MovieSessionService, MoviesInCinemaService],
+  providers: [MovieSessionService, MoviesInCinemaService, MovieService],
   imports: [PrismaModule],
 })
 export class MovieSessionModule {}

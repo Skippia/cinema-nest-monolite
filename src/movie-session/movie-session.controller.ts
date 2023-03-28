@@ -31,6 +31,8 @@ import { MovieSession, Prisma } from '@prisma/client'
 import { BadRequestDto } from '../utils/commonDtos/errors/bad-request.dto'
 import { ConflictRequestDto } from '../utils/commonDtos/errors/conflict-request.dto'
 import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
+import { MovieService } from '../movie/movie.service'
+import { TIME_GAP_BETWEEN_MOVIE_SESSION, EXTRA_MOVIE_SESSION_TIME } from './movie-session.constants'
 
 @Controller('movies-sessions')
 @ApiTags('Movies sessions')
@@ -39,6 +41,7 @@ export class MovieSessionController {
   constructor(
     private readonly movieSessionService: MovieSessionService,
     private readonly moviesInCinemaService: MoviesInCinemaService,
+    private readonly movieService: MovieService,
   ) {}
 
   @Get()
@@ -70,7 +73,10 @@ export class MovieSessionController {
   @ApiConflictResponse({ type: ConflictRequestDto })
   @ApiCreatedResponse({ type: FindMovieSessionDto, isArray: true })
   async createMovieSession(@Body() dto: CreateMovieSessionDto): Promise<MovieSession> {
-    const { movieId, cinemaId } = dto
+    const { movieId, cinemaId, startDate } = dto
+    /**
+     * 1. Check if such movie is available for this cinema
+     */
 
     const isMovieAvailableForCinema = await this.moviesInCinemaService.checkIfMovieAvailableForCinema(movieId, cinemaId)
 
@@ -78,7 +84,39 @@ export class MovieSessionController {
       throw new BadRequestException(`Movie with ${movieId} is not available for cinema with ${cinemaId}`)
     }
 
-    const newMovieSession = await this.movieSessionService.createMovieSession(dto)
+    /**
+     * 2. End of movie session is calculated based on duration of movie + extra movie session time
+     */
+
+    const movie = await this.movieService.findOneMovie(movieId)
+
+    if (!movie) {
+      throw new NotFoundException(`Movie with ${movieId} is not found`)
+    }
+
+    const endDate = new Date(new Date(startDate).getTime() + movie.duration * 60000 + EXTRA_MOVIE_SESSION_TIME * 60000)
+
+    /**
+     * 3. Check if there is intersection with the session
+     * in this cinema (at this time) ∈ [startDate, endDate]
+     */
+    const overlappingSession = await this.movieSessionService.findOverlappingMovieSession({
+      startDate: new Date(startDate),
+      endDate,
+      cinemaId,
+      timeGapBetweenMovieSession: TIME_GAP_BETWEEN_MOVIE_SESSION,
+    })
+
+    if (overlappingSession.length > 0) {
+      throw new BadRequestException(`Cinema with ${cinemaId} already has a session `)
+    }
+
+    const newMovieSession = await this.movieSessionService.createMovieSession({
+      startDate: new Date(startDate),
+      movieId,
+      cinemaId,
+      endDate,
+    })
 
     return newMovieSession
   }

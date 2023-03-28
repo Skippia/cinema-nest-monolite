@@ -1,17 +1,61 @@
 import { Injectable } from '@nestjs/common'
 import { MovieSession, Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateMovieSessionDto } from './dto/create-movie-session.dto'
 import { UpdateMovieSessionDto } from './dto/update-movie-session.dto'
 
 @Injectable()
 export class MovieSessionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createMovieSession(createMovieSessionDto: CreateMovieSessionDto): Promise<MovieSession> {
+  async createMovieSession({
+    startDate,
+    endDate,
+    movieId,
+    cinemaId,
+  }: {
+    startDate: Date
+    endDate: Date
+    movieId: number
+    cinemaId: number
+  }): Promise<MovieSession> {
     return await this.prisma.movieSession.create({
-      data: createMovieSessionDto,
+      data: { startDate, endDate, movieId, cinemaId },
     })
+  }
+
+  async findOverlappingMovieSession({
+    startDate,
+    endDate,
+    cinemaId,
+    timeGapBetweenMovieSession,
+  }: {
+    startDate: Date
+    endDate: Date
+    cinemaId: number
+    timeGapBetweenMovieSession: number
+  }) {
+    const overlappingMovieSession = await this.prisma.movieSession.findMany({
+      where: {
+        OR: [
+          {
+            startDate: {
+              gte: startDate,
+              lte: new Date(endDate.getTime() + timeGapBetweenMovieSession * 60000),
+            },
+            cinemaId,
+          },
+          {
+            endDate: {
+              gte: new Date(startDate.getTime() - timeGapBetweenMovieSession * 60000),
+              lte: endDate,
+            },
+            cinemaId,
+          },
+        ],
+      },
+    })
+
+    return overlappingMovieSession
   }
 
   async findAllMovieSessions(): Promise<MovieSession[]> {
