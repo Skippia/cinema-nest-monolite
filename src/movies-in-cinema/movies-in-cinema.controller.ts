@@ -1,3 +1,5 @@
+import { Serialize } from '../interceptors/serialize.interceptor'
+import { MovieEntity } from './../movie/entity/MovieEntity'
 import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, UseFilters, NotFoundException } from '@nestjs/common'
 import { MoviesInCinemaService } from './movies-in-cinema.service'
 import {
@@ -10,8 +12,7 @@ import {
   ApiNotFoundResponse,
 } from '@nestjs/swagger'
 import { Prisma } from '@prisma/client'
-import { FindMovieDto } from '../movie/dto/find-movie.dto'
-import { Movie } from '../movie/dto/types'
+import { Movie } from '../movie/utils/types'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { DeleteManyDto } from '../utils/commonDtos/delete-many.dto'
 import { AddMovieToCinemaDto } from './dto/add-movie-to-cinema.dto'
@@ -36,13 +37,14 @@ export class MoviesInCinemaController {
   @ApiOperation({ description: 'Add movies (by movieId-s) to cinema by cinemaId' })
   @ApiBadRequestResponse({ type: BadRequestDto })
   @ApiConflictResponse({ type: ConflictRequestDto })
-  @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
+  @ApiCreatedResponse({ type: MovieEntity, isArray: true })
+  @Serialize(MovieEntity)
   async addMoviesToCinema(@Body() dto: AddMovieToCinemaDto): Promise<(Movie | undefined)[]> {
     const addedMoviesToCinema = await this.moviesInCinemaService.addMoviesToCinema(dto)
 
-    const detailedAddedMoviesToCinema = await Promise.all(
+    const detailedAddedMoviesToCinema = (await Promise.all(
       addedMoviesToCinema.map((m) => this.movieService.findOneMovie(m.movieId)),
-    )
+    )) as Movie[]
 
     return detailedAddedMoviesToCinema
   }
@@ -62,8 +64,9 @@ export class MoviesInCinemaController {
   @Get(':cinemaId')
   @ApiOperation({ description: 'Get all available movies for cinema by cinemaId' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  @ApiCreatedResponse({ type: FindMovieDto, isArray: true })
-  async findMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<(Movie | undefined)[]> {
+  @ApiCreatedResponse({ type: MovieEntity, isArray: true })
+  @Serialize(MovieEntity)
+  async findMoviesInCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<(MovieEntity | undefined)[]> {
     const cinema = await this.cinemaService.findOneCinema(cinemaId)
 
     if (!cinema) {
@@ -72,9 +75,9 @@ export class MoviesInCinemaController {
 
     const moviesInCinema = await this.moviesInCinemaService.findMoviesInCinema(cinemaId)
 
-    const detailedMoviesInCinema = await Promise.all(
+    const detailedMoviesInCinema = (await Promise.all(
       moviesInCinema.map((m) => this.movieService.findOneMovie(m.movieId)),
-    )
+    )) as Movie[]
 
     return detailedMoviesInCinema
   }
@@ -82,14 +85,19 @@ export class MoviesInCinemaController {
   @Delete(':cinemaId/:movieId')
   @ApiOperation({ description: 'Delete movie (by movieId) from cinema (by cinemaId)' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  @ApiOkResponse({ type: FindMovieDto })
+  @ApiOkResponse({ type: MovieEntity })
+  @Serialize(MovieEntity)
   async deleteMovieFromCinema(
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
     @Param('movieId', ParseIntPipe) movieId: number,
-  ): Promise<Movie | undefined> {
+  ): Promise<MovieEntity> {
     const deletedMovieFromCinema = await this.moviesInCinemaService.deleteMovieFromCinema(cinemaId, movieId)
 
     const detailedDeletedMovieFromCinema = await this.movieService.findOneMovie(deletedMovieFromCinema.movieId)
+
+    if (!detailedDeletedMovieFromCinema) {
+      throw new NotFoundException(`Movie with id = ${movieId} not found for cinema = ${cinemaId}`)
+    }
 
     return detailedDeletedMovieFromCinema
   }
