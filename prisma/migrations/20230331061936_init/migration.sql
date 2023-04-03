@@ -7,6 +7,12 @@ CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE');
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
 
+-- CreateEnum
+CREATE TYPE "Currency" AS ENUM ('USD', 'EUR', 'BYN', 'RUB');
+
+-- CreateEnum
+CREATE TYPE "TypeSeatEnum" AS ENUM ('SEAT', 'VIP', 'LOVE');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -62,6 +68,8 @@ CREATE TABLE "MovieRecord" (
 -- CreateTable
 CREATE TABLE "MovieSession" (
     "id" SERIAL NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
+    "currency" "Currency" NOT NULL DEFAULT 'USD',
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
     "movieId" INTEGER NOT NULL,
@@ -75,6 +83,7 @@ CREATE TABLE "Booking" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "totalPrice" DOUBLE PRECISION NOT NULL,
+    "currency" "Currency" NOT NULL,
     "movieSessionId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -103,8 +112,17 @@ CREATE TABLE "Seat" (
 CREATE TABLE "SeatOnCinema" (
     "seatId" INTEGER NOT NULL,
     "cinemaId" INTEGER NOT NULL,
+    "typeSeatId" INTEGER NOT NULL,
 
     CONSTRAINT "SeatOnCinema_pkey" PRIMARY KEY ("seatId","cinemaId")
+);
+
+-- CreateTable
+CREATE TABLE "TypeSeat" (
+    "id" SERIAL NOT NULL,
+    "type" "TypeSeatEnum" NOT NULL,
+
+    CONSTRAINT "TypeSeat_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -118,6 +136,9 @@ CREATE UNIQUE INDEX "MovieRecord_imdbId_key" ON "MovieRecord"("imdbId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Seat_row_col_key" ON "Seat"("row", "col");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TypeSeat_type_key" ON "TypeSeat"("type");
 
 -- AddForeignKey
 ALTER TABLE "RTSession" ADD CONSTRAINT "RTSession_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -151,3 +172,6 @@ ALTER TABLE "SeatOnCinema" ADD CONSTRAINT "SeatOnCinema_seatId_fkey" FOREIGN KEY
 
 -- AddForeignKey
 ALTER TABLE "SeatOnCinema" ADD CONSTRAINT "SeatOnCinema_cinemaId_fkey" FOREIGN KEY ("cinemaId") REFERENCES "Cinema"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SeatOnCinema" ADD CONSTRAINT "SeatOnCinema_typeSeatId_fkey" FOREIGN KEY ("typeSeatId") REFERENCES "TypeSeat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

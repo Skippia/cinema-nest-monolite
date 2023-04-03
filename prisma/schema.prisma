@@ -25,6 +25,19 @@ enum Role {
   ADMIN
 }
 
+enum Currency {
+  USD
+  EUR
+  BYN
+  RUB
+}
+
+enum TypeSeatEnum {
+  SEAT
+  VIP
+  LOVE
+}
+
 model User {
   id         Int         @id @default(autoincrement())
   email      String      @unique
@@ -78,6 +91,8 @@ model MovieRecord {
 
 model MovieSession {
   id        Int         @id @default(autoincrement())
+  price     Float
+  currency  Currency    @default(USD)
   startDate DateTime
   endDate   DateTime
   movie     MovieRecord @relation(fields: [movieId], references: [id])
@@ -91,6 +106,7 @@ model Booking {
   id             Int             @id @default(autoincrement())
   userId         Int
   totalPrice     Float
+  currency       Currency
   user           User            @relation(fields: [userId], references: [id])
   movieSession   MovieSession    @relation(fields: [movieSessionId], references: [id])
   movieSessionId Int
@@ -119,10 +135,18 @@ model Seat {
 }
 
 model SeatOnCinema {
-  seat     Seat   @relation(fields: [seatId], references: [id])
-  seatId   Int
-  cinema   Cinema @relation(fields: [cinemaId], references: [id])
-  cinemaId Int
+  seat       Seat     @relation(fields: [seatId], references: [id])
+  seatId     Int
+  cinema     Cinema   @relation(fields: [cinemaId], references: [id])
+  cinemaId   Int
+  type       TypeSeat @relation(fields: [typeSeatId], references: [id])
+  typeSeatId Int
 
   @@id([seatId, cinemaId])
+}
+
+model TypeSeat {
+  id           Int            @id @default(autoincrement())
+  type         TypeSeatEnum   @unique
+  SeatOnCinema SeatOnCinema[]
 }

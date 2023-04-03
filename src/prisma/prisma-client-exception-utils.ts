@@ -1,7 +1,6 @@
 import { HttpStatus } from '@nestjs/common'
 import { Response } from 'express'
 
-// TODO: add error DTO
 export const generateErrorResponse = (
   response: Response<any, Record<string, any>>,
   statusCode: HttpStatus,
