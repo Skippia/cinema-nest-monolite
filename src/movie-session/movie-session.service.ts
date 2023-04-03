@@ -12,14 +12,16 @@ export class MovieSessionService {
     endDate,
     movieId,
     cinemaId,
+    price,
   }: {
     startDate: Date
     endDate: Date
     movieId: number
     cinemaId: number
+    price: number
   }): Promise<MovieSession> {
     return await this.prisma.movieSession.create({
-      data: { startDate, endDate, movieId, cinemaId },
+      data: { startDate, endDate, movieId, cinemaId, price },
     })
   }
 

@@ -1,3 +1,4 @@
+import { MovieSessionEntity } from './entity/MovieSessionEntity'
 import {
   Controller,
   Get,
@@ -23,16 +24,16 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { FindMovieSessionDto } from './dto/find-movie-session.dto'
 import { DeleteManyDto } from '../utils/commonDtos/delete-many.dto'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { MoviesInCinemaService } from '../movies-in-cinema/movies-in-cinema.service'
-import { MovieSession, Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { BadRequestDto } from '../utils/commonDtos/errors/bad-request.dto'
 import { ConflictRequestDto } from '../utils/commonDtos/errors/conflict-request.dto'
 import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
 import { MovieService } from '../movie/movie.service'
 import { TIME_GAP_BETWEEN_MOVIE_SESSION, EXTRA_MOVIE_SESSION_TIME } from './movie-session.constants'
+import { Serialize } from '../interceptors/serialize.interceptor'
 
 @Controller('movies-sessions')
 @ApiTags('Movies sessions')
@@ -46,8 +47,9 @@ export class MovieSessionController {
 
   @Get()
   @ApiOperation({ description: 'Get all movies sessions' })
-  @ApiOkResponse({ type: FindMovieSessionDto, isArray: true })
-  async findAllMovieSessions(): Promise<MovieSession[]> {
+  @ApiOkResponse({ type: MovieSessionEntity, isArray: true })
+  @Serialize(MovieSessionEntity)
+  async findAllMovieSessions(): Promise<MovieSessionEntity[]> {
     const moviesSessions = await this.movieSessionService.findAllMovieSessions()
 
     return moviesSessions
@@ -56,8 +58,11 @@ export class MovieSessionController {
   @Get(':movieSessionId')
   @ApiOperation({ description: 'Get movie session by movieSessionId' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  @ApiOkResponse({ type: FindMovieSessionDto })
-  async findOneMovieSession(@Param('movieSessionId', ParseIntPipe) movieSessionId: number): Promise<MovieSession> {
+  @ApiOkResponse({ type: MovieSessionEntity })
+  @Serialize(MovieSessionEntity)
+  async findOneMovieSession(
+    @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
+  ): Promise<MovieSessionEntity> {
     const movieSession = await this.movieSessionService.findOneMovieSession(movieSessionId)
 
     if (!movieSession) {
@@ -71,9 +76,10 @@ export class MovieSessionController {
   @ApiOperation({ description: 'Create movie session' })
   @ApiBadRequestResponse({ type: BadRequestDto })
   @ApiConflictResponse({ type: ConflictRequestDto })
-  @ApiCreatedResponse({ type: FindMovieSessionDto, isArray: true })
-  async createMovieSession(@Body() dto: CreateMovieSessionDto): Promise<MovieSession> {
-    const { movieId, cinemaId, startDate } = dto
+  @ApiCreatedResponse({ type: MovieSessionEntity, isArray: true })
+  @Serialize(MovieSessionEntity)
+  async createMovieSession(@Body() dto: CreateMovieSessionDto): Promise<MovieSessionEntity> {
+    const { movieId, cinemaId, startDate, price } = dto
     /**
      * 1. Check if such movie is available for this cinema
      */
@@ -116,6 +122,7 @@ export class MovieSessionController {
       movieId,
       cinemaId,
       endDate,
+      price,
     })
 
     return newMovieSession
@@ -125,11 +132,12 @@ export class MovieSessionController {
   @ApiOperation({ description: 'Update movie session by movieSessionId' })
   @ApiBadRequestResponse({ type: BadRequestDto })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  @ApiOkResponse({ type: FindMovieSessionDto })
+  @ApiOkResponse({ type: MovieSessionEntity })
+  @Serialize(MovieSessionEntity)
   async updateMovieSession(
     @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
     @Body() dto: UpdateMovieSessionDto,
-  ): Promise<MovieSession> {
+  ): Promise<MovieSessionEntity> {
     const updadedMovieSession = await this.movieSessionService.updateMovieSession(movieSessionId, dto)
 
     return updadedMovieSession
@@ -138,8 +146,9 @@ export class MovieSessionController {
   @Delete(':movieSessionId')
   @ApiOperation({ description: 'Delete movie session by movieSessionId' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  @ApiOkResponse({ type: FindMovieSessionDto })
-  async deleteMovieSession(@Param('movieSessionId', ParseIntPipe) movieSessionId: number): Promise<MovieSession> {
+  @ApiOkResponse({ type: MovieSessionEntity })
+  @Serialize(MovieSessionEntity)
+  async deleteMovieSession(@Param('movieSessionId', ParseIntPipe) movieSessionId: number): Promise<MovieSessionEntity> {
     const deletedMovieSession = await this.movieSessionService.deleteMovieSession(movieSessionId)
 
     return deletedMovieSession
