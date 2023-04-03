@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../src/prisma/prisma.service'
+import { PrismaService } from '../../src/prisma/prisma.service'
 import { INestApplication, ValidationPipe } from '@nestjs/common'
 import * as request from 'supertest'
-import { AppModule } from '../src/app.module'
-import * as movies from '../data/movies.json'
-import { formatLogSessionTime } from '../src/utils/helpers/formatLogSessionTime'
-import { EXTRA_MOVIE_SESSION_TIME } from '../src/movie-session/movie-session.constants'
+import { AppModule } from '../../src/app.module'
+import * as movies from '../../data/movies.json'
+import { formatLogSessionTime } from '../../src/utils/helpers/formatLogSessionTime'
+import { initMovieSessionMocks } from '../mocks/movie-session.mock'
 
 describe('Movie Session endoints (e2e)', () => {
   let app: INestApplication
@@ -19,6 +19,7 @@ describe('Movie Session endoints (e2e)', () => {
     movieId: expect.any(Number),
     cinemaId: expect.any(Number),
     startDate: expect.any(String),
+    price: expect.any(Number),
   })
 
   let movieId1: number
@@ -102,77 +103,6 @@ describe('Movie Session endoints (e2e)', () => {
     })
   }
 
-  /**
-   * Mocks
-   */
-
-  const successMockDataControlCase = [
-    {
-      name: '(success) - CONTROL CASE',
-      startDate: new Date('July 1, 2022, 14:00:00'),
-      duration: durationMovie1 + EXTRA_MOVIE_SESSION_TIME,
-    },
-  ]
-
-  const failMockGapData = [
-    {
-      name: '(fail) - gap only 1 minute: ',
-      startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() + (successMockDataControlCase[0].duration + 1) * 60000,
-      ),
-      duration: successMockDataControlCase[0].duration,
-    },
-    {
-      name: '(fail) - gap only 60 minute: ',
-      startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() + (successMockDataControlCase[0].duration + 60) * 60000,
-      ),
-      duration: successMockDataControlCase[0].duration,
-    },
-  ]
-
-  const successMockGapData = [
-    {
-      name: '(success) - gap for 61 minutes: ',
-      startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() + (successMockDataControlCase[0].duration + 61) * 60000,
-      ),
-      duration: successMockDataControlCase[0].duration,
-    },
-  ]
-
-  const failMockData = [
-    {
-      name: '(fail) - overlapping (exact both boundaries): ',
-      startDate: successMockDataControlCase[0].startDate,
-      duration: successMockDataControlCase[0].duration,
-    },
-    {
-      name: '(fail) - overlapping (full overlapping): ',
-      startDate: new Date(successMockDataControlCase[0].startDate.getTime() + 1 * 60000),
-      duration: successMockDataControlCase[0].duration - 2,
-    },
-    {
-      name: '(fail) - overlapping (external both boundaries): ',
-      startDate: new Date(successMockDataControlCase[0].startDate.getTime() - 1 * 60000),
-      duration: successMockDataControlCase[0].duration + 2,
-    },
-    {
-      name: '(fail) - overlapping (left boundary): ',
-      startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() + (successMockDataControlCase[0].duration / 2) * 60000,
-      ),
-      duration: successMockDataControlCase[0].duration,
-    },
-    {
-      name: '(fail) - overlapping (right boundaries): ',
-      startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() - (successMockDataControlCase[0].duration / 2) * 60000,
-      ),
-      duration: successMockDataControlCase[0].duration,
-    },
-  ]
-
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -192,6 +122,9 @@ describe('Movie Session endoints (e2e)', () => {
     await app.close()
   })
 
+  const { successMockDataControlCase, failMockGapData, successMockGapData, failMockData } =
+    initMovieSessionMocks(durationMovie1)
+
   describe('POST /createMovieSession', () => {
     /**
      * Tests for cinema1 and movie1
@@ -203,6 +136,7 @@ describe('Movie Session endoints (e2e)', () => {
           cinemaId: cinemaId1,
           movieId: movieId1,
           startDate: test.startDate,
+          price: test.price,
         })
 
         expect(status).toBe(201)
@@ -216,6 +150,7 @@ describe('Movie Session endoints (e2e)', () => {
           cinemaId: cinemaId1,
           movieId: movieId1,
           startDate: test.startDate,
+          price: test.price,
         })
 
         expect(status).toBe(400)
@@ -228,6 +163,7 @@ describe('Movie Session endoints (e2e)', () => {
           cinemaId: cinemaId1,
           movieId: movieId1,
           startDate: test.startDate,
+          price: test.price,
         })
 
         expect(status).toBe(201)
@@ -241,6 +177,7 @@ describe('Movie Session endoints (e2e)', () => {
           cinemaId: cinemaId1,
           movieId: movieId1,
           startDate: test.startDate,
+          price: test.price,
         })
 
         expect(status).toBe(400)
@@ -258,6 +195,7 @@ describe('Movie Session endoints (e2e)', () => {
           cinemaId: cinemaId2,
           movieId: movieId1,
           startDate: new Date('July 1, 2022, 16:00:00'),
+          price: 50,
         })
 
       expect(status).toBe(201)
@@ -274,6 +212,7 @@ describe('Movie Session endoints (e2e)', () => {
           cinemaId: cinemaId2,
           movieId: movieId2,
           startDate: new Date('July 2, 2022, 22:00:00'),
+          price: 50,
         })
 
       expect(status).toBe(400)
