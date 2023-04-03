@@ -24,14 +24,16 @@ import { CreateCinemaDto } from './dto/create-cinema.dto'
 import { UpdateCinemaDto } from './dto/update-cinema.dto'
 import { FindCinemaDto } from './dto/find-cinema.dto'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
-import { Cinema } from '@prisma/client'
 import { BadRequestDto } from '../utils/commonDtos/errors/bad-request.dto'
 import { ConflictRequestDto } from '../utils/commonDtos/errors/conflict-request.dto'
 import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
+import { CinemaEntity } from './entity/CinemaEntity'
+import { Serialize } from '../interceptors/serialize.interceptor'
 
 @Controller('/')
 @ApiTags('Cinema')
 @UseFilters(PrismaClientExceptionFilter)
+@Serialize(CinemaEntity)
 export class CinemaController {
   constructor(private readonly cinemaService: CinemaService) {}
 
@@ -40,7 +42,7 @@ export class CinemaController {
   @ApiBadRequestResponse({ type: BadRequestDto })
   @ApiConflictResponse({ type: ConflictRequestDto })
   @ApiCreatedResponse({ type: FindCinemaDto })
-  async createCinema(@Body() dto: CreateCinemaDto): Promise<Cinema> {
+  async createCinema(@Body() dto: CreateCinemaDto): Promise<CinemaEntity> {
     const newCinema = await this.cinemaService.createCinema(dto)
 
     return newCinema
@@ -49,7 +51,7 @@ export class CinemaController {
   @Get('cinemas')
   @ApiOperation({ description: 'Get all cinemas' })
   @ApiOkResponse({ type: FindCinemaDto, isArray: true })
-  async findAllCinemas(): Promise<Cinema[]> {
+  async findAllCinemas(): Promise<CinemaEntity[]> {
     const cinemas = await this.cinemaService.findAllCinemas()
 
     return cinemas
@@ -59,7 +61,7 @@ export class CinemaController {
   @ApiOperation({ description: 'Get one cinema by cinemaId' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: FindCinemaDto })
-  async findOneCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<Cinema> {
+  async findOneCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<CinemaEntity> {
     const cinema = await this.cinemaService.findOneCinema(cinemaId)
 
     if (!cinema) {
@@ -74,7 +76,10 @@ export class CinemaController {
   @ApiBadRequestResponse({ type: BadRequestDto })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: FindCinemaDto })
-  async updateCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number, @Body() dto: UpdateCinemaDto): Promise<Cinema> {
+  async updateCinema(
+    @Param('cinemaId', ParseIntPipe) cinemaId: number,
+    @Body() dto: UpdateCinemaDto,
+  ): Promise<CinemaEntity> {
     const updadedCinema = await this.cinemaService.updateCinema(cinemaId, dto)
 
     return updadedCinema
@@ -84,7 +89,7 @@ export class CinemaController {
   @ApiOperation({ description: 'Delete cinema by cinemaId' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: FindCinemaDto })
-  async deleteCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<Cinema> {
+  async deleteCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<CinemaEntity> {
     const deletedCinema = await this.cinemaService.deleteCinema(cinemaId)
 
     return deletedCinema
