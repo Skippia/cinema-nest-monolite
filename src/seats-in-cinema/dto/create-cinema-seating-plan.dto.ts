@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsArray, IsInt, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator'
-import { IMatrixSeatPos, ISeatPos } from '../../utils/seatsInCinema/types'
+import { IMatrixSeatPos, ISeatPos } from '../utils/types'
 
 class SeatPosition implements ISeatPos {
   @IsInt()
@@ -73,4 +73,31 @@ export class CreateCinemaSeatingSchemaDto {
     ],
   })
   areasExclude?: MatrixSeatPositions[]
+
+  @ValidateNested({ each: true })
+  @IsArray()
+  @IsNotEmpty()
+  @Type(() => SeatPosition)
+  @IsOptional()
+  @ApiPropertyOptional({
+    isArray: true,
+    type: SeatPosition,
+    example: [{ row: 2, col: 1 }],
+  })
+  vipSeats?: SeatPosition[]
+
+  @ValidateNested({ each: true })
+  @IsArray()
+  @IsNotEmpty()
+  @Type(() => SeatPosition)
+  @IsOptional()
+  @ApiPropertyOptional({
+    isArray: true,
+    type: SeatPosition,
+    example: [
+      { row: 3, col: 2 },
+      { row: 3, col: 3 },
+    ],
+  })
+  loveSeats?: SeatPosition[]
 }
