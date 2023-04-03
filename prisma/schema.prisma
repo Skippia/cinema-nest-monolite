@@ -90,16 +90,17 @@ model MovieRecord {
 }
 
 model MovieSession {
-  id        Int         @id @default(autoincrement())
-  price     Float
-  currency  Currency    @default(USD)
-  startDate DateTime
-  endDate   DateTime
-  movie     MovieRecord @relation(fields: [movieId], references: [id])
-  movieId   Int
-  cinema    Cinema      @relation(fields: [cinemaId], references: [id])
-  cinemaId  Int
-  bookings  Booking[]
+  id                      Int                       @id @default(autoincrement())
+  price                   Float
+  currency                Currency                  @default(USD)
+  startDate               DateTime
+  endDate                 DateTime
+  movie                   MovieRecord               @relation(fields: [movieId], references: [id])
+  movieId                 Int
+  cinema                  Cinema                    @relation(fields: [cinemaId], references: [id])
+  cinemaId                Int
+  bookings                Booking[]
+  MovieSessionMultiFactor MovieSessionMultiFactor[]
 }
 
 model Booking {
@@ -146,7 +147,17 @@ model SeatOnCinema {
 }
 
 model TypeSeat {
-  id           Int            @id @default(autoincrement())
-  type         TypeSeatEnum   @unique
-  SeatOnCinema SeatOnCinema[]
+  id                      Int                       @id @default(autoincrement())
+  type                    TypeSeatEnum              @unique
+  SeatOnCinema            SeatOnCinema[]
+  MovieSessionMultiFactor MovieSessionMultiFactor[]
+}
+
+model MovieSessionMultiFactor {
+  id             Int          @id @default(autoincrement())
+  movieSession   MovieSession @relation(fields: [movieSessionId], references: [id])
+  movieSessionId Int
+  typeSeat       TypeSeat     @relation(fields: [typeSeatId], references: [id])
+  typeSeatId     Int
+  priceFactor    Int
 }

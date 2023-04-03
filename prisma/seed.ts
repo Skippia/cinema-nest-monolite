@@ -1,10 +1,6 @@
 import { PrismaService } from './../src/prisma/prisma.service'
 import { Cinema, PrismaClient, TypeSeatEnum } from '@prisma/client'
-import {
-  seatsSchemaInput1,
-  seatsSchemaInput2,
-  seatsSchemaInput3,
-} from '../test/mocks/seats-in-cinema.mocks'
+import { seatsSchemaInput1, seatsSchemaInput2, seatsSchemaInput3 } from '../test/mocks/seats-in-cinema.mocks'
 import * as movies from '../data/movies.json'
 import * as request from 'supertest'
 import { NestApplication } from '@nestjs/core'

@@ -125,6 +125,16 @@ CREATE TABLE "TypeSeat" (
     CONSTRAINT "TypeSeat_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "MovieSessionMultiFactor" (
+    "id" SERIAL NOT NULL,
+    "movieSessionId" INTEGER NOT NULL,
+    "typeSeatId" INTEGER NOT NULL,
+    "priceFactor" INTEGER NOT NULL,
+
+    CONSTRAINT "MovieSessionMultiFactor_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
@@ -175,3 +185,9 @@ ALTER TABLE "SeatOnCinema" ADD CONSTRAINT "SeatOnCinema_cinemaId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "SeatOnCinema" ADD CONSTRAINT "SeatOnCinema_typeSeatId_fkey" FOREIGN KEY ("typeSeatId") REFERENCES "TypeSeat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MovieSessionMultiFactor" ADD CONSTRAINT "MovieSessionMultiFactor_movieSessionId_fkey" FOREIGN KEY ("movieSessionId") REFERENCES "MovieSession"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MovieSessionMultiFactor" ADD CONSTRAINT "MovieSessionMultiFactor_typeSeatId_fkey" FOREIGN KEY ("typeSeatId") REFERENCES "TypeSeat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
