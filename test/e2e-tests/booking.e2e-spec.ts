@@ -294,13 +294,12 @@ describe('Movies in cinema endoints (e2e)', () => {
   })
 
   describe('GET bookings, seats by booking', () => {
-    /*   it('GET bookings by user - /bookings/users/:userId', async () => {
+    it('GET bookings by user - /bookings/users/:userId', async () => {
       const { status, body } = await request(app.getHttpServer()).get(`/bookings/users/${userId1}`)
 
       expect(status).toBe(200)
-
       expect(body).toEqual(expect.arrayContaining([expect.objectContaining(bookingMockDataOutput1(movieSession1))]))
-    }) */
+    })
 
     it('GET seats by booking - /bookings/seats/:bookingId', async () => {
       const { status, body } = await request(app.getHttpServer()).get(`/bookings/seats/1`)

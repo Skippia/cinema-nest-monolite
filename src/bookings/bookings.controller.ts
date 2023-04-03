@@ -24,6 +24,7 @@ import { checkIfDesiredSeatsCanExist } from './utils/helpers/checkIfDesiredSeats
 import { convertSeatsArrayToString } from './utils/helpers/convertSeatsArrayToString'
 import { generateSourceBookingSchema } from './utils/helpers/generateSourceBookingSchema'
 import { IMergedFullCinemaBookingSeatingSchema, ISeatPosWithType } from '../utils/types'
+import { Booking } from '@prisma/client'
 
 @Controller('bookings')
 @ApiTags('Bookings')
@@ -58,11 +59,27 @@ export class BookingsController {
   @Get('/users/:userId')
   @ApiOperation({ description: "Get user's bookings" })
   @ApiOkResponse({ type: BookingEntity })
-  // TODO: fix
-  async findBookingsByUser(@Param('userId', ParseIntPipe) userId: number): Promise<BookingEntity[] | any> {
+  async findBookingsByUser(@Param('userId', ParseIntPipe) userId: number): Promise<BookingEntity[]> {
     // TODO: add checking for existence of user
 
-    const userBookings = await this.bookingsService.findBookingsByUser(userId)
+    const userBookingsData = await this.bookingsService.findBookingsDataByUser(userId)
+
+    const userBookings = await Promise.all(
+      userBookingsData.map(async (userBookingData) => {
+        const mergedFullCinemaBookingSeatingSchema = await this.bookingsService.findCinemaBookingSeatingSchema({
+          movieSessionId: userBookingData.movieSessionId,
+          cinemaId: userBookingData.cinemaId,
+        })
+
+        const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
+          mergedFullCinemaBookingSeatingSchema,
+          userBookingData.bookingId,
+        )
+
+        const booking = (await this.bookingsService.findBookingById(userBookingData.bookingId)) as Booking
+        return new BookingEntity(seatsByBookingId, booking)
+      }),
+    )
 
     return userBookings
   }

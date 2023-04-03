@@ -104,12 +104,20 @@ export class BookingsService {
     return seatsArray */
   }
 
-  async findBookingsByUser(userId: number): Promise<Booking[]> {
-    return await this.prisma.booking.findMany({
-      where: {
-        userId,
-      },
-    })
+  async findBookingsDataByUser(
+    userId: number,
+  ): Promise<{ bookingId: number; movieSessionId: number; cinemaId: number }[]> {
+    const bookingsDataByUser = await this.prisma.$queryRaw(Prisma.sql`
+    SELECT B."id" AS "bookingId", B."movieSessionId", S."cinemaId"
+    FROM (
+        SELECT "id", "movieSessionId"
+        FROM "Booking"
+        WHERE "userId"=${userId}
+    ) as B
+    JOIN "MovieSession" as S ON B."movieSessionId" = S."id";
+        `)
+
+    return bookingsDataByUser as { bookingId: number; movieSessionId: number; cinemaId: number }[]
   }
 
   async findSeatsByBookingId(
