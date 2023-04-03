@@ -1,6 +1,7 @@
 import { IsString, ValidateNested, IsArray, IsNumber, IsNotEmpty, IsOptional, IsDateString } from 'class-validator'
 import { Type } from 'class-transformer'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { MovieReviews } from '../utils/types'
 
 class Author {
   @IsString()
@@ -29,13 +30,15 @@ class InterestingVotes {
 class Review {
   @ValidateNested()
   @Type(() => Author)
-  @ApiProperty()
-  author: Author
+  @IsOptional()
+  @ApiPropertyOptional()
+  author?: Author
 
   @ValidateNested()
   @Type(() => InterestingVotes)
-  @ApiProperty()
-  interestingVotes: InterestingVotes
+  @IsOptional()
+  @ApiPropertyOptional()
+  interestingVotes?: InterestingVotes
 
   @IsString()
   @IsNotEmpty()
@@ -53,10 +56,15 @@ class Review {
   @Type(() => Date)
   @IsDateString()
   @ApiProperty({ example: '2021-06-15' })
-  date: Date
+  date: string
 }
 
-export class FindMovieReviewsDto {
+export class MovieReviewsEntity {
+  constructor(movieReviews: MovieReviews) {
+    this.id = movieReviews.id
+    this.reviews = movieReviews.reviews
+  }
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
