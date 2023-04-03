@@ -1,9 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { MovieSession } from '@prisma/client'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { Currency, MovieSession } from '@prisma/client'
 import { Type } from 'class-transformer'
-import { IsInt, IsDate } from 'class-validator'
+import { IsInt, IsDate, IsEnum, IsString, IsOptional } from 'class-validator'
+import { CurrencyEnum } from '../../utils/types'
 
-export class CreateMovieSessionDto implements Omit<MovieSession, 'id' | 'endDate'> {
+export class CreateMovieSessionDto implements Omit<MovieSession, 'id' | 'currency' | 'endDate'> {
   @Type(() => Date)
   @IsDate()
   @ApiProperty({ example: '2023-03-24T10:25:01.504Z' })
@@ -16,4 +17,18 @@ export class CreateMovieSessionDto implements Omit<MovieSession, 'id' | 'endDate
   @IsInt()
   @ApiProperty({ example: 1 })
   cinemaId: number
+
+  @IsInt()
+  @ApiProperty({ example: 40 })
+  price: number
+
+  @IsString()
+  @IsOptional()
+  @IsEnum(Currency)
+  @ApiPropertyOptional({
+    enumName: 'CurrencyEnum',
+    enum: CurrencyEnum,
+    example: CurrencyEnum.USD,
+  })
+  currency?: Currency
 }
