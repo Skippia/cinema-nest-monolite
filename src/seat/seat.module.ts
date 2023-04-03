@@ -7,5 +7,6 @@ import { PrismaModule } from '../prisma/prisma.module'
   controllers: [SeatController],
   providers: [SeatService],
   imports: [PrismaModule],
+  exports: [SeatService],
 })
 export class SeatModule {}
