@@ -1,19 +1,20 @@
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Controller, Get, NotFoundException, Param, ParseIntPipe } from '@nestjs/common'
 import { MovieReviewsService } from './movie-reviews.service'
-import { FindMovieReviewsDto } from './dto/find-movie-reviews.dto'
-import { MovieReviews } from './dto/types'
 import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
+import { MovieReviewsEntity } from './entity/MovieReviewsEntity'
+import { Serialize } from '../interceptors/serialize.interceptor'
 
 @Controller('movies-reviews')
 @ApiTags('Reviews for movies')
+@Serialize(MovieReviewsEntity)
 export class MovieReviewsController {
   constructor(private readonly movieReviewsService: MovieReviewsService) {}
 
   @Get()
-  @ApiOkResponse({ type: FindMovieReviewsDto, isArray: true })
+  @ApiOkResponse({ type: MovieReviewsEntity, isArray: true })
   @ApiOperation({ description: 'Get all reviews' })
-  findAllMoviesReviews(): MovieReviews[] {
+  findAllMoviesReviews(): MovieReviewsEntity[] {
     const allMoviesReviews = this.movieReviewsService.findAllMoviesReviews()
 
     return allMoviesReviews
@@ -22,8 +23,8 @@ export class MovieReviewsController {
   @Get(':movieId')
   @ApiOperation({ description: 'Get reviews for movie by movieId (from MovieRecord)' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  @ApiOkResponse({ type: FindMovieReviewsDto })
-  async findReviewsByMovie(@Param('movieId', ParseIntPipe) movieId: number): Promise<MovieReviews> {
+  @ApiOkResponse({ type: MovieReviewsEntity })
+  async findReviewsByMovie(@Param('movieId', ParseIntPipe) movieId: number): Promise<MovieReviewsEntity> {
     const movieReviews = await this.movieReviewsService.findReviewsByMovie(movieId)
 
     if (!movieReviews) {
