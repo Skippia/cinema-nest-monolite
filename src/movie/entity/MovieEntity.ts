@@ -1,8 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsArray, IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { Movie } from '../utils/types'
 
-export class FindMovieDto {
+export class MovieEntity {
+  constructor(movie: Movie) {
+    this.title = movie.title
+    this.rating = movie.rating
+    this.releaseYear = movie.releaseYear
+    this.image = movie.image
+    this.description = movie.description
+    this.trailer = movie.trailer
+    this.genres = movie.genres
+    this.authors = movie.authors
+    this.writers = movie.writers
+    this.id = movie.id
+    this.actors = movie.actors
+    this.duration = movie.duration
+    this.countries = movie.countries
+  }
+
   @IsInt()
   @IsNotEmpty()
   @ApiProperty({ example: 'tt0111161' })
