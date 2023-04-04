@@ -7,6 +7,11 @@ export function initMovieSessionMocks(durationMovie1: number) {
       startDate: new Date('July 1, 2022, 14:00:00'),
       duration: durationMovie1 + EXTRA_MOVIE_SESSION_TIME,
       price: 50,
+      priceFactors: {
+        SEAT: 1,
+        VIP: 1.5,
+        LOVE: 2.25,
+      },
     },
   ]
 
@@ -18,6 +23,11 @@ export function initMovieSessionMocks(durationMovie1: number) {
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
+      priceFactors: {
+        SEAT: 1,
+        VIP: 1.5,
+        LOVE: 2.25,
+      },
     },
     {
       name: '(fail) - gap only 60 minute: ',
@@ -26,6 +36,11 @@ export function initMovieSessionMocks(durationMovie1: number) {
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
+      priceFactors: {
+        SEAT: 1,
+        VIP: 1.5,
+        LOVE: 2.25,
+      },
     },
   ]
 
@@ -37,6 +52,11 @@ export function initMovieSessionMocks(durationMovie1: number) {
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
+      priceFactors: {
+        SEAT: 1,
+        VIP: 1.5,
+        LOVE: 2.25,
+      },
     },
   ]
 
@@ -46,18 +66,33 @@ export function initMovieSessionMocks(durationMovie1: number) {
       startDate: successMockDataControlCase[0].startDate,
       duration: successMockDataControlCase[0].duration,
       price: 50,
+      priceFactors: {
+        SEAT: 1,
+        VIP: 1.5,
+        LOVE: 2.25,
+      },
     },
     {
       name: '(fail) - overlapping (full overlapping): ',
       startDate: new Date(successMockDataControlCase[0].startDate.getTime() + 1 * 60000),
       duration: successMockDataControlCase[0].duration - 2,
       price: 50,
+      priceFactors: {
+        SEAT: 1,
+        VIP: 1.5,
+        LOVE: 2.25,
+      },
     },
     {
       name: '(fail) - overlapping (external both boundaries): ',
       startDate: new Date(successMockDataControlCase[0].startDate.getTime() - 1 * 60000),
       duration: successMockDataControlCase[0].duration + 2,
       price: 50,
+      priceFactors: {
+        SEAT: 1,
+        VIP: 1.5,
+        LOVE: 2.25,
+      },
     },
     {
       name: '(fail) - overlapping (left boundary): ',
@@ -66,6 +101,11 @@ export function initMovieSessionMocks(durationMovie1: number) {
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
+      priceFactors: {
+        SEAT: 1,
+        VIP: 1.5,
+        LOVE: 2.25,
+      },
     },
     {
       name: '(fail) - overlapping (right boundaries): ',
@@ -74,6 +114,11 @@ export function initMovieSessionMocks(durationMovie1: number) {
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
+      priceFactors: {
+        SEAT: 1,
+        VIP: 1.5,
+        LOVE: 2.25,
+      },
     },
   ]
 
