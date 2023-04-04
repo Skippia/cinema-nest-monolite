@@ -159,5 +159,5 @@ model MovieSessionMultiFactor {
   movieSessionId Int
   typeSeat       TypeSeat     @relation(fields: [typeSeatId], references: [id])
   typeSeatId     Int
-  priceFactor    Int
+  priceFactor    Float        @db.Real
 }

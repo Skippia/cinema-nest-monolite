@@ -6,6 +6,7 @@ import { AppModule } from '../../src/app.module'
 import * as movies from '../../data/movies.json'
 import { formatLogSessionTime } from '../../src/utils/helpers/formatLogSessionTime'
 import { initMovieSessionMocks } from '../mocks/movie-session.mock'
+import { TypeSeatEnum } from '@prisma/client'
 
 describe('Movie Session endoints (e2e)', () => {
   let app: INestApplication
@@ -38,6 +39,12 @@ describe('Movie Session endoints (e2e)', () => {
    *  1 movie session
    */
   async function runInitMovieDataMigration(prisma: PrismaService) {
+    async function createTypeSeats() {
+      await prisma.typeSeat.createMany({
+        data: [{ type: TypeSeatEnum.SEAT }, { type: TypeSeatEnum.VIP }, { type: TypeSeatEnum.LOVE }],
+      })
+    }
+
     /**
      * Add movies to db
      */
@@ -74,6 +81,7 @@ describe('Movie Session endoints (e2e)', () => {
     cinemaId1 = newCinema1.id
     cinemaId2 = newCinema2.id
 
+    await createTypeSeats()
     /**
      * Add movie1 to cinema1
      */
@@ -137,6 +145,7 @@ describe('Movie Session endoints (e2e)', () => {
           movieId: movieId1,
           startDate: test.startDate,
           price: test.price,
+          priceFactors: test.priceFactors,
         })
 
         expect(status).toBe(201)
@@ -151,6 +160,7 @@ describe('Movie Session endoints (e2e)', () => {
           movieId: movieId1,
           startDate: test.startDate,
           price: test.price,
+          priceFactors: test.priceFactors,
         })
 
         expect(status).toBe(400)
@@ -164,6 +174,7 @@ describe('Movie Session endoints (e2e)', () => {
           movieId: movieId1,
           startDate: test.startDate,
           price: test.price,
+          priceFactors: test.priceFactors,
         })
 
         expect(status).toBe(201)
@@ -178,6 +189,7 @@ describe('Movie Session endoints (e2e)', () => {
           movieId: movieId1,
           startDate: test.startDate,
           price: test.price,
+          priceFactors: test.priceFactors,
         })
 
         expect(status).toBe(400)
@@ -196,6 +208,11 @@ describe('Movie Session endoints (e2e)', () => {
           movieId: movieId1,
           startDate: new Date('July 1, 2022, 16:00:00'),
           price: 50,
+          priceFactors: {
+            SEAT: 1,
+            VIP: 1.5,
+            LOVE: 2.25,
+          },
         })
 
       expect(status).toBe(201)
@@ -213,6 +230,11 @@ describe('Movie Session endoints (e2e)', () => {
           movieId: movieId2,
           startDate: new Date('July 2, 2022, 22:00:00'),
           price: 50,
+          priceFactors: {
+            SEAT: 1,
+            VIP: 1.5,
+            LOVE: 2.25,
+          },
         })
 
       expect(status).toBe(400)

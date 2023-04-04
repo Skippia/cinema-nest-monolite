@@ -79,7 +79,8 @@ export class MovieSessionController {
   @ApiCreatedResponse({ type: MovieSessionEntity, isArray: true })
   @Serialize(MovieSessionEntity)
   async createMovieSession(@Body() dto: CreateMovieSessionDto): Promise<MovieSessionEntity> {
-    const { movieId, cinemaId, startDate, price } = dto
+    const { movieId, cinemaId, startDate, price, currency, priceFactors } = dto
+
     /**
      * 1. Check if such movie is available for this cinema
      */
@@ -123,6 +124,8 @@ export class MovieSessionController {
       cinemaId,
       endDate,
       price,
+      currency,
+      priceFactors,
     })
 
     return newMovieSession
