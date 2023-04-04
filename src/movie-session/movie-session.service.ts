@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { MovieSession, Prisma } from '@prisma/client'
+import { Currency, MovieSession, Prisma, TypeSeat, TypeSeatEnum } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { UpdateMovieSessionDto } from './dto/update-movie-session.dto'
 
@@ -13,16 +13,36 @@ export class MovieSessionService {
     movieId,
     cinemaId,
     price,
+    currency,
+    priceFactors,
   }: {
     startDate: Date
     endDate: Date
     movieId: number
     cinemaId: number
     price: number
+    currency?: Currency
+    priceFactors: Record<TypeSeatEnum, number>
   }): Promise<MovieSession> {
-    return await this.prisma.movieSession.create({
-      data: { startDate, endDate, movieId, cinemaId, price },
+    const typeSeatArray = await this.prisma.typeSeat.findMany()
+
+    const movieSession = await this.prisma.$transaction(async (tx) => {
+      const movieSession = await tx.movieSession.create({
+        data: { startDate, endDate, movieId, cinemaId, price, currency },
+      })
+
+      await tx.movieSessionMultiFactor.createMany({
+        data: Object.keys(priceFactors).map((priceFactorKey) => ({
+          movieSessionId: movieSession.id,
+          typeSeatId: (typeSeatArray.find((x) => x.type === priceFactorKey) as TypeSeat).id,
+          priceFactor: priceFactors[priceFactorKey as keyof typeof priceFactors],
+        })),
+      })
+
+      return movieSession
     })
+
+    return movieSession
   }
 
   async findOverlappingMovieSession({
