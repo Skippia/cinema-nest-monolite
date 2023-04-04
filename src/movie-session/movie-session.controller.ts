@@ -80,6 +80,7 @@ export class MovieSessionController {
   @Serialize(MovieSessionEntity)
   async createMovieSession(@Body() dto: CreateMovieSessionDto): Promise<MovieSessionEntity> {
     const { movieId, cinemaId, startDate, price } = dto
+
     /**
      * 1. Check if such movie is available for this cinema
      */
