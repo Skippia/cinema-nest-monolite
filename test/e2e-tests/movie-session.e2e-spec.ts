@@ -206,7 +206,7 @@ describe('Movie Session endoints (e2e)', () => {
         .send({
           cinemaId: cinemaId2,
           movieId: movieId1,
-          startDate: new Date('July 1, 2022, 16:00:00'),
+          startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(16, 0)),
           price: 50,
           priceFactors: {
             SEAT: 1,
@@ -220,7 +220,7 @@ describe('Movie Session endoints (e2e)', () => {
     })
 
     it(`(fail) - that movie is not available for cinema: ${formatLogSessionTime({
-      startDate: new Date('July 2, 2022, 22:00:00'),
+      startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(16, 0)),
       duration: durationMovie2,
     })} `, async () => {
       const { status } = await request(app.getHttpServer())
