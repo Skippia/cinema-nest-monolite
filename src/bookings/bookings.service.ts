@@ -2,12 +2,13 @@ import { SeatService } from './../seat/seat.service'
 import { SeatsInCinemaService } from '../seats-in-cinema/seats-in-cinema.service'
 import { PrismaService } from './../prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
-import { Booking, Prisma, TypeSeatEnum } from '@prisma/client'
+import { Booking, Prisma, TypeSeat, TypeSeatEnum } from '@prisma/client'
 import { generateActualBookingSchema } from './utils/helpers/generateActualBookingSchema'
 import { generateMergedCinemaBookingSeatingSchema } from './utils/helpers/generateMergedCinemaBookingSeatingSchema'
 import { generateSourceBookingSchema } from './utils/helpers/generateSourceBookingSchema'
 import { ISeatPos } from '../seats-in-cinema/utils/types'
-import { IMergedFullCinemaBookingSeatingSchema, ISeatPosWithType } from '../utils/types'
+import { IMergedFullCinemaBookingSeatingSchema, ISeatPosWithType, ISeatsSchema } from '../utils/types'
+import { calcTotalPrice } from './utils/helpers/calcTotalPrice'
 
 @Injectable()
 export class BookingsService {
@@ -69,39 +70,6 @@ export class BookingsService {
   `)
 
     return seatsArray as ISeatPos[]
-
-    /* 
-
-    // 1. Get all bookings with such sessionId
-    const bookingsWithSeatsOnBookingForMovieSession = await this.prisma.booking.findMany({
-      where: {
-        movieSessionId,
-      },
-      include: {
-        seat: true,
-      },
-    })
-
-    // 2. Convert to seatPositions
-
-    const seatsDoubleArray = await Promise.all(
-      bookingsWithSeatsOnBookingForMovieSession.map((booking) =>
-        Promise.all(
-          booking.seat.map((s) =>
-            this.prisma.seat.findUniqueOrThrow({
-              where: { id: s.seatId },
-              select: {
-                row: true,
-                col: true,
-              },
-            }),
-          ),
-        ),
-      ),
-    )
-    const seatsArray = seatsDoubleArray.flatMap((s) => s)
-
-    return seatsArray */
   }
 
   async findBookingsDataByUser(
@@ -155,26 +123,53 @@ export class BookingsService {
     { userId, movieSessionId }: { userId: number; movieSessionId: number },
     desiredSeats: ISeatPos[],
   ): Promise<Booking> {
+    // TODO: I guess can be optimized via SQL
+
+    // 1. Check if such movie session exists
     const movieSession = await this.prisma.movieSession.findUniqueOrThrow({
       where: {
         id: movieSessionId,
       },
     })
 
-    const totalPrice = movieSession.price * desiredSeats.length
-    const currency = movieSession.currency
+    const mergedFullCinemaBookingSeatingSchema = await this.findCinemaBookingSeatingSchema({
+      movieSessionId,
+      cinemaId: movieSession.cinemaId,
+    })
 
-    // 1. Convert desired seats to real seats
+    // 2. Get seat types for desired seats (first off need to recovery full cinema booking schema)
+    const desiredSeatsSchemaWithType = mergedFullCinemaBookingSeatingSchema
+      .filter((x) => desiredSeats.some((el) => el.col === x.bookingCol && el.row === x.bookingRow))
+      .map((x) => ({
+        row: x.bookingRow,
+        col: x.bookingCol,
+        type: x.type,
+      })) as ISeatsSchema
+
+    // 3. Get info about price multiplication factors for our movie session
+    const multiFactorsForThisMovieSession = (await this.prisma.movieSessionMultiFactor.findMany({
+      where: {
+        movieSessionId,
+      },
+      include: {
+        typeSeat: true,
+      },
+    })) as { priceFactor: number; typeSeat: TypeSeat }[]
+
+    // 4. Calculate total price basded on multiplication factors and base price on movie session
+    const totalPrice = calcTotalPrice(desiredSeatsSchemaWithType, multiFactorsForThisMovieSession, movieSession)
+
+    // 5. Convert desired seats to real seats
     const realDesiredSeats = await this.seatService.convertSeatsPositionsToRealSeats(desiredSeats)
 
-    // 2. In transaction create booking then seats for this booking
+    // 6. In transaction create booking then seats for this booking
     const createdBooking = await this.prisma.$transaction(async (tx) => {
       const booking = await tx.booking.create({
         data: {
           userId,
           movieSessionId,
           totalPrice,
-          currency,
+          currency: movieSession.currency,
         },
       })
 
