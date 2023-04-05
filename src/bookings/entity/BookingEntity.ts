@@ -5,7 +5,9 @@ import { Type } from 'class-transformer'
 import { SeatPos } from '../dto/create-booking.dto'
 import { CurrencyEnum, ISeatPosWithType } from '../../utils/types'
 
-export class BookingEntity {
+type TBookingEntity = Omit<Booking, 'updatedAt'> & { seats: ISeatPosWithType[] }
+
+export class BookingEntity implements TBookingEntity {
   constructor(seatsForBooking: ISeatPosWithType[], booking: Booking) {
     const { id, userId, totalPrice, currency, movieSessionId, createdAt } = booking
 

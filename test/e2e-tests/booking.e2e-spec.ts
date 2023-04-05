@@ -1,3 +1,4 @@
+import { MIN_DAYS_UNTIL_BOOKING } from './../../src/bookings/booking.constants'
 import {
   mergedCinemaSchema1,
   mergedCinemaSchema2,
@@ -166,8 +167,10 @@ describe('Movies in cinema endoints (e2e)', () => {
     async function createMovieSessions() {
       movieSession1 = await prisma.movieSession.create({
         data: {
-          startDate: '2024-01-10T10:00:01.504Z',
-          endDate: '2024-01-10T12:50:01.504Z',
+          // startDate: '2024-01-10T10:00:01.504Z',
+          // endDate: '2024-01-10T12:50:01.504Z',
+          startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1)),
+          endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1)),
           movieId: 1,
           cinemaId: 1,
           price: 40,
@@ -177,8 +180,10 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       movieSession2 = await prisma.movieSession.create({
         data: {
-          startDate: '2024-01-10T10:00:01.504Z',
-          endDate: '2024-01-10T12:50:01.504Z',
+          // startDate: '2024-01-10T10:00:01.504Z',
+          // endDate: '2024-01-10T12:50:01.504Z',
+          startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1)),
+          endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1)),
           movieId: 1,
           cinemaId: 2,
           price: 60,
@@ -188,8 +193,10 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       movieSession3 = await prisma.movieSession.create({
         data: {
-          startDate: '2024-01-10T10:00:01.504Z',
-          endDate: '2024-01-10T12:10:01.504Z',
+          // startDate: '2024-01-10T10:00:01.504Z',
+          // endDate: '2024-01-10T12:10:01.504Z',
+          startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 10, 1)),
+          endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 10, 1)),
           movieId: 2,
           cinemaId: 3,
           price: 80,
@@ -454,6 +461,49 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       const bookedSeatsString = convertSeatsArrayToString(bookedSeats)
       const errorMessage = `These seats are already booked: ${bookedSeatsString}`
+
+      expect(status).toBe(400)
+      expect(body.message).toBe(errorMessage)
+    })
+
+    it('create booking (failure) - too far to movie session', async () => {
+      // subject movie sessin in one year
+
+      const { body: movieSessionBody } = (await request(app.getHttpServer())
+        .post(`/movies-sessions`)
+        .send({
+          startDate: new Date(
+            new Date(new Date().setDate(new Date().getDate() + 10)).setHours(
+              new Date().getHours(),
+              new Date().getMinutes(),
+              new Date().getSeconds(),
+            ),
+          ),
+          movieId: 1,
+          cinemaId: 1,
+          price: 40,
+          currency: 'USD',
+          priceFactors: {
+            SEAT: 1,
+            VIP: 1.5,
+            LOVE: 2.25,
+          },
+        })) as { body: MovieSession }
+
+      const { body, status } = await request(app.getHttpServer())
+        .post(`/bookings`)
+        .send({
+          userId: 1,
+          movieSessionId: movieSessionBody.id,
+          desiredSeats: [
+            {
+              col: 1,
+              row: 1,
+            },
+          ],
+        })
+
+      const errorMessage = `Wait please ${10 - MIN_DAYS_UNTIL_BOOKING - 1} day(s) to make a booking`
 
       expect(status).toBe(400)
       expect(body.message).toBe(errorMessage)

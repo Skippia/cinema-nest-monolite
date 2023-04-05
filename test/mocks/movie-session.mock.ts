@@ -4,7 +4,7 @@ export function initMovieSessionMocks(durationMovie1: number) {
   const successMockDataControlCase = [
     {
       name: '(success) - CONTROL CASE',
-      startDate: new Date('July 1, 2022, 14:00:00'),
+      startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 5)).setHours(16, 0)),
       duration: durationMovie1 + EXTRA_MOVIE_SESSION_TIME,
       price: 50,
       priceFactors: {
