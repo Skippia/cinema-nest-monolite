@@ -25,6 +25,8 @@ import { convertSeatsArrayToString } from './utils/helpers/convertSeatsArrayToSt
 import { generateSourceBookingSchema } from './utils/helpers/generateSourceBookingSchema'
 import { IMergedFullCinemaBookingSeatingSchema, ISeatPosWithType } from '../utils/types'
 import { Booking } from '@prisma/client'
+import { MIN_DAYS_UNTIL_BOOKING } from './booking.constants'
+import { getDaysGapRelatevilyNow } from './utils/helpers/getDaysGapRelatevilyNow'
 
 @Controller('bookings')
 @ApiTags('Bookings')
@@ -186,6 +188,17 @@ export class BookingsController {
       throw new NotFoundException(`Movie session with id: ${movieSessionId} is not exist`)
     }
 
+    const daysGapRelatevilyNow = getDaysGapRelatevilyNow(movieSession.startDate)
+
+    // 3. Check date for booking (if it's allowed)
+    const isBookingAllowed = daysGapRelatevilyNow < MIN_DAYS_UNTIL_BOOKING
+
+    if (!isBookingAllowed) {
+      throw new BadRequestException(
+        `Wait please ${daysGapRelatevilyNow - MIN_DAYS_UNTIL_BOOKING} day(s) to make a booking`,
+      )
+    }
+
     const cinemaSeatingSchema = await this.seatsInCinemaService.findCinemaSeatingSchema(movieSession.cinemaId)
     const sourceBookingSchema = generateSourceBookingSchema(cinemaSeatingSchema)
 
@@ -212,8 +225,7 @@ export class BookingsController {
       throw new BadRequestException(`These seats are already booked: ${bookedSeatsString}`)
     }
 
-    // 6. If all seats from desired are available for booking
-    // then create such booking
+    // 6. If all seats from desired are available for booking then create such booking
     const newBooking = await this.bookingsService.createBooking({ movieSessionId, userId }, desiredSeats)
 
     const mergedFullCinemaBookingSeatingSchema = await this.bookingsService.findCinemaBookingSeatingSchema({
