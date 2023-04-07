@@ -25,6 +25,7 @@ import {
   mergedCinemaSchemaAfterSecondBooking,
 } from '../mocks/bookings.mock'
 import { convertSeatsArrayToString } from '../../src/bookings/utils/helpers/convertSeatsArrayToString'
+import * as bcrypt from 'bcrypt'
 
 describe('Movies in cinema endoints (e2e)', () => {
   let app: INestApplication
@@ -123,7 +124,7 @@ describe('Movies in cinema endoints (e2e)', () => {
           email: 'pocketbook.love24@gmail.com',
           name: 'John',
           lastName: 'Doe',
-          password: 'midapa',
+          hashedPassword: bcrypt.hashSync('midapa', 10),
           role: 'USER',
           gender: 'MALE',
           language: 'EN',

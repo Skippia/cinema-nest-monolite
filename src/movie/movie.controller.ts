@@ -5,6 +5,7 @@ import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'
 import { MovieEntity } from './entity/MovieEntity'
 import { Serialize } from '../interceptors/serialize.interceptor'
+import { Public } from '../auth/decorators/public.decorator'
 
 @Controller('movies')
 @ApiTags('Movie')
