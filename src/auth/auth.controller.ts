@@ -1,14 +1,11 @@
-import { SignupDto } from './dto/Signup.dto'
-import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common'
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Controller, Post, HttpCode, HttpStatus, Res, Body, UseGuards } from '@nestjs/common'
+import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
-import { Tokens } from './utils/types/tokens.type'
-import { TokensDto } from './dto/Tokens.dto'
-import { SigninDto } from './dto/Signin.dto'
-import { GetCurrentUserId } from './decorators/get-current-user-id.decorator'
-import { GetCurrentUser } from './decorators/get-current-user.decorator'
-import { Public } from './decorators/public.decorator'
-import { RtGuard } from './guards/rt.guard'
+import { Public, GetCurrentUserId, GetCurrentUser } from './decorators'
+import { SigninDto, SignupDto, TokensDto } from './dto'
+import { RtGuard } from './guards'
+import { Tokens } from './utils/types'
+import { Response } from 'express'
 
 @Controller('auth')
 @ApiTags('Authorization')
@@ -20,15 +17,12 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ description: 'Signup locally' })
   @ApiOkResponse({ type: TokensDto })
-  async signupLocal(
-    @Res({ passthrough: true }) res: Response,
-    @Body() dto: SignupDto,
-  ): Promise<Pick<Tokens, 'access_token'>> {
+  async signupLocal(@Res({ passthrough: true }) res: Response, @Body() dto: SignupDto): Promise<Tokens> {
     const { access_token, refresh_token } = await this.authService.signupLocal(dto)
 
-    this.authService.setRefreshTokenInCookies(res, refresh_token)
+    this.authService.addTokensToCookies(res, access_token, refresh_token)
 
-    return { access_token }
+    return { access_token, refresh_token }
   }
 
   @Public()
@@ -36,15 +30,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ description: 'Signin locally' })
   @ApiOkResponse({ type: TokensDto })
-  async signinLocal(
-    @Res({ passthrough: true }) res: Response,
-    @Body() dto: SigninDto,
-  ): Promise<Pick<Tokens, 'access_token'>> {
+  async signinLocal(@Res({ passthrough: true }) res: Response, @Body() dto: SigninDto): Promise<Tokens> {
     const { access_token, refresh_token } = await this.authService.signinLocal(dto)
 
-    this.authService.setRefreshTokenInCookies(res, refresh_token)
+    this.authService.addTokensToCookies(res, access_token, refresh_token)
 
-    return { access_token }
+    return { access_token, refresh_token }
   }
 
   @Public()
@@ -56,20 +47,23 @@ export class AuthController {
   async refreshTokens(
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<Tokens> {
     const { access_token, refresh_token } = await this.authService.refreshTokens(userId, refreshToken)
 
-    // this.authService.setRefreshTokenInCookies(res, refresh_token)
+    this.authService.addTokensToCookies(res, access_token, refresh_token)
 
-    return { access_token, refresh_token }
+    return { refresh_token, access_token }
   }
 
   @Post('local/logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ description: 'Logout' })
   @ApiOkResponse()
-  async logout(@GetCurrentUserId() userId: number): Promise<boolean> {
+  async logout(@GetCurrentUserId() userId: number, @Res({ passthrough: true }) res: Response): Promise<boolean> {
     const isLogout = await this.authService.logout(userId)
+
+    this.authService.clearCookies(res)
 
     return isLogout
   }
