@@ -19,10 +19,12 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "hashedPassword" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'USER',
     "gender" "Gender" NOT NULL,
     "language" "Language" NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -30,11 +32,11 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "RTSession" (
     "id" SERIAL NOT NULL,
-    "refreshToken" TEXT NOT NULL,
+    "hashedRt" TEXT NOT NULL,
     "userAgent" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "userId" INTEGER,
+    "userId" INTEGER NOT NULL,
 
     CONSTRAINT "RTSession_pkey" PRIMARY KEY ("id")
 );
@@ -130,7 +132,7 @@ CREATE TABLE "MovieSessionMultiFactor" (
     "id" SERIAL NOT NULL,
     "movieSessionId" INTEGER NOT NULL,
     "typeSeatId" INTEGER NOT NULL,
-    "priceFactor" INTEGER NOT NULL,
+    "priceFactor" REAL NOT NULL,
 
     CONSTRAINT "MovieSessionMultiFactor_pkey" PRIMARY KEY ("id")
 );
@@ -151,7 +153,7 @@ CREATE UNIQUE INDEX "Seat_row_col_key" ON "Seat"("row", "col");
 CREATE UNIQUE INDEX "TypeSeat_type_key" ON "TypeSeat"("type");
 
 -- AddForeignKey
-ALTER TABLE "RTSession" ADD CONSTRAINT "RTSession_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "RTSession" ADD CONSTRAINT "RTSession_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MovieOnCinema" ADD CONSTRAINT "MovieOnCinema_cinemaId_fkey" FOREIGN KEY ("cinemaId") REFERENCES "Cinema"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
