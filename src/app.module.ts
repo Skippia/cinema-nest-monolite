@@ -11,6 +11,9 @@ import { ConfigModule } from '@nestjs/config'
 import { MoviesInCinemaModule } from './movies-in-cinema/movies-in-cinema.module'
 import { MovieReviewsModule } from './movie-reviews/movie-reviews.module'
 import { BookingsModule } from './bookings/bookings.module'
+import { AuthModule } from './auth/auth.module'
+import { APP_GUARD } from '@nestjs/core'
+import { AtGuard } from './auth/guards/at.guard'
 
 @Module({
   imports: [
@@ -26,8 +29,15 @@ import { BookingsModule } from './bookings/bookings.module'
     MoviesInCinemaModule,
     MovieReviewsModule,
     BookingsModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
+  ],
 })
 export class AppModule {}
