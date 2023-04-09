@@ -17,7 +17,10 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ description: 'Signup locally' })
   @ApiOkResponse({ type: TokensDto })
-  async signupLocal(@Res({ passthrough: true }) res: Response, @Body() dto: SignupDto): Promise<Tokens> {
+  async signupLocal(
+    @Res({ passthrough: true }) res: Response,
+    @Body() dto: SignupDto,
+  ): Promise<Tokens> {
     const { access_token, refresh_token } = await this.authService.signupLocal(dto)
 
     this.authService.addTokensToCookies(res, access_token, refresh_token)
@@ -30,7 +33,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ description: 'Signin locally' })
   @ApiOkResponse({ type: TokensDto })
-  async signinLocal(@Res({ passthrough: true }) res: Response, @Body() dto: SigninDto): Promise<Tokens> {
+  async signinLocal(
+    @Res({ passthrough: true }) res: Response,
+    @Body() dto: SigninDto,
+  ): Promise<Tokens> {
     const { access_token, refresh_token } = await this.authService.signinLocal(dto)
 
     this.authService.addTokensToCookies(res, access_token, refresh_token)
@@ -49,7 +55,10 @@ export class AuthController {
     @GetCurrentUser('refreshToken') refreshToken: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<Tokens> {
-    const { access_token, refresh_token } = await this.authService.refreshTokens(userId, refreshToken)
+    const { access_token, refresh_token } = await this.authService.refreshTokens(
+      userId,
+      refreshToken,
+    )
 
     this.authService.addTokensToCookies(res, access_token, refresh_token)
 
@@ -60,7 +69,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ description: 'Logout' })
   @ApiOkResponse()
-  async logout(@GetCurrentUserId() userId: number, @Res({ passthrough: true }) res: Response): Promise<boolean> {
+  async logout(
+    @GetCurrentUserId() userId: number,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<boolean> {
     const isLogout = await this.authService.logout(userId)
 
     this.authService.clearCookies(res)

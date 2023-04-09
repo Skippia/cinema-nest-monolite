@@ -39,7 +39,10 @@ export class CreateMovieSessionDto implements Omit<MovieSession, 'id' | 'currenc
   })
   @ApiProperty({
     example: Object.keys(TypeSeatEnum).reduce((acc, cur) => {
-      return { ...acc, [cur]: acc[Object.keys(acc).at(-1) as keyof typeof acc] * 1.5 || 1 }
+      return {
+        ...acc,
+        [cur]: acc[Object.keys(acc).at(-1) as keyof typeof acc] * 1.5 || 1,
+      }
     }, {} as Record<TypeSeatEnum, number>),
     description: 'Price multipliers for each type of seat.',
   })

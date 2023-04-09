@@ -8,6 +8,7 @@ export const calcTotalPrice = (
 ) =>
   seatsSchema.reduce((totalPrice, curSeat) => {
     const priceForCurrentSeat =
-      movieSession.price * (multiFactorsArr.find((factor) => factor.typeSeat.type === curSeat.type)?.priceFactor || 1)
+      movieSession.price *
+      (multiFactorsArr.find((factor) => factor.typeSeat.type === curSeat.type)?.priceFactor || 1)
     return totalPrice + priceForCurrentSeat
   }, 0)

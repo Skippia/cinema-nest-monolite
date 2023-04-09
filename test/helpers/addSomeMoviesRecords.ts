@@ -1,6 +1,9 @@
 import { PrismaService } from '../../src/prisma/prisma.service'
 
-export async function addSomeMovieRecords(prisma: PrismaService, imdbIds: string[]): Promise<number[]> {
+export async function addSomeMovieRecords(
+  prisma: PrismaService,
+  imdbIds: string[],
+): Promise<number[]> {
   const newMovieRecords = await Promise.all(
     imdbIds.map((imdbId) =>
       prisma.movieRecord.create({

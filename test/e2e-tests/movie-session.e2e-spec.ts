@@ -87,7 +87,10 @@ describe('Movie Session endoints (e2e)', () => {
      */
 
     for (const test of successMockDataControlCase) {
-      it(`${test.name}, ${formatLogSessionTime({ startDate: test.startDate, duration: test.duration })}`, async () => {
+      it(`${test.name}, ${formatLogSessionTime({
+        startDate: test.startDate,
+        duration: test.duration,
+      })}`, async () => {
         const { body, status } = await request(app.getHttpServer())
           .post('/movies-sessions')
           .set('Cookie', cookies)
@@ -105,21 +108,30 @@ describe('Movie Session endoints (e2e)', () => {
     }
 
     for (const test of failMockGapData) {
-      it(`${test.name}, ${formatLogSessionTime({ startDate: test.startDate, duration: test.duration })}`, async () => {
-        const { status } = await request(app.getHttpServer()).post('/movies-sessions').set('Cookie', cookies).send({
-          cinemaId: cinemaId1,
-          movieId: movieId1,
-          startDate: test.startDate,
-          price: test.price,
-          priceFactors: test.priceFactors,
-        })
+      it(`${test.name}, ${formatLogSessionTime({
+        startDate: test.startDate,
+        duration: test.duration,
+      })}`, async () => {
+        const { status } = await request(app.getHttpServer())
+          .post('/movies-sessions')
+          .set('Cookie', cookies)
+          .send({
+            cinemaId: cinemaId1,
+            movieId: movieId1,
+            startDate: test.startDate,
+            price: test.price,
+            priceFactors: test.priceFactors,
+          })
 
         expect(status).toBe(400)
       })
     }
 
     for (const test of successMockGapData) {
-      it(`${test.name}, ${formatLogSessionTime({ startDate: test.startDate, duration: test.duration })}`, async () => {
+      it(`${test.name}, ${formatLogSessionTime({
+        startDate: test.startDate,
+        duration: test.duration,
+      })}`, async () => {
         const { body, status } = await request(app.getHttpServer())
           .post('/movies-sessions')
           .set('Cookie', cookies)
@@ -137,14 +149,20 @@ describe('Movie Session endoints (e2e)', () => {
     }
 
     for (const test of failMockData) {
-      it(`${test.name}, ${formatLogSessionTime({ startDate: test.startDate, duration: test.duration })}`, async () => {
-        const { status } = await request(app.getHttpServer()).post('/movies-sessions').set('Cookie', cookies).send({
-          cinemaId: cinemaId1,
-          movieId: movieId1,
-          startDate: test.startDate,
-          price: test.price,
-          priceFactors: test.priceFactors,
-        })
+      it(`${test.name}, ${formatLogSessionTime({
+        startDate: test.startDate,
+        duration: test.duration,
+      })}`, async () => {
+        const { status } = await request(app.getHttpServer())
+          .post('/movies-sessions')
+          .set('Cookie', cookies)
+          .send({
+            cinemaId: cinemaId1,
+            movieId: movieId1,
+            startDate: test.startDate,
+            price: test.price,
+            priceFactors: test.priceFactors,
+          })
 
         expect(status).toBe(400)
       })
@@ -161,7 +179,9 @@ describe('Movie Session endoints (e2e)', () => {
         .send({
           cinemaId: cinemaId2,
           movieId: movieId1,
-          startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(16, 0)),
+          startDate: new Date(
+            new Date(new Date().setDate(new Date().getDate() + 6)).setHours(16, 0),
+          ),
           price: 50,
           priceFactors: {
             SEAT: 1,

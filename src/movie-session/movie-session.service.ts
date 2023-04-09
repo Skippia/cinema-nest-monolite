@@ -88,8 +88,14 @@ export class MovieSessionService {
     return await this.prisma.movieSession.findUnique({ where: { id } })
   }
 
-  async updateMovieSession(id: number, updateMovieSessionDto: UpdateMovieSessionDto): Promise<MovieSession> {
-    return await this.prisma.movieSession.update({ where: { id }, data: updateMovieSessionDto })
+  async updateMovieSession(
+    id: number,
+    updateMovieSessionDto: UpdateMovieSessionDto,
+  ): Promise<MovieSession> {
+    return await this.prisma.movieSession.update({
+      where: { id },
+      data: updateMovieSessionDto,
+    })
   }
 
   async deleteMovieSession(id: number): Promise<MovieSession> {

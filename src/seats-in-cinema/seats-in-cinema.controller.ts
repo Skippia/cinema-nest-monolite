@@ -1,4 +1,13 @@
-import { Controller, UseFilters, Post, Body, Param, ParseIntPipe, Delete, Get } from '@nestjs/common'
+import {
+  Controller,
+  UseFilters,
+  Post,
+  Body,
+  Param,
+  ParseIntPipe,
+  Delete,
+  Get,
+} from '@nestjs/common'
 import {
   ApiTags,
   ApiCreatedResponse,
@@ -26,7 +35,9 @@ export class SeatsInCinemaController {
   constructor(private readonly seatsInCinemaService: SeatsInCinemaService) {}
 
   @Post(':cinemaId')
-  @ApiOperation({ description: 'Create cinema seating schema for cinema by cinemaId' })
+  @ApiOperation({
+    description: 'Create cinema seating schema for cinema by cinemaId',
+  })
   @ApiBadRequestResponse({ type: BadRequestDto })
   @ApiConflictResponse({ type: ConflictRequestDto })
   @ApiCreatedResponse({ type: SeatWithTypeEntity, isArray: true })
@@ -35,26 +46,38 @@ export class SeatsInCinemaController {
     @Body() dto: CreateCinemaSeatingSchemaDto,
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
   ): Promise<SeatWithTypeEntity[]> {
-    const newCinemaSeatingSchema = await this.seatsInCinemaService.createCinemaSeatingSchema(cinemaId, dto)
+    const newCinemaSeatingSchema = await this.seatsInCinemaService.createCinemaSeatingSchema(
+      cinemaId,
+      dto,
+    )
 
     return newCinemaSeatingSchema
   }
 
   @Delete(':cinemaId')
-  @ApiOperation({ description: 'Delete cinema seating schema for cinema by cinemaId' })
+  @ApiOperation({
+    description: 'Delete cinema seating schema for cinema by cinemaId',
+  })
   @ApiOkResponse({ type: DeleteManyDto })
-  async resetCinemaSeatingSchema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<Prisma.BatchPayload> {
-    const countDeletedSeatsInSeatingSchema = await this.seatsInCinemaService.resetCinemaSeatingSchema(cinemaId)
+  async resetCinemaSeatingSchema(
+    @Param('cinemaId', ParseIntPipe) cinemaId: number,
+  ): Promise<Prisma.BatchPayload> {
+    const countDeletedSeatsInSeatingSchema =
+      await this.seatsInCinemaService.resetCinemaSeatingSchema(cinemaId)
 
     return countDeletedSeatsInSeatingSchema
   }
 
   @Get(':cinemaId')
-  @ApiOperation({ description: 'Get cinema seating schema for cinema by cinemaId' })
+  @ApiOperation({
+    description: 'Get cinema seating schema for cinema by cinemaId',
+  })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: SeatWithTypeEntity, isArray: true })
   @Serialize(SeatWithTypeEntity)
-  async findCinemaSeatingSchema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<SeatWithTypeEntity[]> {
+  async findCinemaSeatingSchema(
+    @Param('cinemaId', ParseIntPipe) cinemaId: number,
+  ): Promise<SeatWithTypeEntity[]> {
     const cinemaSeatinsSchema = await this.seatsInCinemaService.findCinemaSeatingSchema(cinemaId)
 
     return cinemaSeatinsSchema

@@ -5,7 +5,9 @@ export async function createMovieSessions(prisma: PrismaService): Promise<MovieS
     data: {
       // startDate: '2024-01-10T10:00:01.504Z',
       // endDate: '2024-01-10T12:50:01.504Z',
-      startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1)),
+      startDate: new Date(
+        new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1),
+      ),
       endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1)),
       movieId: 1,
       cinemaId: 1,
@@ -18,7 +20,9 @@ export async function createMovieSessions(prisma: PrismaService): Promise<MovieS
     data: {
       // startDate: '2024-01-10T10:00:01.504Z',
       // endDate: '2024-01-10T12:50:01.504Z',
-      startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1)),
+      startDate: new Date(
+        new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1),
+      ),
       endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1)),
       movieId: 1,
       cinemaId: 2,
@@ -31,7 +35,9 @@ export async function createMovieSessions(prisma: PrismaService): Promise<MovieS
     data: {
       // startDate: '2024-01-10T10:00:01.504Z',
       // endDate: '2024-01-10T12:10:01.504Z',
-      startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 10, 1)),
+      startDate: new Date(
+        new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 10, 1),
+      ),
       endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 10, 1)),
       movieId: 2,
       cinemaId: 3,

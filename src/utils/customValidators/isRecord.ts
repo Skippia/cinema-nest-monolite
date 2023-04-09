@@ -1,4 +1,9 @@
-import { ValidationOptions, registerDecorator, ValidationArguments, isObject } from 'class-validator'
+import {
+  ValidationOptions,
+  registerDecorator,
+  ValidationArguments,
+  isObject,
+} from 'class-validator'
 
 export function IsRecord(
   object_needed: Record<string, unknown>,
@@ -12,6 +17,7 @@ export function IsRecord(
       propertyName: propertyName,
       options: validationOptions,
       validator: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         validate(value: Record<string, unknown>, args: ValidationArguments) {
           if (!isObject(value)) return false
 

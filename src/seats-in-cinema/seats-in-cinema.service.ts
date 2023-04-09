@@ -33,11 +33,17 @@ export class SeatsInCinemaService {
     /**
      * Replace seats for real seats or create
      */
-    const realSeatsSchema = await this.seatService.replaceSeatsPositionsToRealOrCreateSeats(processedSchema)
+    const realSeatsSchema = await this.seatService.replaceSeatsPositionsToRealOrCreateSeats(
+      processedSchema,
+    )
 
-    const { id: defaultSeatTypeId } = await this.seatService.findSeatTypeIdBySeatType(TypeSeatEnum.SEAT)
+    const { id: defaultSeatTypeId } = await this.seatService.findSeatTypeIdBySeatType(
+      TypeSeatEnum.SEAT,
+    )
     const { id: vipSeatTypeId } = await this.seatService.findSeatTypeIdBySeatType(TypeSeatEnum.VIP)
-    const { id: loveSeatTypeId } = await this.seatService.findSeatTypeIdBySeatType(TypeSeatEnum.LOVE)
+    const { id: loveSeatTypeId } = await this.seatService.findSeatTypeIdBySeatType(
+      TypeSeatEnum.LOVE,
+    )
 
     /**
      * Add generated seats from realSeatsSchema to cinema (db)
@@ -62,7 +68,10 @@ export class SeatsInCinemaService {
 
   async addSeatsToCinemaByType(
     cinemaId: number,
-    data: { schema: (ISeatPosWithType & { id: number })[]; typeSeat: TypeSeat }[],
+    data: {
+      schema: (ISeatPosWithType & { id: number })[]
+      typeSeat: TypeSeat
+    }[],
   ): Promise<ISeatPosWithType[]> {
     const addedSeatsToCinemaDoubleArray = await Promise.all(
       data.map((el) =>
@@ -78,7 +87,11 @@ export class SeatsInCinemaService {
     return addedSeatsToCinemaArray
   }
 
-  async addSeatsSchemaToCinema(cinemaId: number, seats: Seat[], typeSeatId: number): Promise<ISeatPosWithType[]> {
+  async addSeatsSchemaToCinema(
+    cinemaId: number,
+    seats: Seat[],
+    typeSeatId: number,
+  ): Promise<ISeatPosWithType[]> {
     const seatCinemaElements = seats.reduce(
       (acc, seat) => [...acc, { cinemaId, seatId: seat.id, typeSeatId }],
       [] as SeatOnCinema[],

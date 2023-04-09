@@ -1,7 +1,9 @@
 import { TypeSeatEnum } from '@prisma/client'
 import { ISeatPos } from '../seats-in-cinema/utils/types'
 
-export type ArrElement<ArrType> = ArrType extends readonly (infer ElementType)[] ? ElementType : never
+export type ArrElement<ArrType> = ArrType extends readonly (infer ElementType)[]
+  ? ElementType
+  : never
 
 const TypeSeatEmpty = {
   EMPTY: 'EMPTY',

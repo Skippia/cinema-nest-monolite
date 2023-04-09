@@ -19,7 +19,8 @@ export function initMovieSessionMocks(durationMovie1: number) {
     {
       name: '(fail) - gap only 1 minute: ',
       startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() + (successMockDataControlCase[0].duration + 1) * 60000,
+        successMockDataControlCase[0].startDate.getTime() +
+          (successMockDataControlCase[0].duration + 1) * 60000,
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
@@ -32,7 +33,8 @@ export function initMovieSessionMocks(durationMovie1: number) {
     {
       name: '(fail) - gap only 60 minute: ',
       startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() + (successMockDataControlCase[0].duration + 60) * 60000,
+        successMockDataControlCase[0].startDate.getTime() +
+          (successMockDataControlCase[0].duration + 60) * 60000,
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
@@ -48,7 +50,8 @@ export function initMovieSessionMocks(durationMovie1: number) {
     {
       name: '(success) - gap for 61 minutes: ',
       startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() + (successMockDataControlCase[0].duration + 61) * 60000,
+        successMockDataControlCase[0].startDate.getTime() +
+          (successMockDataControlCase[0].duration + 61) * 60000,
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
@@ -97,7 +100,8 @@ export function initMovieSessionMocks(durationMovie1: number) {
     {
       name: '(fail) - overlapping (left boundary): ',
       startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() + (successMockDataControlCase[0].duration / 2) * 60000,
+        successMockDataControlCase[0].startDate.getTime() +
+          (successMockDataControlCase[0].duration / 2) * 60000,
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
@@ -110,7 +114,8 @@ export function initMovieSessionMocks(durationMovie1: number) {
     {
       name: '(fail) - overlapping (right boundaries): ',
       startDate: new Date(
-        successMockDataControlCase[0].startDate.getTime() - (successMockDataControlCase[0].duration / 2) * 60000,
+        successMockDataControlCase[0].startDate.getTime() -
+          (successMockDataControlCase[0].duration / 2) * 60000,
       ),
       duration: successMockDataControlCase[0].duration,
       price: 50,
@@ -122,5 +127,10 @@ export function initMovieSessionMocks(durationMovie1: number) {
     },
   ]
 
-  return { successMockDataControlCase, failMockGapData, successMockGapData, failMockData }
+  return {
+    successMockDataControlCase,
+    failMockGapData,
+    successMockGapData,
+    failMockData,
+  }
 }

@@ -1,4 +1,12 @@
-import { IsString, ValidateNested, IsArray, IsNumber, IsNotEmpty, IsOptional, IsDateString } from 'class-validator'
+import {
+  IsString,
+  ValidateNested,
+  IsArray,
+  IsNumber,
+  IsNotEmpty,
+  IsOptional,
+  IsDateString,
+} from 'class-validator'
 import { Type } from 'class-transformer'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { MovieReviews } from '../utils/types'
@@ -42,7 +50,9 @@ class Review {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'You love it or  you hate it, personally I loved it' })
+  @ApiProperty({
+    example: 'You love it or  you hate it, personally I loved it',
+  })
   title: string
 
   @IsString()

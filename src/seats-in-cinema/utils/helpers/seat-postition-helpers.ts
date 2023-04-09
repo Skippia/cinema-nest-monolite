@@ -4,7 +4,8 @@ import { IMatrixSeatPos, ISeatPos } from '../types'
 
 export const isPositionExcluded = (excludeMatrices: IMatrixSeatPos[], { col, row }: ISeatPos) =>
   excludeMatrices.some(
-    ({ colStart, colEnd, rowStart, rowEnd }) => col >= colStart && col <= colEnd && row >= rowStart && row <= rowEnd,
+    ({ colStart, colEnd, rowStart, rowEnd }) =>
+      col >= colStart && col <= colEnd && row >= rowStart && row <= rowEnd,
   )
 
 export function excludeAreaSeatsPositions(
@@ -20,7 +21,9 @@ export function excludeAreaSeatsPositions(
 
     // Exclude positions
     if (
-      excludePositions.filter((excludeSeat) => excludeSeat.col === seat.col && excludeSeat.row === seat.row).length > 0
+      excludePositions.filter(
+        (excludeSeat) => excludeSeat.col === seat.col && excludeSeat.row === seat.row,
+      ).length > 0
     ) {
       return { ...seat, type: TypeSeatEnumFull.EMPTY }
     }
@@ -28,5 +31,7 @@ export function excludeAreaSeatsPositions(
     return { ...seat }
   }) as (ISeatPos & { type?: TypeSeatEnum })[]
 
-  return allSeats.filter((seat) => seat?.type !== (TypeSeatEnumFull.EMPTY as keyof typeof TypeSeatEnum))
+  return allSeats.filter(
+    (seat) => seat?.type !== (TypeSeatEnumFull.EMPTY as keyof typeof TypeSeatEnum),
+  )
 }

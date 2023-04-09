@@ -3,7 +3,9 @@ import { TypeSeatEnum } from '@prisma/client'
 import { IsInt, IsBoolean, IsString, IsEnum } from 'class-validator'
 import { ArrElement, IMergedFullCinemaBookingSeatingSchema } from '../../utils/types'
 
-export class FindMergedCinemaBookingSeatingSchemaDto implements ArrElement<IMergedFullCinemaBookingSeatingSchema> {
+export class FindMergedCinemaBookingSeatingSchemaDto
+  implements ArrElement<IMergedFullCinemaBookingSeatingSchema>
+{
   @IsInt()
   @ApiProperty({ example: 1 })
   col: number

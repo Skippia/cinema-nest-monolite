@@ -189,20 +189,29 @@ describe('Movies in cinema endoints (e2e)', () => {
         .set('Cookie', cookies)
 
       expect(status).toBe(200)
-      expect(body).toEqual(expect.arrayContaining([expect.objectContaining(bookingMockDataOutput1(movieSession1))]))
+      expect(body).toEqual(
+        expect.arrayContaining([expect.objectContaining(bookingMockDataOutput1(movieSession1))]),
+      )
     })
 
     it('GET seats by booking - /bookings/seats/:bookingId', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/seats/1`).set('Cookie', cookies)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/bookings/seats/1`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(
-        bookingMockDataOutput1(movieSession1).seats.map((e) => ({ ...e, type: TypeSeatEnum.SEAT })),
+        bookingMockDataOutput1(movieSession1).seats.map((e) => ({
+          ...e,
+          type: TypeSeatEnum.SEAT,
+        })),
       )
     })
 
     it('GET booking by booking id - /bookings/:bookingId', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/1`).set('Cookie', cookies)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/bookings/1`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toMatchObject(bookingMockDataOutput1(movieSession1))
@@ -422,7 +431,9 @@ describe('Movies in cinema endoints (e2e)', () => {
     it('cancel booking (success)', async () => {
       const beforeCount = await prisma.booking.count()
 
-      const { body, status } = await request(app.getHttpServer()).delete(`/bookings/1`).set('Cookie', cookies)
+      const { body, status } = await request(app.getHttpServer())
+        .delete(`/bookings/1`)
+        .set('Cookie', cookies)
 
       const afterCount = await prisma.booking.count()
 
@@ -434,7 +445,9 @@ describe('Movies in cinema endoints (e2e)', () => {
     it('cancel all rest booking (success)', async () => {
       const beforeCount = await prisma.booking.count()
 
-      const { body, status } = await request(app.getHttpServer()).delete(`/bookings/users/1`).set('Cookie', cookies)
+      const { body, status } = await request(app.getHttpServer())
+        .delete(`/bookings/users/1`)
+        .set('Cookie', cookies)
 
       const afterCount = await prisma.booking.count()
 
