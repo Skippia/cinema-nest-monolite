@@ -48,12 +48,13 @@ describe('Movies endoints (e2e)', () => {
 
     app = moduleFixture.createNestApplication()
     prisma = app.get<PrismaService>(PrismaService)
-
+    
     app.use(cookieParser())
     app.useGlobalPipes(new ValidationPipe())
 
     await app.init()
     await runInitMovieDataMigration(prisma)
+
     cookies = await signinAccount(app)
   })
 
