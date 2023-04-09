@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../src/prisma/prisma.service'
+import { PrismaService } from '../../src/prisma/prisma.service'
 import { INestApplication, ValidationPipe } from '@nestjs/common'
 import * as request from 'supertest'
-import { AppModule } from '../src/app.module'
+import { AppModule } from '../../src/app.module'
 
 describe('Movies endoints (e2e)', () => {
   let app: INestApplication

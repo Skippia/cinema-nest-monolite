@@ -7,6 +7,7 @@ import { NestApplication } from '@nestjs/core'
 import { TestingModule, Test } from '@nestjs/testing'
 import { AppModule } from '../src/app.module'
 import { ValidationPipe } from '@nestjs/common'
+import * as bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
@@ -204,7 +205,7 @@ async function main() {
         email: 'pocketbook.love24@gmail.com',
         name: 'John',
         lastName: 'Doe',
-        password: 'midapa',
+        hashedPassword: bcrypt.hashSync('midapa', 10),
         role: 'USER',
         gender: 'MALE',
         language: 'EN',
@@ -216,14 +217,14 @@ async function main() {
   await createUsers()
   // await prismaInApp.clearDatabase()
 
-  await createSeats()
-  await createTypeSeats()
-  await createCinemas()
-  await createSeatingCinemaSchemas()
-  await loadMovies()
-  await addMoviesToCinemas()
-  await createMovieSessions()
-  await createSeatingCinemaSchemas()
+  // await createSeats()
+  // await createTypeSeats()
+  // await createCinemas()
+  // await createSeatingCinemaSchemas()
+  // await loadMovies()
+  // await addMoviesToCinemas()
+  // await createMovieSessions()
+  // await createSeatingCinemaSchemas()
 }
 // execute the main function
 main()

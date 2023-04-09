@@ -41,8 +41,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     }
     try {
       await this.$executeRawUnsafe(`TRUNCATE TABLE "public"."${tablename}" CASCADE;`)
-    } catch (error) {
-      console.log({ error })
+    } catch (error: any) {
+      if (error.meta.code === '40P01') {
+        console.error('DEADLOCK OCCURED')
+      } else {
+        console.error('UNEXPECTED DB ERROR', error.meta)
+      }
     }
   }
 
