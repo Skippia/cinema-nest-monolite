@@ -1,4 +1,9 @@
-import { IBookingSchema, ISeatPosWithType, ISeatsSchema, TypeSeatEnumFull } from '../../../utils/types'
+import {
+  IBookingSchema,
+  ISeatPosWithType,
+  ISeatsSchema,
+  TypeSeatEnumFull,
+} from '../../../utils/types'
 import { ISeatPos } from '../types'
 
 export const sortSeatBy = (seats: ISeatPos[], criteria: 'row' | 'col') =>
@@ -13,7 +18,10 @@ export const findLastSeatByCurRow = (bookingSchema: IBookingSchema, curPos: ISea
 export const findOtherSeatsForCurRow = (seats: ISeatPos[], curPos: ISeatPos, beginWith: number) =>
   seats.slice(beginWith + 1).find((pos) => pos.row === curPos.row)
 
-export const addSeatToBooking = (bookingSchema: IBookingSchema, { col, row, type }: ISeatPosWithType) => {
+export const addSeatToBooking = (
+  bookingSchema: IBookingSchema,
+  { col, row, type }: ISeatPosWithType,
+) => {
   bookingSchema.push({ row, col, type, isBooked: false })
 }
 
@@ -31,4 +39,5 @@ export function findMaxColRow(seatsArray: ISeatPos[]) {
   return { maxCol, maxRow }
 }
 
-export const filterBySeat = (schema: ISeatsSchema) => schema.filter((pos) => pos.type === TypeSeatEnumFull.SEAT)
+export const filterBySeat = (schema: ISeatsSchema) =>
+  schema.filter((pos) => pos.type === TypeSeatEnumFull.SEAT)

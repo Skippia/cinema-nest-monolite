@@ -48,7 +48,7 @@ describe('Movies endoints (e2e)', () => {
 
     app = moduleFixture.createNestApplication()
     prisma = app.get<PrismaService>(PrismaService)
-    
+
     app.use(cookieParser())
     app.useGlobalPipes(new ValidationPipe())
 
@@ -65,7 +65,9 @@ describe('Movies endoints (e2e)', () => {
 
   describe('GET /movies', () => {
     it('should return the movies', async () => {
-      const { status, body } = await request(app.getHttpServer()).get('/movies').set('Cookie', cookies)
+      const { status, body } = await request(app.getHttpServer())
+        .get('/movies')
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(expect.arrayContaining([movieShape]))
@@ -74,7 +76,9 @@ describe('Movies endoints (e2e)', () => {
 
   describe('GET /movies/:movieId', () => {
     it('should return the movie by id', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/movies/${movieId1}`).set('Cookie', cookies)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/movies/${movieId1}`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(movieShape)

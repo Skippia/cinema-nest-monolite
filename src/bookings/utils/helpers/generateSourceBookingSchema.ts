@@ -26,9 +26,17 @@ export function generateSourceBookingSchema(seatSchema: ISeatsSchema): IBookingS
 
       if (sortedSeatsInLastRow.length > 0) {
         const lastCol = (sortedSeatsInLastRow.at(-1) as ISeatPos).col
-        addSeatToBooking(bookingSchema, { row: lastRow + 1, col: lastCol + 1, type: curPos.type })
+        addSeatToBooking(bookingSchema, {
+          row: lastRow + 1,
+          col: lastCol + 1,
+          type: curPos.type,
+        })
       } else {
-        addSeatToBooking(bookingSchema, { row: lastRow + 1, col: 1, type: curPos.type })
+        addSeatToBooking(bookingSchema, {
+          row: lastRow + 1,
+          col: 1,
+          type: curPos.type,
+        })
       }
 
       const isOtherSeatsForCurRow = findOtherSeatsForCurRow(sortedSeatSchema, curPos, idx)
@@ -39,7 +47,11 @@ export function generateSourceBookingSchema(seatSchema: ISeatsSchema): IBookingS
     }
 
     if (lastSeatInCurRow) {
-      addSeatToBooking(bookingSchema, { row: lastSeatInCurRow.row, col: lastSeatInCurRow.col + 1, type: curPos.type })
+      addSeatToBooking(bookingSchema, {
+        row: lastSeatInCurRow.row,
+        col: lastSeatInCurRow.col + 1,
+        type: curPos.type,
+      })
       lastRow = lastSeatInCurRow.row
     }
   })

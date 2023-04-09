@@ -12,7 +12,10 @@ import { generateBaseSeatSchema } from '../utils/helpers/generateBaseSeatSchema'
 import { generateSeatsOnRectangle } from '../utils/helpers/generateSeatsOnRectangle'
 import { recoverySeatSchema } from '../utils/helpers/recoverySeatSchema'
 import { findMaxColRow } from '../utils/helpers/seat-helpers'
-import { isPositionExcluded, excludeAreaSeatsPositions } from '../utils/helpers/seat-postition-helpers'
+import {
+  isPositionExcluded,
+  excludeAreaSeatsPositions,
+} from '../utils/helpers/seat-postition-helpers'
 
 describe('helpers for SeatOnCinema service', () => {
   const excludeMatrices = [
@@ -155,7 +158,9 @@ describe('helpers for SeatOnCinema service', () => {
   it('should return filtered positions (deleted excluded matrix coordinates)', () => {
     const allPositions = [...excludedFalsePositions, ...excludedTruePositions]
 
-    expect(excludeAreaSeatsPositions(allPositions, excludeMatrices, [])).toEqual(excludedFalsePositions)
+    expect(excludeAreaSeatsPositions(allPositions, excludeMatrices, [])).toEqual(
+      excludedFalsePositions,
+    )
   })
 
   it('should return filtered positions (deleted excluded matrix coordinates and point coordinates)', () => {

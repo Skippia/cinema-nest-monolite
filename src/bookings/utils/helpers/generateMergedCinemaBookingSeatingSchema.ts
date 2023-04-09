@@ -21,6 +21,11 @@ export function generateMergedCinemaBookingSeatingSchema(
 
     offsetIdx++
 
-    return { ...seat, bookingCol: bookingSeat.col, bookingRow: bookingSeat.row, isBooked: bookingSeat.isBooked }
+    return {
+      ...seat,
+      bookingCol: bookingSeat.col,
+      bookingRow: bookingSeat.row,
+      isBooked: bookingSeat.isBooked,
+    }
   })
 }

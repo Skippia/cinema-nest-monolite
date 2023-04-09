@@ -11,7 +11,11 @@ import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwtService: JwtService, private config: ConfigService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private config: ConfigService,
+  ) {}
 
   async signupLocal(dto: SignupDto): Promise<Tokens> {
     const { email, name, lastName, gender, language, password } = dto
@@ -30,7 +34,11 @@ export class AuthService {
         },
       })
 
-      const tokens = await this.getTokens({ userId: newUser.id, email: newUser.email, role: newUser.role })
+      const tokens = await this.getTokens({
+        userId: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+      })
       await this.createRtSession(newUser.id, tokens.refresh_token)
 
       return tokens
@@ -62,7 +70,11 @@ export class AuthService {
     if (!arePasswordEqual) throw new ForbiddenException('Access Denied')
 
     // 3. Generate tokens and add RT to current sessions
-    const tokens = await this.getTokens({ userId: user.id, email: user.email, role: user.role })
+    const tokens = await this.getTokens({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    })
     await this.createRtSession(user.id, tokens.refresh_token)
 
     return tokens
@@ -95,7 +107,8 @@ export class AuthService {
       },
     })
 
-    if (userSessions.length === 0) throw new ForbiddenException('Sessions for this user are not exist')
+    if (userSessions.length === 0)
+      throw new ForbiddenException('Sessions for this user are not exist')
 
     // Check if there is active session for this user with such RT
     const matchArray = await Promise.all(
@@ -107,7 +120,11 @@ export class AuthService {
     if (!isMatch) throw new ForbiddenException('There is not RT in user session DB')
 
     // Generate new pair of tokens and new session
-    const tokens = await this.getTokens({ userId: user.id, email: user.email, role: user.role })
+    const tokens = await this.getTokens({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    })
 
     await this.createRtSession(user.id, tokens.refresh_token)
 
@@ -125,7 +142,15 @@ export class AuthService {
     })
   }
 
-  async getTokens({ userId, email, role }: { userId: number; email: string; role: Role }): Promise<Tokens> {
+  async getTokens({
+    userId,
+    email,
+    role,
+  }: {
+    userId: number
+    email: string
+    role: Role
+  }): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
       sub: userId,
       email,
@@ -149,7 +174,11 @@ export class AuthService {
     }
   }
 
-  addTokensToCookies(@Res({ passthrough: true }) res: Response, accessToken: string, refreshToken: string): void {
+  addTokensToCookies(
+    @Res({ passthrough: true }) res: Response,
+    accessToken: string,
+    refreshToken: string,
+  ): void {
     res.cookie('Authentication', accessToken, {
       httpOnly: true,
       secure: false,

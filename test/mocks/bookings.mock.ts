@@ -47,7 +47,10 @@ const bookingMockDataOutput1 = (movieSession: MovieSession) => ({
   totalPrice: bookingMockDataInput1.desiredSeats.length * movieSession.price,
   currency: movieSession.currency,
   movieSessionId: movieSession.id,
-  seats: bookingMockDataInput1.desiredSeats.map((x) => ({ ...x, type: TypeSeatEnum.SEAT })),
+  seats: bookingMockDataInput1.desiredSeats.map((x) => ({
+    ...x,
+    type: TypeSeatEnum.SEAT,
+  })),
 })
 
 const bookingMockDataOutput2 = (movieSession: MovieSession) => ({

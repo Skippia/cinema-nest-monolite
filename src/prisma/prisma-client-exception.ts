@@ -18,7 +18,8 @@ function conflictErrorHandler(
   const statusCode = HttpStatus.CONFLICT
 
   const messageError = 'Unique violation for foreign key'
-  const messageDetails = (exception.meta?.cause as string) || extractUsefulInformationFromError(exception.message)
+  const messageDetails =
+    (exception.meta?.cause as string) || extractUsefulInformationFromError(exception.message)
 
   return generateErrorResponse(
     response,
@@ -39,7 +40,8 @@ function fkFailedErrorHandler(
 
   const messageError = 'Operation with not existing foreign key'
   const messageDetails =
-    (exception.meta?.['field_name'] as string) || extractUsefulInformationFromError(exception.message)
+    (exception.meta?.['field_name'] as string) ||
+    extractUsefulInformationFromError(exception.message)
 
   return generateErrorResponse(
     response,
@@ -59,7 +61,8 @@ function throwNotFoundHandler(
   const statusCode = HttpStatus.NOT_FOUND
 
   const messageError = 'Not found'
-  const messageDetails = (exception.meta?.cause as string) || extractUsefulInformationFromError(exception.message)
+  const messageDetails =
+    (exception.meta?.cause as string) || extractUsefulInformationFromError(exception.message)
 
   return generateErrorResponse(
     response,

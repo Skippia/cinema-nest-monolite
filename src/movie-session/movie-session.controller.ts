@@ -85,10 +85,13 @@ export class MovieSessionController {
      * 1. Check if such movie is available for this cinema
      */
 
-    const isMovieAvailableForCinema = await this.moviesInCinemaService.checkIfMovieAvailableForCinema(movieId, cinemaId)
+    const isMovieAvailableForCinema =
+      await this.moviesInCinemaService.checkIfMovieAvailableForCinema(movieId, cinemaId)
 
     if (!isMovieAvailableForCinema) {
-      throw new BadRequestException(`Movie with ${movieId} is not available for cinema with ${cinemaId}`)
+      throw new BadRequestException(
+        `Movie with ${movieId} is not available for cinema with ${cinemaId}`,
+      )
     }
 
     /**
@@ -101,7 +104,9 @@ export class MovieSessionController {
       throw new NotFoundException(`Movie with ${movieId} is not found`)
     }
 
-    const endDate = new Date(new Date(startDate).getTime() + movie.duration * 60000 + EXTRA_MOVIE_SESSION_TIME * 60000)
+    const endDate = new Date(
+      new Date(startDate).getTime() + movie.duration * 60000 + EXTRA_MOVIE_SESSION_TIME * 60000,
+    )
 
     /**
      * 3. Check if there is intersection with the session
@@ -141,7 +146,10 @@ export class MovieSessionController {
     @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
     @Body() dto: UpdateMovieSessionDto,
   ): Promise<MovieSessionEntity> {
-    const updadedMovieSession = await this.movieSessionService.updateMovieSession(movieSessionId, dto)
+    const updadedMovieSession = await this.movieSessionService.updateMovieSession(
+      movieSessionId,
+      dto,
+    )
 
     return updadedMovieSession
   }
@@ -151,18 +159,26 @@ export class MovieSessionController {
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: MovieSessionEntity })
   @Serialize(MovieSessionEntity)
-  async deleteMovieSession(@Param('movieSessionId', ParseIntPipe) movieSessionId: number): Promise<MovieSessionEntity> {
+  async deleteMovieSession(
+    @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
+  ): Promise<MovieSessionEntity> {
     const deletedMovieSession = await this.movieSessionService.deleteMovieSession(movieSessionId)
 
     return deletedMovieSession
   }
 
   @Delete('cinema/:cinemaId')
-  @ApiOperation({ description: 'Delete all movies sessions for cinema by cinemaId' })
+  @ApiOperation({
+    description: 'Delete all movies sessions for cinema by cinemaId',
+  })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: DeleteManyDto })
-  async resetMoviesSessions(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<Prisma.BatchPayload> {
-    const countDeletedMoviesSessionsFromCinema = await this.movieSessionService.resetMoviesSessions(cinemaId)
+  async resetMoviesSessions(
+    @Param('cinemaId', ParseIntPipe) cinemaId: number,
+  ): Promise<Prisma.BatchPayload> {
+    const countDeletedMoviesSessionsFromCinema = await this.movieSessionService.resetMoviesSessions(
+      cinemaId,
+    )
 
     return countDeletedMoviesSessionsFromCinema
   }

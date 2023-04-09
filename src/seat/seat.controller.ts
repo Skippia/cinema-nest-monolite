@@ -75,7 +75,10 @@ export class SeatController {
   @ApiBadRequestResponse({ type: BadRequestDto })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: SeatEntity })
-  async updateSeat(@Param('seatId', ParseIntPipe) seatId: number, @Body() dto: UpdateSeatDto): Promise<SeatEntity> {
+  async updateSeat(
+    @Param('seatId', ParseIntPipe) seatId: number,
+    @Body() dto: UpdateSeatDto,
+  ): Promise<SeatEntity> {
     const updadedSeat = await this.seatService.updateSeat(seatId, dto)
 
     return updadedSeat

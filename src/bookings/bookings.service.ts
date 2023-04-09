@@ -7,7 +7,11 @@ import { generateActualBookingSchema } from './utils/helpers/generateActualBooki
 import { generateMergedCinemaBookingSeatingSchema } from './utils/helpers/generateMergedCinemaBookingSeatingSchema'
 import { generateSourceBookingSchema } from './utils/helpers/generateSourceBookingSchema'
 import { ISeatPos } from '../seats-in-cinema/utils/types'
-import { IMergedFullCinemaBookingSeatingSchema, ISeatPosWithType, ISeatsSchema } from '../utils/types'
+import {
+  IMergedFullCinemaBookingSeatingSchema,
+  ISeatPosWithType,
+  ISeatsSchema,
+} from '../utils/types'
 import { calcTotalPrice } from './utils/helpers/calcTotalPrice'
 
 @Injectable()
@@ -32,13 +36,18 @@ export class BookingsService {
     const sourceBookingSchema = generateSourceBookingSchema(cinemaSeatingSchema)
 
     // 3. Get already booked seats positions
-    const bookedSeatsPositionsForMovieSession = await this.findBookedSeatsPositionsForMovieSession(movieSessionId)
+    const bookedSeatsPositionsForMovieSession = await this.findBookedSeatsPositionsForMovieSession(
+      movieSessionId,
+    )
 
     /**
      * 4. Overlap already booked seats to source booking schema
      * (in order to get actual booking schema)
      */
-    const actualBookingSchema = generateActualBookingSchema(sourceBookingSchema, bookedSeatsPositionsForMovieSession)
+    const actualBookingSchema = generateActualBookingSchema(
+      sourceBookingSchema,
+      bookedSeatsPositionsForMovieSession,
+    )
 
     // 5. Merge to schema and return to frontend only real seats (IMergedCinemaBookingSeatingSchema)
     const mergedFullCinemaBookingSeatingSchema = generateMergedCinemaBookingSeatingSchema(
@@ -85,7 +94,11 @@ export class BookingsService {
     JOIN "MovieSession" as S ON B."movieSessionId" = S."id";
         `)
 
-    return bookingsDataByUser as { bookingId: number; movieSessionId: number; cinemaId: number }[]
+    return bookingsDataByUser as {
+      bookingId: number
+      movieSessionId: number
+      cinemaId: number
+    }[]
   }
 
   async findSeatsByBookingId(
@@ -157,7 +170,11 @@ export class BookingsService {
     })) as { priceFactor: number; typeSeat: TypeSeat }[]
 
     // 4. Calculate total price basded on multiplication factors and base price on movie session
-    const totalPrice = calcTotalPrice(desiredSeatsSchemaWithType, multiFactorsForThisMovieSession, movieSession)
+    const totalPrice = calcTotalPrice(
+      desiredSeatsSchemaWithType,
+      multiFactorsForThisMovieSession,
+      movieSession,
+    )
 
     // 5. Convert desired seats to real seats
     const realDesiredSeats = await this.seatService.convertSeatsPositionsToRealSeats(desiredSeats)
@@ -174,7 +191,10 @@ export class BookingsService {
       })
 
       await tx.seatOnBooking.createMany({
-        data: realDesiredSeats.map((desiredSeat) => ({ seatId: desiredSeat.id, bookingId: booking.id })),
+        data: realDesiredSeats.map((desiredSeat) => ({
+          seatId: desiredSeat.id,
+          bookingId: booking.id,
+        })),
       })
 
       return booking
@@ -205,7 +225,9 @@ export class BookingsService {
     desiredSeats: ISeatPos[],
   ): Promise<{ allSeatsAreAvailable: boolean; bookedSeats: ISeatPos[] }> {
     // 1. Get all booked seats for this movie session
-    const bookedSeatsForMovieSession = await this.findBookedSeatsPositionsForMovieSession(movieSessionId)
+    const bookedSeatsForMovieSession = await this.findBookedSeatsPositionsForMovieSession(
+      movieSessionId,
+    )
 
     // 2. Separate desired seats on two categories: are available for booking
     // and already are booked

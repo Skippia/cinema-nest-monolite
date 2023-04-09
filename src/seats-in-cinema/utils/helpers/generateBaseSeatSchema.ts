@@ -15,7 +15,11 @@ export function generateBaseSeatSchema(seatsSchemaData: ISeatsSchemaInput): ISea
    * Exclude positions accord to the input schema
    * and return seats without empties
    */
-  const schema = excludeAreaSeatsPositions(rectangePositions, areasExclude || [], positionsExclude || [])
+  const schema = excludeAreaSeatsPositions(
+    rectangePositions,
+    areasExclude || [],
+    positionsExclude || [],
+  )
 
   return schema.map((e) => ({ ...e, type: TypeSeatEnumFull.SEAT }))
 }

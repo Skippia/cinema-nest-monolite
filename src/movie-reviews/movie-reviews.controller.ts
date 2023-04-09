@@ -21,10 +21,14 @@ export class MovieReviewsController {
   }
 
   @Get(':movieId')
-  @ApiOperation({ description: 'Get reviews for movie by movieId (from MovieRecord)' })
+  @ApiOperation({
+    description: 'Get reviews for movie by movieId (from MovieRecord)',
+  })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: MovieReviewsEntity })
-  async findReviewsByMovie(@Param('movieId', ParseIntPipe) movieId: number): Promise<MovieReviewsEntity> {
+  async findReviewsByMovie(
+    @Param('movieId', ParseIntPipe) movieId: number,
+  ): Promise<MovieReviewsEntity> {
     const movieReviews = await this.movieReviewsService.findReviewsByMovie(movieId)
 
     if (!movieReviews) {
