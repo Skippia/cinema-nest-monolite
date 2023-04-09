@@ -1,12 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../src/prisma/prisma.service'
 import { INestApplication, ValidationPipe } from '@nestjs/common'
-import * as request from 'supertest'
 import { AppModule } from '../../src/app.module'
+import * as request from 'supertest'
 import * as movies from '../../data/movies.json'
 import { formatLogSessionTime } from '../../src/utils/helpers/formatLogSessionTime'
 import { initMovieSessionMocks } from '../mocks/movie-session.mock'
-import { TypeSeatEnum } from '@prisma/client'
+import { signinAccount } from '../helpers/signinAccount'
+import { createCinemas, createUsers, createTypeSeats, addMoviesToCinemas } from '../helpers'
+import { addSomeMovieRecords } from '../helpers/addSomeMoviesRecords'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const cookieParser = require('cookie-parser')
 
 describe('Movie Session endoints (e2e)', () => {
   let app: INestApplication
@@ -23,6 +27,7 @@ describe('Movie Session endoints (e2e)', () => {
     price: expect.any(Number),
   })
 
+  let cookies: string[]
   let movieId1: number
   let movieId2: number
   let cinemaId1: number
@@ -39,76 +44,16 @@ describe('Movie Session endoints (e2e)', () => {
    *  1 movie session
    */
   async function runInitMovieDataMigration(prisma: PrismaService) {
-    async function createTypeSeats() {
-      await prisma.typeSeat.createMany({
-        data: [{ type: TypeSeatEnum.SEAT }, { type: TypeSeatEnum.VIP }, { type: TypeSeatEnum.LOVE }],
-      })
-    }
+    await createUsers(prisma)
+    await createTypeSeats(prisma)
+    ;[movieId1, movieId2] = await addSomeMovieRecords(prisma, [imdbId1, imdbId2])
+    ;[cinemaId1, cinemaId2] = await createCinemas(prisma)
 
-    /**
-     * Add movies to db
-     */
-    const newMovie1 = await prisma.movieRecord.create({
-      data: {
-        imdbId: imdbId1,
-      },
-    })
-    const newMovie2 = await prisma.movieRecord.create({
-      data: {
-        imdbId: imdbId2,
-      },
-    })
-    movieId1 = newMovie1.id
-    movieId2 = newMovie2.id
-
-    /**
-     * Add cinema to db
-     */
-    const newCinema1 = await prisma.cinema.create({
-      data: {
-        name: 'Aurora',
-        address: 'str Romanovskaya 5',
-        city: 'Gomel',
-      },
-    })
-    const newCinema2 = await prisma.cinema.create({
-      data: {
-        name: 'DOM KINO',
-        address: 'str Pochkova 15',
-        city: 'Minsk',
-      },
-    })
-    cinemaId1 = newCinema1.id
-    cinemaId2 = newCinema2.id
-
-    await createTypeSeats()
-    /**
-     * Add movie1 to cinema1
-     */
-    await prisma.movieOnCinema.create({
-      data: {
-        movieId: movieId1,
-        cinemaId: cinemaId1,
-      },
-    })
-    /**
-     * Add movie2 to cinema1
-     */
-    await prisma.movieOnCinema.create({
-      data: {
-        movieId: movieId2,
-        cinemaId: cinemaId1,
-      },
-    })
-    /**
-     * Add movie1 to cinema2
-     */
-    await prisma.movieOnCinema.create({
-      data: {
-        movieId: movieId1,
-        cinemaId: cinemaId2,
-      },
-    })
+    await addMoviesToCinemas(prisma, [
+      { movieId: movieId1, cinemaId: cinemaId1 },
+      { movieId: movieId2, cinemaId: cinemaId1 },
+      { movieId: movieId1, cinemaId: cinemaId2 },
+    ])
   }
 
   beforeAll(async () => {
@@ -119,10 +64,13 @@ describe('Movie Session endoints (e2e)', () => {
     app = moduleFixture.createNestApplication()
     prisma = app.get<PrismaService>(PrismaService)
 
+    app.use(cookieParser())
     app.useGlobalPipes(new ValidationPipe())
 
     await app.init()
     await runInitMovieDataMigration(prisma)
+
+    cookies = await signinAccount(app)
   })
 
   afterAll(async () => {
@@ -140,13 +88,16 @@ describe('Movie Session endoints (e2e)', () => {
 
     for (const test of successMockDataControlCase) {
       it(`${test.name}, ${formatLogSessionTime({ startDate: test.startDate, duration: test.duration })}`, async () => {
-        const { body, status } = await request(app.getHttpServer()).post('/movies-sessions').send({
-          cinemaId: cinemaId1,
-          movieId: movieId1,
-          startDate: test.startDate,
-          price: test.price,
-          priceFactors: test.priceFactors,
-        })
+        const { body, status } = await request(app.getHttpServer())
+          .post('/movies-sessions')
+          .set('Cookie', cookies)
+          .send({
+            cinemaId: cinemaId1,
+            movieId: movieId1,
+            startDate: test.startDate,
+            price: test.price,
+            priceFactors: test.priceFactors,
+          })
 
         expect(status).toBe(201)
         expect(body).toStrictEqual(movieSessionShape)
@@ -155,7 +106,7 @@ describe('Movie Session endoints (e2e)', () => {
 
     for (const test of failMockGapData) {
       it(`${test.name}, ${formatLogSessionTime({ startDate: test.startDate, duration: test.duration })}`, async () => {
-        const { status } = await request(app.getHttpServer()).post('/movies-sessions').send({
+        const { status } = await request(app.getHttpServer()).post('/movies-sessions').set('Cookie', cookies).send({
           cinemaId: cinemaId1,
           movieId: movieId1,
           startDate: test.startDate,
@@ -169,13 +120,16 @@ describe('Movie Session endoints (e2e)', () => {
 
     for (const test of successMockGapData) {
       it(`${test.name}, ${formatLogSessionTime({ startDate: test.startDate, duration: test.duration })}`, async () => {
-        const { body, status } = await request(app.getHttpServer()).post('/movies-sessions').send({
-          cinemaId: cinemaId1,
-          movieId: movieId1,
-          startDate: test.startDate,
-          price: test.price,
-          priceFactors: test.priceFactors,
-        })
+        const { body, status } = await request(app.getHttpServer())
+          .post('/movies-sessions')
+          .set('Cookie', cookies)
+          .send({
+            cinemaId: cinemaId1,
+            movieId: movieId1,
+            startDate: test.startDate,
+            price: test.price,
+            priceFactors: test.priceFactors,
+          })
 
         expect(status).toBe(201)
         expect(body).toStrictEqual(movieSessionShape)
@@ -184,7 +138,7 @@ describe('Movie Session endoints (e2e)', () => {
 
     for (const test of failMockData) {
       it(`${test.name}, ${formatLogSessionTime({ startDate: test.startDate, duration: test.duration })}`, async () => {
-        const { status } = await request(app.getHttpServer()).post('/movies-sessions').send({
+        const { status } = await request(app.getHttpServer()).post('/movies-sessions').set('Cookie', cookies).send({
           cinemaId: cinemaId1,
           movieId: movieId1,
           startDate: test.startDate,
@@ -203,6 +157,7 @@ describe('Movie Session endoints (e2e)', () => {
     it(`(success) - overlapping time but another cinema`, async () => {
       const { body, status } = await request(app.getHttpServer())
         .post('/movies-sessions')
+        .set('Cookie', cookies)
         .send({
           cinemaId: cinemaId2,
           movieId: movieId1,
@@ -225,6 +180,7 @@ describe('Movie Session endoints (e2e)', () => {
     })} `, async () => {
       const { status } = await request(app.getHttpServer())
         .post('/movies-sessions')
+        .set('Cookie', cookies)
         .send({
           cinemaId: cinemaId2,
           movieId: movieId2,

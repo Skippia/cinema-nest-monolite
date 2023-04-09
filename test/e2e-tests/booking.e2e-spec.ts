@@ -11,9 +11,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../src/prisma/prisma.service'
 import { INestApplication, ValidationPipe } from '@nestjs/common'
 import * as request from 'supertest'
-import * as movies from '../../data/movies.json'
 import { AppModule } from '../../src/app.module'
-import { Cinema, MovieSession, TypeSeatEnum } from '@prisma/client'
+import { MovieSession, TypeSeatEnum } from '@prisma/client'
 import {
   bookingMockDataInput1,
   bookingMockDataInput2,
@@ -25,193 +24,58 @@ import {
   mergedCinemaSchemaAfterSecondBooking,
 } from '../mocks/bookings.mock'
 import { convertSeatsArrayToString } from '../../src/bookings/utils/helpers/convertSeatsArrayToString'
+import { signinAccount } from '../helpers/signinAccount'
+import {
+  createTypeSeats,
+  createCinemas,
+  loadMovies,
+  createUsers,
+  addMoviesToCinemas,
+  createMovieSessions,
+} from '../helpers'
+import { createSeats } from '../helpers/createSeats'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const cookieParser = require('cookie-parser')
 
 describe('Movies in cinema endoints (e2e)', () => {
-  let app: INestApplication
-  let prisma: PrismaService
-
-  const bookingShape = expect.objectContaining({
-    id: expect.any(Number),
-    userId: expect.any(Number),
-    totalPrice: expect.any(Number),
-    movieSessionId: expect.any(Number),
-    createdAt: expect.any(Date),
-    updatedAt: expect.any(Date),
-  })
-
-  const cinemaId1 = 1
-  const cinemaId2 = 2
-  const cinemaId3 = 3
-
-  const movieId1 = 1
-  const movieId2 = 2
-
-  const userId1 = 1
-
-  let movieSession1: MovieSession
-  let movieSession2: MovieSession
-  let movieSession3: MovieSession
-
   const movieSessionId1 = 1
   const movieSessionId2 = 2
   const movieSessionId3 = 3
 
+  let app: INestApplication
+  let prisma: PrismaService
+  let cookies: string[]
+  let userId1: number
+  let movieSession1: MovieSession
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let movieSession2: MovieSession
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let movieSession3: MovieSession
+
   /**
-   * Create:
-   *   100 seats,
-   *   3 cinemas,
-   *   3 cinena seating schema
    *   load all movies
-   *   1 user
-   *   add 2 movies to 3 cinemas ( [1-1, 2-1], [1-2], [1-3, 2-3] )
-   *   3 movie sessions
+   *   add 100 seats,
+   *   add 3 type seats
+   *   add 3 cinemas,
+   *   add 1 user
+   *   add 2 movies to 3 cinemas
+   *   add 3 movie sessions
    */
   async function runInitMovieDataMigration(prisma: PrismaService) {
-    async function createSeats() {
-      const colLength = 10
-      const rowLength = 10
+    await loadMovies(prisma)
+    await createSeats(prisma)
+    await createTypeSeats(prisma)
+    await createCinemas(prisma)
+    await addMoviesToCinemas(prisma, [
+      { movieId: 1, cinemaId: 1 },
+      { movieId: 2, cinemaId: 1 },
+      { movieId: 1, cinemaId: 2 },
+      { movieId: 1, cinemaId: 3 },
+      { movieId: 2, cinemaId: 3 },
+    ])
 
-      const dataSeat = [] as { col: number; row: number }[]
-
-      for (let x = 1; x <= colLength; x++) {
-        for (let y = 1; y <= rowLength; y++) {
-          dataSeat.push({ col: x, row: y })
-        }
-      }
-
-      await prisma.seat.createMany({ data: dataSeat })
-    }
-
-    async function createTypeSeats() {
-      await prisma.typeSeat.createMany({
-        data: [{ type: TypeSeatEnum.SEAT }, { type: TypeSeatEnum.VIP }, { type: TypeSeatEnum.LOVE }],
-      })
-    }
-
-    async function createCinemas() {
-      const cinema1: Omit<Cinema, 'id'> = {
-        name: 'Dom Kino',
-        address: 'Talbuchina 18',
-        city: 'Minsk',
-      }
-      const cinema2: Omit<Cinema, 'id'> = {
-        name: 'Aurora',
-        address: 'Prytyckaha 23',
-        city: 'Minsk',
-      }
-      const cinema3: Omit<Cinema, 'id'> = {
-        name: 'Rodina',
-        address: 'Leninskaya 4',
-        city: 'Vitebsk',
-      }
-
-      await prisma.cinema.createMany({
-        data: [cinema1, cinema2, cinema3],
-      })
-    }
-
-    async function loadMovies() {
-      const movieIds = movies.map((m) => ({ imdbId: m.id }))
-      await prisma.movieRecord.createMany({
-        data: movieIds,
-      })
-    }
-
-    async function createUsers() {
-      await prisma.user.create({
-        data: {
-          email: 'pocketbook.love24@gmail.com',
-          name: 'John',
-          lastName: 'Doe',
-          password: 'midapa',
-          role: 'USER',
-          gender: 'MALE',
-          language: 'EN',
-        },
-      })
-    }
-
-    async function addMoviesToCinemas() {
-      // Adding movie1 to all cinemas3
-
-      const movieCinema11 = {
-        movieId: 1,
-        cinemaId: 1,
-      }
-
-      const movieCinema21 = {
-        movieId: 2,
-        cinemaId: 1,
-      }
-
-      const movieCinema12 = {
-        movieId: 1,
-        cinemaId: 2,
-      }
-
-      const movieCinema13 = {
-        movieId: 1,
-        cinemaId: 3,
-      }
-
-      const movieCinema23 = {
-        movieId: 2,
-        cinemaId: 3,
-      }
-
-      await prisma.movieOnCinema.createMany({
-        data: [movieCinema11, movieCinema21, movieCinema12, movieCinema13, movieCinema23],
-      })
-    }
-
-    async function createMovieSessions() {
-      movieSession1 = await prisma.movieSession.create({
-        data: {
-          // startDate: '2024-01-10T10:00:01.504Z',
-          // endDate: '2024-01-10T12:50:01.504Z',
-          startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1)),
-          endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1)),
-          movieId: 1,
-          cinemaId: 1,
-          price: 40,
-          currency: 'USD',
-        },
-      })
-
-      movieSession2 = await prisma.movieSession.create({
-        data: {
-          // startDate: '2024-01-10T10:00:01.504Z',
-          // endDate: '2024-01-10T12:50:01.504Z',
-          startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1)),
-          endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1)),
-          movieId: 1,
-          cinemaId: 2,
-          price: 60,
-          currency: 'USD',
-        },
-      })
-
-      movieSession3 = await prisma.movieSession.create({
-        data: {
-          // startDate: '2024-01-10T10:00:01.504Z',
-          // endDate: '2024-01-10T12:10:01.504Z',
-          startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 10, 1)),
-          endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 10, 1)),
-          movieId: 2,
-          cinemaId: 3,
-          price: 80,
-          currency: 'USD',
-        },
-      })
-    }
-
-    await createSeats()
-    await createTypeSeats()
-    await createCinemas()
-    await loadMovies()
-    await createUsers()
-    await addMoviesToCinemas()
-    await createMovieSessions()
+    userId1 = (await createUsers(prisma)).id
+    ;[movieSession1, movieSession2, movieSession3] = await createMovieSessions(prisma)
   }
 
   beforeAll(async () => {
@@ -222,10 +86,13 @@ describe('Movies in cinema endoints (e2e)', () => {
     app = moduleFixture.createNestApplication()
     prisma = app.get<PrismaService>(PrismaService)
 
+    app.use(cookieParser())
     app.useGlobalPipes(new ValidationPipe())
 
     await app.init()
     await runInitMovieDataMigration(prisma)
+
+    cookies = await signinAccount(app)
   })
 
   afterAll(async () => {
@@ -236,23 +103,30 @@ describe('Movies in cinema endoints (e2e)', () => {
   describe('GET booking schema - /bookings/booking-schema/:sessionId', () => {
     it('get booking schema for movieSession1 (cinemaId = 1) (success)', async () => {
       // Creating seating schema for cinema1
+
       await request(app.getHttpServer())
         .post('/seats-in-cinema/1')
+        .set('Cookie', cookies)
         .send({ ...seatsSchemaInput1 })
 
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/booking-schema/${movieSessionId1}`)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/bookings/booking-schema/${movieSessionId1}`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(mergedCinemaSchema1)
     })
 
-    it('get booking schema for movieSession3 (cinemaId = 2) (success)', async () => {
+    it('get booking schema for movieSession2 (cinemaId = 2) (success)', async () => {
       // Creating seating schema for cinema2
       await request(app.getHttpServer())
         .post('/seats-in-cinema/2')
+        .set('Cookie', cookies)
         .send({ ...seatsSchemaInput2 })
 
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/booking-schema/${movieSessionId2}`)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/bookings/booking-schema/${movieSessionId2}`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(mergedCinemaSchema2)
@@ -262,9 +136,12 @@ describe('Movies in cinema endoints (e2e)', () => {
       // Creating seating schema for cinema3
       await request(app.getHttpServer())
         .post('/seats-in-cinema/3')
+        .set('Cookie', cookies)
         .send({ ...seatsSchemaInput3 })
 
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/booking-schema/${movieSessionId3}`)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/bookings/booking-schema/${movieSessionId3}`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(mergedCinemaSchema3)
@@ -273,7 +150,9 @@ describe('Movies in cinema endoints (e2e)', () => {
 
   describe('POST create booking 1 (control case) - /bookings ', () => {
     it('get booking schema (success) - primary schema (0 seats are reserved)', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/booking-schema/1`)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/bookings/booking-schema/1`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(mergedCinemaSchema1)
@@ -283,6 +162,7 @@ describe('Movies in cinema endoints (e2e)', () => {
     it('create control booking (success)', async () => {
       const { status, body } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput1,
         })
@@ -292,7 +172,9 @@ describe('Movies in cinema endoints (e2e)', () => {
     })
 
     it('get booking schema (success) - after first booking (2 seats are reserved)', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/booking-schema/1`)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/bookings/booking-schema/1`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(mergedCinemaSchemaAfterFirstBooking)
@@ -302,14 +184,16 @@ describe('Movies in cinema endoints (e2e)', () => {
 
   describe('GET bookings, seats by booking', () => {
     it('GET bookings by user - /bookings/users/:userId', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/users/${userId1}`)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/bookings/users/${userId1}`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toEqual(expect.arrayContaining([expect.objectContaining(bookingMockDataOutput1(movieSession1))]))
     })
 
     it('GET seats by booking - /bookings/seats/:bookingId', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/seats/1`)
+      const { status, body } = await request(app.getHttpServer()).get(`/bookings/seats/1`).set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(
@@ -318,7 +202,7 @@ describe('Movies in cinema endoints (e2e)', () => {
     })
 
     it('GET booking by booking id - /bookings/:bookingId', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/1`)
+      const { status, body } = await request(app.getHttpServer()).get(`/bookings/1`).set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toMatchObject(bookingMockDataOutput1(movieSession1))
@@ -329,6 +213,7 @@ describe('Movies in cinema endoints (e2e)', () => {
     it('create booking 2 - seats are available (success)', async () => {
       const { status, body } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput2,
         })
@@ -338,7 +223,9 @@ describe('Movies in cinema endoints (e2e)', () => {
     })
 
     it('get booking schema (success) - after second booking (4 seats are reserved)', async () => {
-      const { status, body } = await request(app.getHttpServer()).get(`/bookings/booking-schema/1`)
+      const { status, body } = await request(app.getHttpServer())
+        .get(`/bookings/booking-schema/1`)
+        .set('Cookie', cookies)
 
       expect(status).toBe(200)
       expect(body).toStrictEqual(mergedCinemaSchemaAfterSecondBooking)
@@ -348,6 +235,7 @@ describe('Movies in cinema endoints (e2e)', () => {
     it('create booking (failure) - such movie session is not exist ', async () => {
       const { status } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput3,
           movieSessionId: 9999,
@@ -359,6 +247,7 @@ describe('Movies in cinema endoints (e2e)', () => {
     it('create booking (failure) - such seat is already reserved ', async () => {
       const { body, status } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput3,
           desiredSeats: bookingMockDataInput1.desiredSeats,
@@ -379,6 +268,7 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       const { body, status } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput3,
           desiredSeats: outSeats,
@@ -397,6 +287,7 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       const { body, status } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput3,
           desiredSeats: [...availableSeats, ...outSeats],
@@ -418,6 +309,7 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       const { body, status } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput3,
           desiredSeats: [...availableSeats, ...outSeats],
@@ -436,6 +328,7 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       const { body, status } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput3,
           desiredSeats: [...availableSeats, ...bookedSeat],
@@ -454,6 +347,7 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       const { body, status } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput3,
           desiredSeats: [...availableSeats, ...bookedSeats],
@@ -471,6 +365,7 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       const { body: movieSessionBody } = (await request(app.getHttpServer())
         .post(`/movies-sessions`)
+        .set('Cookie', cookies)
         .send({
           startDate: new Date(
             new Date(new Date().setDate(new Date().getDate() + 10)).setHours(
@@ -492,6 +387,7 @@ describe('Movies in cinema endoints (e2e)', () => {
 
       const { body, status } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           userId: 1,
           movieSessionId: movieSessionBody.id,
@@ -512,6 +408,7 @@ describe('Movies in cinema endoints (e2e)', () => {
     it('create booking 3 - seats are available (success)', async () => {
       const { status, body } = await request(app.getHttpServer())
         .post(`/bookings`)
+        .set('Cookie', cookies)
         .send({
           ...bookingMockDataInput3,
         })
@@ -525,7 +422,7 @@ describe('Movies in cinema endoints (e2e)', () => {
     it('cancel booking (success)', async () => {
       const beforeCount = await prisma.booking.count()
 
-      const { body, status } = await request(app.getHttpServer()).delete(`/bookings/1`)
+      const { body, status } = await request(app.getHttpServer()).delete(`/bookings/1`).set('Cookie', cookies)
 
       const afterCount = await prisma.booking.count()
 
@@ -537,7 +434,7 @@ describe('Movies in cinema endoints (e2e)', () => {
     it('cancel all rest booking (success)', async () => {
       const beforeCount = await prisma.booking.count()
 
-      const { body, status } = await request(app.getHttpServer()).delete(`/bookings/users/1`)
+      const { body, status } = await request(app.getHttpServer()).delete(`/bookings/users/1`).set('Cookie', cookies)
 
       const afterCount = await prisma.booking.count()
 
