@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import * as reviews from '../../data/reviews.json'
+import reviews from '../../data/reviews.json'
 import { MovieReviews } from './utils/types'
 
 @Injectable()

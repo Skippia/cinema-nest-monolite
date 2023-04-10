@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common'
-import * as request from 'supertest'
+import request from 'supertest'
 
 export async function signinAccount(app: INestApplication): Promise<string[]> {
   const credentials = {
