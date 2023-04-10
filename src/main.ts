@@ -7,13 +7,19 @@ import { AppModule } from './app.module'
 const cookieParser = require('cookie-parser')
 
 async function bootstrap() {
+  const globalPrefix = 'api/v1'
   const app: NestExpressApplication = await NestFactory.create(AppModule)
+
+  // app.enableCors(`)
+  app.use(cookieParser())
+  app.useGlobalPipes(new ValidationPipe())
+  app.setGlobalPrefix(globalPrefix)
 
   const config = new DocumentBuilder()
     .setTitle('Modsen Cinema')
     .setDescription('The Cinema API')
     .setVersion('1.0.0')
-    .setBasePath('api/v1')
+    .setBasePath(globalPrefix)
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
@@ -29,10 +35,6 @@ async function bootstrap() {
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css',
     ],
   })
-
-  // app.enableCors(`)
-  app.use(cookieParser())
-  app.useGlobalPipes(new ValidationPipe())
 
   await app.listen(3000)
 }
