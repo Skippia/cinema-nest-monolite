@@ -1,8 +1,12 @@
 import { PrismaService } from './../src/prisma/prisma.service'
 import { Cinema, PrismaClient, TypeSeatEnum } from '@prisma/client'
-import { seatsSchemaInput1, seatsSchemaInput2, seatsSchemaInput3 } from '../test/mocks/seats-in-cinema.mocks'
-import * as movies from '../data/movies.json'
-import * as request from 'supertest'
+import {
+  seatsSchemaInput1,
+  seatsSchemaInput2,
+  seatsSchemaInput3,
+} from '../test/mocks/seats-in-cinema.mocks'
+import movies from '../data/movies.json'
+import request from 'supertest'
 import { NestApplication } from '@nestjs/core'
 import { TestingModule, Test } from '@nestjs/testing'
 import { AppModule } from '../src/app.module'
@@ -115,8 +119,12 @@ async function main() {
       data: {
         // startDate: '2024-01-10T10:00:01.504Z',
         // endDate: '2024-01-10T12:50:01.504Z',
-        startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1)),
-        endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1)),
+        startDate: new Date(
+          new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1),
+        ),
+        endDate: new Date(
+          new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1),
+        ),
         movieId: 1,
         cinemaId: 1,
         price: 40,
@@ -136,8 +144,12 @@ async function main() {
       data: {
         // startDate: '2024-01-10T10:00:01.504Z',
         // endDate: '2024-01-10T12:50:01.504Z',
-        startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1)),
-        endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1)),
+        startDate: new Date(
+          new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 0, 1),
+        ),
+        endDate: new Date(
+          new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 50, 1),
+        ),
         movieId: 1,
         cinemaId: 2,
         price: 60,
@@ -157,8 +169,12 @@ async function main() {
       data: {
         // startDate: '2024-01-10T10:00:01.504Z',
         // endDate: '2024-01-10T12:10:01.504Z',
-        startDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 10, 1)),
-        endDate: new Date(new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 10, 1)),
+        startDate: new Date(
+          new Date(new Date().setDate(new Date().getDate() + 6)).setHours(10, 10, 1),
+        ),
+        endDate: new Date(
+          new Date(new Date().setDate(new Date().getDate() + 6)).setHours(12, 10, 1),
+        ),
         movieId: 2,
         cinemaId: 3,
         price: 80,

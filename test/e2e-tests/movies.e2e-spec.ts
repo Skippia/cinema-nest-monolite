@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../src/prisma/prisma.service'
 import { INestApplication, ValidationPipe } from '@nestjs/common'
-import * as request from 'supertest'
+import request from 'supertest'
 import { AppModule } from '../../src/app.module'
 import { createUsers, signinAccount } from '../helpers'
 import { addSomeMovieRecords } from '../helpers/addSomeMoviesRecords'
