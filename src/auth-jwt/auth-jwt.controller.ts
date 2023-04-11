@@ -15,7 +15,7 @@ import { CreateUserDto, SigninDto, TokensDto } from './dto'
 import { RtGuard } from './guards'
 import { Tokens } from './types'
 import { Response } from 'express'
-import { PrismaClientExceptionFilter } from 'src/prisma/prisma-client-exception'
+import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 
 @Controller('auth')
 @ApiTags('Authorization JWT')
