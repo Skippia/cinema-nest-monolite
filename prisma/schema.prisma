@@ -39,18 +39,20 @@ enum TypeSeatEnum {
 }
 
 model User {
-  id             Int         @id @default(autoincrement())
-  email          String      @unique
-  name           String
-  lastName       String
-  hashedPassword String
-  bookings       Booking[]
-  role           Role        @default(USER)
-  gender         Gender
-  language       Language
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  rtSessions     RTSession[]
+  id                     Int         @id @default(autoincrement())
+  email                  String      @unique
+  firstName              String
+  lastName               String?
+  avatar                 String?
+  hashedPassword         String?
+  bookings               Booking[]
+  role                   Role        @default(USER)
+  gender                 Gender?
+  language               Language    @default(EN)
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+  isRegisteredWithGoogle Boolean     @default(false)
+  rtSessions             RTSession[]
 }
 
 model RTSession {

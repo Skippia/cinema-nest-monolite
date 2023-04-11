@@ -1,6 +1,6 @@
 import { Controller, UseFilters, Get, Param, ParseIntPipe, NotFoundException } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger'
-import { Public } from '../auth/decorators'
+import { Public } from '../auth-jwt/decorators'
 import { Serialize } from '../interceptors/serialize.interceptor'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { NotFoundResponseDto } from '../utils/commonDtos/errors/not-found-response.dto'

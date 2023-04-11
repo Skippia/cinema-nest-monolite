@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, IsString } from 'class-validator'
-import { Tokens } from '../utils/types/tokens.type'
+import { Tokens } from '../types/tokens.type'
 
 export class TokensDto implements Tokens {
   @IsNotEmpty()

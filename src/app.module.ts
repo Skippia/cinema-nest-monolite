@@ -11,9 +11,11 @@ import { ConfigModule } from '@nestjs/config'
 import { MoviesInCinemaModule } from './movies-in-cinema/movies-in-cinema.module'
 import { MovieReviewsModule } from './movie-reviews/movie-reviews.module'
 import { BookingsModule } from './bookings/bookings.module'
-import { AuthModule } from './auth/auth.module'
-import { AtGuard } from './auth/guards/at.guard'
 import { APP_GUARD } from '@nestjs/core'
+import { AuthGoogleModule } from './auth-google/auth-google.module'
+import { UsersModule } from './users/users.module'
+import { AuthJwtModule } from './auth-jwt/auth-jwt.module'
+import { AtGuard } from './auth-jwt/guards'
 
 @Module({
   imports: [
@@ -29,7 +31,9 @@ import { APP_GUARD } from '@nestjs/core'
     MoviesInCinemaModule,
     MovieReviewsModule,
     BookingsModule,
-    AuthModule,
+    AuthJwtModule,
+    AuthGoogleModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [

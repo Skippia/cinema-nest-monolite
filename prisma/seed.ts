@@ -219,7 +219,7 @@ async function main() {
     await prisma.user.create({
       data: {
         email: 'pocketbook.love24@gmail.com',
-        name: 'John',
+        firstName: 'John',
         lastName: 'Doe',
         hashedPassword: bcrypt.hashSync('midapa', 10),
         role: 'USER',
@@ -228,9 +228,9 @@ async function main() {
       },
     })
   }
-  await createApp()
+  // await createApp()
 
-  await createUsers()
+  // await createUsers()
   // await prismaInApp.clearDatabase()
 
   // await createSeats()

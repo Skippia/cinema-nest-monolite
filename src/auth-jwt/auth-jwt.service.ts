@@ -1,44 +1,34 @@
-import { Injectable, ForbiddenException, Res } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { Injectable, ForbiddenException, Res } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Response } from 'express'
-import { Prisma, Role, User } from '@prisma/client'
+import { Prisma, Role } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-import { HASH_SALT, EXPIRES_IN_AT_MIN, EXPIRES_IN_RT_MIN } from './auth.constants'
-import { SignupDto, SigninDto } from './dto'
-import { Tokens, JwtPayload } from './utils/types'
+import { HASH_SALT, EXPIRES_IN_AT_MIN, EXPIRES_IN_RT_MIN } from './auth-jwt.constants'
+import { CreateUserDto, SigninDto } from './dto'
+import { Tokens, JwtPayload } from './types'
 import * as bcrypt from 'bcrypt'
+import { UsersService } from '../users/users.service'
 
 @Injectable()
-export class AuthService {
+export class AuthJwtService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private usersService: UsersService,
     private config: ConfigService,
   ) {}
 
-  async signupLocal(dto: SignupDto): Promise<Tokens> {
-    const { email, name, lastName, gender, language, password } = dto
-
-    const hashedPassword = bcrypt.hashSync(password, HASH_SALT)
-
+  async signupLocal(dto: CreateUserDto): Promise<Tokens> {
     try {
-      const newUser = await this.prisma.user.create({
-        data: {
-          email,
-          name,
-          lastName,
-          gender,
-          language,
-          hashedPassword,
-        },
-      })
+      const newUser = await this.usersService.createUser(dto)
 
-      const tokens = await this.getTokens({
+      const tokens = await this.generateTokens({
         userId: newUser.id,
         email: newUser.email,
         role: newUser.role,
       })
+
       await this.createRtSession(newUser.id, tokens.refresh_token)
 
       return tokens
@@ -55,22 +45,18 @@ export class AuthService {
   async signinLocal(dto: SigninDto): Promise<Tokens> {
     const { email, password } = dto
 
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email,
-      },
-    })
+    const user = await this.usersService.findUser({ email })
 
     // 1. If user doesn't exist - throw 403
     if (!user) throw new ForbiddenException('Access Denied')
 
-    const arePasswordEqual = bcrypt.compareSync(password, user.hashedPassword)
+    const arePasswordEqual = bcrypt.compareSync(password, user?.hashedPassword || '')
 
     // 2. If user's password is not correct - throw 403
     if (!arePasswordEqual) throw new ForbiddenException('Access Denied')
 
     // 3. Generate tokens and add RT to current sessions
-    const tokens = await this.getTokens({
+    const tokens = await this.generateTokens({
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -91,11 +77,7 @@ export class AuthService {
   }
 
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    })
+    const user = await this.usersService.findUser({ id: userId })
 
     // Check if user exists
     if (!user) throw new ForbiddenException('Access Denied')
@@ -120,7 +102,7 @@ export class AuthService {
     if (!isMatch) throw new ForbiddenException('There is not RT in user session DB')
 
     // Generate new pair of tokens and new session
-    const tokens = await this.getTokens({
+    const tokens = await this.generateTokens({
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -142,7 +124,7 @@ export class AuthService {
     })
   }
 
-  async getTokens({
+  async generateTokens({
     userId,
     email,
     role,
@@ -197,33 +179,5 @@ export class AuthService {
   clearCookies(res: Response) {
     res.clearCookie('Authentication')
     res.clearCookie('Refresh')
-  }
-
-  async getUserIfRefreshTokenMatches(userId: number, refreshToken: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    })
-
-    if (!user) {
-      throw new ForbiddenException('Access Denied')
-    }
-
-    const userRtToken = await this.prisma.rTSession.findFirst({
-      where: {
-        userId,
-      },
-    })
-
-    // Check if RT exists
-    if (!userRtToken) throw new ForbiddenException('RT is not exist')
-
-    // Check if RT is valid
-    const areRtMatch = await bcrypt.compare(refreshToken, userRtToken.hashedRt)
-
-    if (!areRtMatch) throw new ForbiddenException('Access Denied')
-
-    return user
   }
 }
