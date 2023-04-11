@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
-import { ISigninDto } from '../utils/types/dto.type'
+import { ISigninDto } from '../types/dto.type'
 
 export class SigninDto implements ISigninDto {
   @IsEmail()
