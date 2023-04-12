@@ -1,5 +1,5 @@
 import { Cinema } from '@prisma/client'
-import { PrismaService } from '../../src/modules/prisma/prisma.service'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 
 export async function createCinemas(prisma: PrismaService): Promise<number[]> {
   const cinema1: Omit<Cinema, 'id'> = {
