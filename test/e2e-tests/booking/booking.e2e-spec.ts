@@ -3,6 +3,15 @@ import { MovieSession, TypeSeatEnum } from '@prisma/client'
 import { MIN_DAYS_UNTIL_BOOKING } from 'src/modules/bookings/booking.constants'
 import { convertSeatsArrayToString } from 'src/modules/bookings/helpers'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
+import {
+  seatsSchemaInput1,
+  mergedCinemaSchema1,
+  seatsSchemaInput2,
+  mergedCinemaSchema2,
+  seatsSchemaInput3,
+  mergedCinemaSchema3,
+} from 'src/modules/seats-in-cinema/tests/seats-in-cinema.mocks'
+import request from 'supertest'
 import { loadMovies, initApp, signinAccount } from 'test/helpers/common'
 import {
   createSeats,
@@ -13,14 +22,6 @@ import {
 } from 'test/helpers/create'
 import { createMovieSessions } from 'test/helpers/createMovieSessions'
 import {
-  seatsSchemaInput1,
-  mergedCinemaSchema1,
-  seatsSchemaInput2,
-  mergedCinemaSchema2,
-  seatsSchemaInput3,
-  mergedCinemaSchema3,
-} from 'test/mocks/seats-in-cinema.mocks'
-import {
   bookingMockDataInput1,
   bookingMockDataOutput1,
   mergedCinemaSchemaAfterFirstBooking,
@@ -30,7 +31,6 @@ import {
   bookingMockDataInput3,
   bookingMockDataOutput3,
 } from './bookings.mock'
-import request from 'supertest'
 
 describe('Movies in cinema endoints (e2e)', () => {
   const movieSessionId1 = 1

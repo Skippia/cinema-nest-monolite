@@ -1,5 +1,5 @@
-import { SeatsSchemaInput } from 'src/modules/seats-in-cinema/utils/types'
-import { FullSeatsSchema, TypeSeatEnumFull } from '../../src/common/types'
+import { FullSeatsSchema, TypeSeatEnumFull } from 'src/common/types'
+import { SeatsSchemaInput } from '../utils/types'
 
 const seatsSchemaInput1: SeatsSchemaInput = {
   colLength: 4,

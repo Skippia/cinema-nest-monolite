@@ -4,7 +4,7 @@ import {
   seatsSchemaInput1,
   seatsSchemaInput2,
   seatsSchemaInput3,
-} from '../../mocks/seats-in-cinema.mocks'
+} from '../../../src/seats-in-cinema/tests/seats-in-cinema.mocks'
 
 export async function createSeatingCinemaSchemas(app: INestApplication) {
   // Seating schema for cinema1
