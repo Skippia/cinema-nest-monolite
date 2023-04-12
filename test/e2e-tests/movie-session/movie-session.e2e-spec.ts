@@ -1,16 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../src/modules/prisma/prisma.service'
-import { INestApplication, ValidationPipe } from '@nestjs/common'
-import { AppModule } from '../../src/app.module'
+import { INestApplication } from '@nestjs/common'
+import { formatLogSessionTime } from 'src/common/helpers'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import request from 'supertest'
-import movies from '../../data/movies.json'
-import { formatLogSessionTime } from '../../src/common/helpers/formatLogSessionTime'
-import { initMovieSessionMocks } from '../mocks/movie-session.mock'
-import { signinAccount } from '../helpers/signinAccount'
-import { createCinemas, createUsers, createTypeSeats, addMoviesToCinemas } from '../helpers'
-import { addSomeMovieRecords } from '../helpers/addSomeMoviesRecords'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const cookieParser = require('cookie-parser')
+import { initApp, signinAccount } from 'test/helpers/common'
+import {
+  createUsers,
+  createTypeSeats,
+  addSomeMovieRecords,
+  createCinemas,
+  addMoviesToCinemas,
+} from 'test/helpers/create'
+import movies from '../../../data/movies.json'
+import { initMovieSessionMocks } from './movie-session.mock'
 
 describe('Movie Session endoints (e2e)', () => {
   let app: INestApplication
@@ -36,12 +37,11 @@ describe('Movie Session endoints (e2e)', () => {
   const durationMovie2 = movies.find((m) => m.id === imdbId2)?.duration as number // 160 min for movie2
   /**
    * Create:
+   *   1 user
+   *   3 type seats
    *   2 movies,
    *   2 cinema
-   * Add:
-   *  1 movie to cinema1
-   *  1 movie to cinema2
-   *  1 movie session
+   *   1-2 movies for 2 cinemas
    */
   async function runInitMovieDataMigration(prisma: PrismaService) {
     await createUsers(prisma)
@@ -57,17 +57,8 @@ describe('Movie Session endoints (e2e)', () => {
   }
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile()
+    ;[app, prisma] = await initApp()
 
-    app = moduleFixture.createNestApplication()
-    prisma = app.get<PrismaService>(PrismaService)
-
-    app.use(cookieParser())
-    app.useGlobalPipes(new ValidationPipe())
-
-    await app.init()
     await runInitMovieDataMigration(prisma)
 
     cookies = await signinAccount(app)

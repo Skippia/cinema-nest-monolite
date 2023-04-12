@@ -1,4 +1,5 @@
-import { PrismaService } from '../../src/modules/prisma/prisma.service'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
+
 export async function createSeats(prisma: PrismaService) {
   const colLength = 10
   const rowLength = 10

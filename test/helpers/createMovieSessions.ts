@@ -1,5 +1,6 @@
 import { MovieSession } from '@prisma/client'
-import { PrismaService } from '../../src/modules/prisma/prisma.service'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
+
 export async function createMovieSessions(prisma: PrismaService): Promise<MovieSession[]> {
   const movieSession1 = await prisma.movieSession.create({
     data: {

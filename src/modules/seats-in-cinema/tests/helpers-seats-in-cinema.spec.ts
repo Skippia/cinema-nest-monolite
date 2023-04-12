@@ -1,4 +1,12 @@
 import {
+  generateBaseSeatSchema,
+  findMaxColRow,
+  recoverySeatSchema,
+  generateSeatsOnRectangle,
+  isPositionExcluded,
+  excludeAreaSeatsPositions,
+} from '../utils/helpers'
+import {
   seatsSchemaInput2,
   seatsSchemaInput3,
   seatsSchemaOutput2,
@@ -7,15 +15,7 @@ import {
   seatsSchemaOutputFull1,
   seatsSchemaOutputFull2,
   seatsSchemaOutputFull3,
-} from '../../../../test/mocks/seats-in-cinema.mocks'
-import { generateBaseSeatSchema } from '../utils/helpers/generate-base-seat-schema'
-import { generateSeatsOnRectangle } from '../utils/helpers/generate-seats-on-rectangle'
-import { recoverySeatSchema } from '../utils/helpers/recovery-seat-schema'
-import { findMaxColRow } from '../utils/helpers/seat-helpers'
-import {
-  isPositionExcluded,
-  excludeAreaSeatsPositions,
-} from '../utils/helpers/seat-postition-helpers'
+} from './seats-in-cinema.mocks'
 
 describe('helpers for SeatOnCinema service', () => {
   const excludeMatrices = [
