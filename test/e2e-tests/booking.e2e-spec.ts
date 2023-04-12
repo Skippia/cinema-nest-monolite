@@ -1,39 +1,39 @@
-import { MIN_DAYS_UNTIL_BOOKING } from './../../src/bookings/booking.constants'
-import {
-  mergedCinemaSchema1,
-  mergedCinemaSchema2,
-  mergedCinemaSchema3,
-  seatsSchemaInput1,
-  seatsSchemaInput2,
-  seatsSchemaInput3,
-} from '../mocks/seats-in-cinema.mocks'
-import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../src/prisma/prisma.service'
 import { INestApplication, ValidationPipe } from '@nestjs/common'
-import request from 'supertest'
-import { AppModule } from '../../src/app.module'
+import { TestingModule, Test } from '@nestjs/testing'
 import { MovieSession, TypeSeatEnum } from '@prisma/client'
+import { AppModule } from 'src/app.module'
+import { MIN_DAYS_UNTIL_BOOKING } from 'src/modules/bookings/booking.constants'
+import { convertSeatsArrayToString } from 'src/modules/bookings/helpers'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import {
-  bookingMockDataInput1,
-  bookingMockDataInput2,
-  bookingMockDataInput3,
-  bookingMockDataOutput1,
-  bookingMockDataOutput2,
-  bookingMockDataOutput3,
-  mergedCinemaSchemaAfterFirstBooking,
-  mergedCinemaSchemaAfterSecondBooking,
-} from '../mocks/bookings.mock'
-import { convertSeatsArrayToString } from '../../src/bookings/utils/helpers/convertSeatsArrayToString'
-import { signinAccount } from '../helpers/signinAccount'
-import {
+  loadMovies,
   createTypeSeats,
   createCinemas,
-  loadMovies,
-  createUsers,
   addMoviesToCinemas,
+  createUsers,
   createMovieSessions,
+  signinAccount,
 } from '../helpers'
 import { createSeats } from '../helpers/createSeats'
+import {
+  bookingMockDataInput1,
+  bookingMockDataOutput1,
+  mergedCinemaSchemaAfterFirstBooking,
+  bookingMockDataInput2,
+  bookingMockDataOutput2,
+  mergedCinemaSchemaAfterSecondBooking,
+  bookingMockDataInput3,
+  bookingMockDataOutput3,
+} from '../mocks/bookings.mock'
+import {
+  seatsSchemaInput1,
+  mergedCinemaSchema1,
+  seatsSchemaInput2,
+  mergedCinemaSchema2,
+  seatsSchemaInput3,
+  mergedCinemaSchema3,
+} from '../mocks/seats-in-cinema.mocks'
+import request from 'supertest'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cookieParser = require('cookie-parser')
 

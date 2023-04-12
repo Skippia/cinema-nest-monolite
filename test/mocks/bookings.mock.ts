@@ -1,5 +1,5 @@
 import { MovieSession, TypeSeatEnum } from '@prisma/client'
-import { TypeSeatEnumFull } from '../../src/utils/types'
+import { TypeSeatEnumFull } from '../../src/common/types'
 
 const bookingMockDataInput1 = {
   userId: 1,

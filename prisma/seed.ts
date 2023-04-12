@@ -1,4 +1,4 @@
-import { PrismaService } from './../src/prisma/prisma.service'
+import { PrismaService } from '../src/modules/prisma/prisma.service'
 import { Cinema, PrismaClient, TypeSeatEnum } from '@prisma/client'
 import {
   seatsSchemaInput1,
