@@ -1,13 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../src/modules/prisma/prisma.service'
-import { INestApplication, ValidationPipe } from '@nestjs/common'
-import request from 'supertest'
-import { AppModule } from '../../src/app.module'
-import { addSomeMovieRecords } from '../helpers/addSomeMoviesRecords'
-import { createCinemas, addMoviesToCinemas, signinAccount, createUsers } from '../helpers'
-import { deleteMoviesInCinema } from '../helpers/deleteMoviesInCinema'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const cookieParser = require('cookie-parser')
+import { INestApplication } from '@nestjs/common'
+import { request } from 'express'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { initApp, signinAccount } from 'test/helpers/common'
+import {
+  addSomeMovieRecords,
+  createCinemas,
+  createUsers,
+  addMoviesToCinemas,
+} from 'test/helpers/create'
+import { deleteMoviesInCinema } from 'test/helpers/delete'
 
 describe('Movies in cinema endoints (e2e)', () => {
   const imdbId1 = 'tt0068646'
@@ -37,7 +38,7 @@ describe('Movies in cinema endoints (e2e)', () => {
 
   /**
    * Create:
-   *   2 movie,
+   *   2 movies,
    *   1 cinema,
    *   1 movie in cinema
    */
@@ -50,17 +51,8 @@ describe('Movies in cinema endoints (e2e)', () => {
   }
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile()
+    ;[app, prisma] = await initApp()
 
-    app = moduleFixture.createNestApplication()
-    prisma = app.get<PrismaService>(PrismaService)
-
-    app.use(cookieParser())
-    app.useGlobalPipes(new ValidationPipe())
-
-    await app.init()
     await runInitMovieDataMigration(prisma)
 
     cookies = await signinAccount(app)
