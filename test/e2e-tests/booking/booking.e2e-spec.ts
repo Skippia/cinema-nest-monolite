@@ -1,20 +1,25 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common'
-import { TestingModule, Test } from '@nestjs/testing'
+import { INestApplication } from '@nestjs/common'
 import { MovieSession, TypeSeatEnum } from '@prisma/client'
-import { AppModule } from 'src/app.module'
 import { MIN_DAYS_UNTIL_BOOKING } from 'src/modules/bookings/booking.constants'
 import { convertSeatsArrayToString } from 'src/modules/bookings/helpers'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { loadMovies, initApp, signinAccount } from 'test/helpers/common'
 import {
-  loadMovies,
+  createSeats,
   createTypeSeats,
   createCinemas,
   addMoviesToCinemas,
   createUsers,
-  createMovieSessions,
-  signinAccount,
-} from '../helpers'
-import { createSeats } from '../helpers/createSeats'
+} from 'test/helpers/create'
+import { createMovieSessions } from 'test/helpers/createMovieSessions'
+import {
+  seatsSchemaInput1,
+  mergedCinemaSchema1,
+  seatsSchemaInput2,
+  mergedCinemaSchema2,
+  seatsSchemaInput3,
+  mergedCinemaSchema3,
+} from 'test/mocks/seats-in-cinema.mocks'
 import {
   bookingMockDataInput1,
   bookingMockDataOutput1,
@@ -24,18 +29,8 @@ import {
   mergedCinemaSchemaAfterSecondBooking,
   bookingMockDataInput3,
   bookingMockDataOutput3,
-} from '../mocks/bookings.mock'
-import {
-  seatsSchemaInput1,
-  mergedCinemaSchema1,
-  seatsSchemaInput2,
-  mergedCinemaSchema2,
-  seatsSchemaInput3,
-  mergedCinemaSchema3,
-} from '../mocks/seats-in-cinema.mocks'
+} from './bookings.mock'
 import request from 'supertest'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const cookieParser = require('cookie-parser')
 
 describe('Movies in cinema endoints (e2e)', () => {
   const movieSessionId1 = 1
@@ -57,8 +52,8 @@ describe('Movies in cinema endoints (e2e)', () => {
    *   add 100 seats,
    *   add 3 type seats
    *   add 3 cinemas,
+   *   add 1-2 movies to 3 cinemas
    *   add 1 user
-   *   add 2 movies to 3 cinemas
    *   add 3 movie sessions
    */
   async function runInitMovieDataMigration(prisma: PrismaService) {
@@ -79,17 +74,8 @@ describe('Movies in cinema endoints (e2e)', () => {
   }
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile()
+    ;[app, prisma] = await initApp()
 
-    app = moduleFixture.createNestApplication()
-    prisma = app.get<PrismaService>(PrismaService)
-
-    app.use(cookieParser())
-    app.useGlobalPipes(new ValidationPipe())
-
-    await app.init()
     await runInitMovieDataMigration(prisma)
 
     cookies = await signinAccount(app)
