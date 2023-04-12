@@ -45,10 +45,11 @@ export class AuthGoogleController {
     @GetCurrentUserGooglePayload() googlePayload: GooglePayload,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { access_token, refresh_token } = await this.authGoogleService.signinGoogle(googlePayload)
+    const { access_token, refresh_token, rt_session_id } =
+      await this.authGoogleService.signinGoogle(googlePayload)
 
-    this.authJwtService.addTokensToCookies(res, access_token, refresh_token)
+    this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
 
-    return { refresh_token, access_token }
+    return { refresh_token, access_token, rt_session_id }
   }
 }

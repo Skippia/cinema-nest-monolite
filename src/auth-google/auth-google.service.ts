@@ -3,6 +3,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common'
 import { GooglePayload } from './types'
 import { AuthJwtService } from '../auth-jwt/auth-jwt.service'
 import { User } from '@prisma/client'
+import { TokensWithRtSessionId } from '../auth-jwt/types'
 
 @Injectable()
 export class AuthGoogleService {
@@ -11,7 +12,7 @@ export class AuthGoogleService {
     private readonly authJwtService: AuthJwtService,
   ) {}
 
-  async signinGoogle(googlePayload: GooglePayload) {
+  async signinGoogle(googlePayload: GooglePayload): Promise<TokensWithRtSessionId> {
     if (!googlePayload) {
       throw new ForbiddenException('Google Auth error')
     }
@@ -24,7 +25,13 @@ export class AuthGoogleService {
 
     // User with such email doesn't exist - create it
     if (!user) {
-      user = await this.usersService.createUser({ email, firstName, lastName, avatar })
+      user = await this.usersService.createUser({
+        email,
+        firstName,
+        lastName,
+        avatar,
+        isRegisteredWithGoogle: true,
+      })
     }
 
     const tokens = await this.authJwtService.generateTokens({
@@ -33,8 +40,8 @@ export class AuthGoogleService {
       role: user.role,
     })
 
-    await this.authJwtService.createRtSession(user.id, tokens.refresh_token)
+    const newRtSession = await this.authJwtService.createRtSession(user.id, tokens.refresh_token)
 
-    return tokens
+    return { ...tokens, rt_session_id: newRtSession.id }
   }
 }
