@@ -1,4 +1,4 @@
-import { EXTRA_MOVIE_SESSION_TIME } from '../../src/movie-session/movie-session.constants'
+import { EXTRA_MOVIE_SESSION_TIME } from 'src/modules/movie-session/movie-session.constants'
 
 export function initMovieSessionMocks(durationMovie1: number) {
   const successMockDataControlCase = [

@@ -1,4 +1,4 @@
-import { PrismaService } from '../../src/prisma/prisma.service'
+import { PrismaService } from '../../src/modules/prisma/prisma.service'
 
 export async function addSomeMovieRecords(
   prisma: PrismaService,

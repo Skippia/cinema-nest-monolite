@@ -2,7 +2,7 @@
 import { Controller, Get } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { AppService } from './app.service'
-import { Public } from './auth-jwt/decorators'
+import { Public } from './modules/auth-jwt/decorators'
 
 @Controller()
 @Public()

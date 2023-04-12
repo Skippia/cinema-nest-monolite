@@ -1,7 +1,7 @@
-import { IFullSeatsSchema, TypeSeatEnumFull } from '../../src/utils/types'
-import { ISeatsSchemaInput } from '../../src/seats-in-cinema/utils/types'
+import { SeatsSchemaInput } from 'src/modules/seats-in-cinema/utils/types'
+import { FullSeatsSchema, TypeSeatEnumFull } from '../../src/common/types'
 
-const seatsSchemaInput1: ISeatsSchemaInput = {
+const seatsSchemaInput1: SeatsSchemaInput = {
   colLength: 4,
   rowLength: 3,
   positionsExclude: [
@@ -36,7 +36,7 @@ const seatsSchemaInput1: ISeatsSchemaInput = {
     { row: 3, col: 3 },
   ],
 }
-const seatsSchemaInput2: ISeatsSchemaInput = {
+const seatsSchemaInput2: SeatsSchemaInput = {
   colLength: 4,
   rowLength: 4,
   positionsExclude: [
@@ -66,7 +66,7 @@ const seatsSchemaInput2: ISeatsSchemaInput = {
     },
   ],
 }
-const seatsSchemaInput3: ISeatsSchemaInput = {
+const seatsSchemaInput3: SeatsSchemaInput = {
   colLength: 6,
   rowLength: 9,
   positionsExclude: [
@@ -292,7 +292,7 @@ const seatsSchemaOutput3 = [
 /**
  * Full output schemas (after recovery)
  */
-const seatsSchemaOutputFull1: IFullSeatsSchema = [
+const seatsSchemaOutputFull1: FullSeatsSchema = [
   { col: 1, row: 1, type: TypeSeatEnumFull.EMPTY },
   { col: 1, row: 2, type: TypeSeatEnumFull.SEAT },
   { col: 1, row: 3, type: TypeSeatEnumFull.EMPTY },
@@ -306,7 +306,7 @@ const seatsSchemaOutputFull1: IFullSeatsSchema = [
   { col: 4, row: 2, type: TypeSeatEnumFull.SEAT },
   { col: 4, row: 3, type: TypeSeatEnumFull.EMPTY },
 ]
-const seatsSchemaOutputFull2: IFullSeatsSchema = [
+const seatsSchemaOutputFull2: FullSeatsSchema = [
   { col: 1, row: 1, type: TypeSeatEnumFull.EMPTY },
   { col: 1, row: 2, type: TypeSeatEnumFull.EMPTY },
   { col: 1, row: 3, type: TypeSeatEnumFull.SEAT },
@@ -324,7 +324,7 @@ const seatsSchemaOutputFull2: IFullSeatsSchema = [
   { col: 4, row: 3, type: TypeSeatEnumFull.EMPTY },
   { col: 4, row: 4, type: TypeSeatEnumFull.SEAT },
 ]
-const seatsSchemaOutputFull3: IFullSeatsSchema = [
+const seatsSchemaOutputFull3: FullSeatsSchema = [
   { col: 1, row: 1, type: TypeSeatEnumFull.EMPTY },
   { col: 1, row: 2, type: TypeSeatEnumFull.EMPTY },
   { col: 1, row: 3, type: TypeSeatEnumFull.SEAT },
