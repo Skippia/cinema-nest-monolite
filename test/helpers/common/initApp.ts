@@ -1,8 +1,8 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common'
 import { TestingModule, Test } from '@nestjs/testing'
 import cookieParser from 'cookie-parser'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { AppModule } from '../../../src/app.module'
-import { PrismaService } from '../../../src/prisma/prisma.service'
 
 export async function initApp(): Promise<[app: INestApplication, prisma: PrismaService]> {
   const moduleFixture: TestingModule = await Test.createTestingModule({

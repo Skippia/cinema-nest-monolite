@@ -1,10 +1,10 @@
 import { INestApplication } from '@nestjs/common'
-import request from 'supertest'
 import {
   seatsSchemaInput1,
   seatsSchemaInput2,
   seatsSchemaInput3,
-} from '../../../src/seats-in-cinema/tests/seats-in-cinema.mocks'
+} from 'src/modules/seats-in-cinema/tests/seats-in-cinema.mocks'
+import request from 'supertest'
 
 export async function createSeatingCinemaSchemas(app: INestApplication) {
   // Seating schema for cinema1

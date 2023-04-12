@@ -1,14 +1,8 @@
-<<<<<<< HEAD:test/e2e-tests/movies.e2e-spec.ts
-import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../src/modules/prisma/prisma.service'
-import { INestApplication, ValidationPipe } from '@nestjs/common'
-=======
-import { PrismaService } from '../../../src/prisma/prisma.service'
 import { INestApplication } from '@nestjs/common'
->>>>>>> 037614f (refactor(e2e): improve `movies e2e test`):test/e2e-tests/movies/movies.e2e-spec.ts
 import request from 'supertest'
-import { initApp, signinAccount } from '../../helpers/common'
-import { addSomeMovieRecords, createUsers } from '../../helpers/create'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { initApp, signinAccount } from 'test/helpers/common'
+import { addSomeMovieRecords, createUsers } from 'test/helpers/create'
 
 describe('Movies endoints (e2e)', () => {
   const imdbId1 = 'tt0068646'

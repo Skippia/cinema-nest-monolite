@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common'
-import { HttpError } from './../../../app.constants'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsInt, IsString, IsNotEmpty } from 'class-validator'
+import { HttpError } from 'src/app.constants'
 
 export class NotFoundResponseDto {
   @IsInt()

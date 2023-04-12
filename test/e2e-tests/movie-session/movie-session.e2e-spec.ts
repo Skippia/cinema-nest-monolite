@@ -10,6 +10,7 @@ import {
   createCinemas,
   addMoviesToCinemas,
 } from 'test/helpers/create'
+import movies from '../../../data/movies.json'
 import { initMovieSessionMocks } from './movie-session.mock'
 
 describe('Movie Session endoints (e2e)', () => {

@@ -1,5 +1,4 @@
 import { INestApplication } from '@nestjs/common'
-import { request } from 'express'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { initApp, signinAccount } from 'test/helpers/common'
 import {
@@ -9,6 +8,7 @@ import {
   addMoviesToCinemas,
 } from 'test/helpers/create'
 import { deleteMoviesInCinema } from 'test/helpers/delete'
+import request from 'supertest'
 
 describe('Movies in cinema endoints (e2e)', () => {
   const imdbId1 = 'tt0068646'
