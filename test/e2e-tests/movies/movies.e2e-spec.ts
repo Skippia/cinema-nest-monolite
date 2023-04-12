@@ -1,12 +1,14 @@
+<<<<<<< HEAD:test/e2e-tests/movies.e2e-spec.ts
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../src/modules/prisma/prisma.service'
 import { INestApplication, ValidationPipe } from '@nestjs/common'
+=======
+import { PrismaService } from '../../../src/prisma/prisma.service'
+import { INestApplication } from '@nestjs/common'
+>>>>>>> 037614f (refactor(e2e): improve `movies e2e test`):test/e2e-tests/movies/movies.e2e-spec.ts
 import request from 'supertest'
-import { AppModule } from '../../src/app.module'
-import { createUsers, signinAccount } from '../helpers'
-import { addSomeMovieRecords } from '../helpers/addSomeMoviesRecords'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const cookieParser = require('cookie-parser')
+import { initApp, signinAccount } from '../../helpers/common'
+import { addSomeMovieRecords, createUsers } from '../../helpers/create'
 
 describe('Movies endoints (e2e)', () => {
   const imdbId1 = 'tt0068646'
@@ -42,17 +44,8 @@ describe('Movies endoints (e2e)', () => {
   }
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile()
+    ;[app, prisma] = await initApp()
 
-    app = moduleFixture.createNestApplication()
-    prisma = app.get<PrismaService>(PrismaService)
-
-    app.use(cookieParser())
-    app.useGlobalPipes(new ValidationPipe())
-
-    await app.init()
     await runInitMovieDataMigration(prisma)
 
     cookies = await signinAccount(app)
