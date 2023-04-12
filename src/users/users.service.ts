@@ -1,5 +1,5 @@
 import { CreateUserDto } from './dto/CreateUser.dto'
-import { ForbiddenException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { User, Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import * as bcrypt from 'bcrypt'
@@ -16,7 +16,16 @@ export class UsersService {
   }
 
   async createUser(dto: CreateUserDto): Promise<User> {
-    const { email, firstName, lastName, gender, language, password, avatar } = dto
+    const {
+      email,
+      firstName,
+      lastName,
+      gender,
+      language,
+      password,
+      avatar,
+      isRegisteredWithGoogle,
+    } = dto
     let hashedPassword: string | undefined = undefined
 
     if (password) {
@@ -32,37 +41,10 @@ export class UsersService {
         language,
         avatar,
         hashedPassword,
+        isRegisteredWithGoogle,
       },
     })
 
     return newUser
-  }
-
-  async getUserIfRefreshTokenMatches(userId: number, refreshToken: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    })
-
-    if (!user) {
-      throw new ForbiddenException('Access Denied')
-    }
-
-    const userRtToken = await this.prisma.rTSession.findFirst({
-      where: {
-        userId,
-      },
-    })
-
-    // Check if RT exists
-    if (!userRtToken) throw new ForbiddenException('RT is not exist')
-
-    // Check if RT is valid
-    const areRtMatch = await bcrypt.compare(refreshToken, userRtToken.hashedRt)
-
-    if (!areRtMatch) throw new ForbiddenException('Access Denied')
-
-    return user
   }
 }

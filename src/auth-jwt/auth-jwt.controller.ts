@@ -13,7 +13,7 @@ import { AuthJwtService } from './auth-jwt.service'
 import { Public, GetCurrentUserId, GetCurrentUser } from './decorators'
 import { CreateUserDto, SigninDto, TokensDto } from './dto'
 import { RtGuard } from './guards'
-import { Tokens } from './types'
+import { Tokens, TokensWithRtSessionId } from './types'
 import { Response } from 'express'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 
@@ -31,12 +31,14 @@ export class AuthJwtController {
   async signupLocal(
     @Res({ passthrough: true }) res: Response,
     @Body() dto: CreateUserDto,
-  ): Promise<Tokens> {
-    const { access_token, refresh_token } = await this.authJwtService.signupLocal(dto)
+  ): Promise<TokensWithRtSessionId> {
+    const { access_token, refresh_token, rt_session_id } = await this.authJwtService.signupLocal(
+      dto,
+    )
 
-    this.authJwtService.addTokensToCookies(res, access_token, refresh_token)
+    this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
 
-    return { access_token, refresh_token }
+    return { access_token, refresh_token, rt_session_id }
   }
 
   @Public()
@@ -47,12 +49,14 @@ export class AuthJwtController {
   async signinLocal(
     @Res({ passthrough: true }) res: Response,
     @Body() dto: SigninDto,
-  ): Promise<Tokens> {
-    const { access_token, refresh_token } = await this.authJwtService.signinLocal(dto)
+  ): Promise<TokensWithRtSessionId> {
+    const { access_token, refresh_token, rt_session_id } = await this.authJwtService.signinLocal(
+      dto,
+    )
 
-    this.authJwtService.addTokensToCookies(res, access_token, refresh_token)
+    this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
 
-    return { access_token, refresh_token }
+    return { access_token, refresh_token, rt_session_id }
   }
 
   @Public()
@@ -62,16 +66,16 @@ export class AuthJwtController {
   @ApiOperation({ description: 'Refresh tokens' })
   @ApiOkResponse({ type: TokensDto })
   async refreshTokens(
-    @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshToken: string,
+    @GetCurrentUser('rtSessionId') rtSessionId: number,
     @Res({ passthrough: true }) res: Response,
   ): Promise<Tokens> {
-    const { access_token, refresh_token } = await this.authJwtService.refreshTokens(
-      userId,
+    const { access_token, refresh_token, rt_session_id } = await this.authJwtService.refreshTokens({
+      rtSessionId,
       refreshToken,
-    )
+    })
 
-    this.authJwtService.addTokensToCookies(res, access_token, refresh_token)
+    this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
 
     return { refresh_token, access_token }
   }

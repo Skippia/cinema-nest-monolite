@@ -2,11 +2,11 @@ import { ConfigService } from '@nestjs/config'
 import { Injectable, ForbiddenException, Res } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Response } from 'express'
-import { Prisma, Role } from '@prisma/client'
+import { Prisma, Role, RTSession } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { HASH_SALT, EXPIRES_IN_AT_MIN, EXPIRES_IN_RT_MIN } from './auth-jwt.constants'
 import { CreateUserDto, SigninDto } from './dto'
-import { Tokens, JwtPayload } from './types'
+import { Tokens, JwtPayload, TokensWithRtSessionId } from './types'
 import * as bcrypt from 'bcrypt'
 import { UsersService } from '../users/users.service'
 
@@ -19,7 +19,7 @@ export class AuthJwtService {
     private config: ConfigService,
   ) {}
 
-  async signupLocal(dto: CreateUserDto): Promise<Tokens> {
+  async signupLocal(dto: CreateUserDto): Promise<TokensWithRtSessionId> {
     try {
       const newUser = await this.usersService.createUser(dto)
 
@@ -29,9 +29,9 @@ export class AuthJwtService {
         role: newUser.role,
       })
 
-      await this.createRtSession(newUser.id, tokens.refresh_token)
+      const newRtSession = await this.createRtSession(newUser.id, tokens.refresh_token)
 
-      return tokens
+      return { ...tokens, rt_session_id: newRtSession.id }
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -42,7 +42,7 @@ export class AuthJwtService {
     }
   }
 
-  async signinLocal(dto: SigninDto): Promise<Tokens> {
+  async signinLocal(dto: SigninDto): Promise<TokensWithRtSessionId> {
     const { email, password } = dto
 
     const user = await this.usersService.findUser({ email })
@@ -61,9 +61,10 @@ export class AuthJwtService {
       email: user.email,
       role: user.role,
     })
-    await this.createRtSession(user.id, tokens.refresh_token)
 
-    return tokens
+    const newRtSession = await this.createRtSession(user.id, tokens.refresh_token)
+
+    return { ...tokens, rt_session_id: newRtSession.id }
   }
 
   async logout(userId: number): Promise<boolean> {
@@ -76,52 +77,69 @@ export class AuthJwtService {
     return true
   }
 
-  async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
-    const user = await this.usersService.findUser({ id: userId })
-
-    // Check if user exists
-    if (!user) throw new ForbiddenException('Access Denied')
-
-    // Get all active sessions for this user
-    const userSessions = await this.prisma.rTSession.findMany({
-      where: {
-        userId,
-      },
-    })
-
-    if (userSessions.length === 0)
-      throw new ForbiddenException('Sessions for this user are not exist')
-
-    // Check if there is active session for this user with such RT
-    const matchArray = await Promise.all(
-      userSessions.map((userSession) => bcrypt.compare(refreshToken, userSession.hashedRt)),
-    )
-
-    const isMatch = matchArray.some((el) => el === true)
-
-    if (!isMatch) throw new ForbiddenException('There is not RT in user session DB')
+  async refreshTokens({
+    rtSessionId,
+    refreshToken,
+  }: {
+    rtSessionId: number
+    refreshToken: string
+  }): Promise<TokensWithRtSessionId> {
+    const { sub: userId, email, role } = this.jwtService.decode(refreshToken) as JwtPayload
 
     // Generate new pair of tokens and new session
     const tokens = await this.generateTokens({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
+      userId,
+      email,
+      role,
     })
 
-    await this.createRtSession(user.id, tokens.refresh_token)
+    await this.updateRtSession({
+      rtSessionId,
+      newRt: tokens.refresh_token,
+    })
 
-    return tokens
+    return { ...tokens, rt_session_id: rtSessionId }
   }
 
-  async createRtSession(userId: number, refreshToken: string): Promise<void> {
+  async updateRtSession({
+    rtSessionId,
+    newRt,
+  }: {
+    rtSessionId: number
+    newRt: string
+  }): Promise<void> {
+    const rtSession = await this.findRtSessionById(rtSessionId)
+
+    if (!rtSession) throw new ForbiddenException('There is not user session for your RT')
+
+    const newHashedRt = bcrypt.hashSync(newRt, HASH_SALT)
+    const { exp } = this.jwtService.decode(newRt) as JwtPayload
+
+    await this.prisma.rTSession.update({
+      where: {
+        id: rtSession.id,
+      },
+      data: {
+        hashedRt: newHashedRt,
+        rtExpDate: new Date(exp * 1000),
+      },
+    })
+  }
+
+  async createRtSession(userId: number, refreshToken: string): Promise<RTSession> {
     const hashedRt = bcrypt.hashSync(refreshToken, HASH_SALT)
 
-    await this.prisma.rTSession.create({
+    const { exp } = this.jwtService.decode(refreshToken) as JwtPayload
+
+    const newRtSession = await this.prisma.rTSession.create({
       data: {
         userId,
         hashedRt,
+        rtExpDate: new Date(exp * 1000),
       },
     })
+
+    return newRtSession
   }
 
   async generateTokens({
@@ -133,11 +151,11 @@ export class AuthJwtService {
     email: string
     role: Role
   }): Promise<Tokens> {
-    const jwtPayload: JwtPayload = {
+    const jwtPayload = {
       sub: userId,
       email,
       role,
-    }
+    } as JwtPayload
 
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
@@ -156,19 +174,70 @@ export class AuthJwtService {
     }
   }
 
+  async findRtSessionById(id: number): Promise<RTSession | null> {
+    const userSession = await this.prisma.rTSession.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    return userSession
+  }
+
+  async validRefreshToken({
+    userId,
+    rtSessionId,
+    refreshToken,
+  }: {
+    userId: number
+    rtSessionId: number
+    refreshToken: string
+  }) {
+    const user = await this.usersService.findUser({ id: userId })
+
+    // 1. Check if user with such RT exists
+    if (!user) throw new ForbiddenException(`User with id ${userId} is not exist`)
+
+    const rtSession = await this.findRtSessionById(rtSessionId)
+
+    // 2. Check if rt session with such rtSessionId exists
+    if (!rtSession) throw new ForbiddenException('There is not RT in user session DB')
+
+    const isEqual = bcrypt.compareSync(refreshToken, rtSession.hashedRt)
+
+    // 3. Check if getted from client RT has the same hash as "hashed version" of this RT in DB
+    if (!isEqual) throw new ForbiddenException('Your RT is malformed')
+
+    return isEqual
+  }
+
   addTokensToCookies(
     @Res({ passthrough: true }) res: Response,
-    accessToken: string,
-    refreshToken: string,
+    {
+      access_token,
+      refresh_token,
+      rt_session_id,
+    }: {
+      access_token: string
+      refresh_token: string
+      rt_session_id: number
+    },
   ): void {
-    res.cookie('Authentication', accessToken, {
+    res.cookie('Authentication', access_token, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_AT_MIN),
     })
 
-    res.cookie('Refresh', refreshToken, {
+    res.cookie('Refresh', refresh_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
+    })
+
+    res.cookie('RtSessionId', rt_session_id, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
@@ -179,5 +248,6 @@ export class AuthJwtService {
   clearCookies(res: Response) {
     res.clearCookie('Authentication')
     res.clearCookie('Refresh')
+    res.clearCookie('RtSessionId')
   }
 }

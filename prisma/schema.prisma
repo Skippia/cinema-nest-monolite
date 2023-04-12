@@ -58,11 +58,14 @@ model User {
 model RTSession {
   id        Int      @id @default(autoincrement())
   hashedRt  String
+  rtExpDate DateTime
   userAgent String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
+
+  @@unique([hashedRt, userId])
 }
 
 model Cinema {
@@ -78,9 +81,9 @@ model Cinema {
 }
 
 model MovieOnCinema {
-  cinema   Cinema      @relation(fields: [cinemaId], references: [id])
+  cinema   Cinema      @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
   cinemaId Int
-  movie    MovieRecord @relation(fields: [movieId], references: [id])
+  movie    MovieRecord @relation(fields: [movieId], references: [id], onDelete: Cascade)
   movieId  Int
 
   @@id([cinemaId, movieId])
@@ -99,9 +102,9 @@ model MovieSession {
   currency                Currency                  @default(USD)
   startDate               DateTime
   endDate                 DateTime
-  movie                   MovieRecord               @relation(fields: [movieId], references: [id])
+  movie                   MovieRecord               @relation(fields: [movieId], references: [id], onDelete: Cascade)
   movieId                 Int
-  cinema                  Cinema                    @relation(fields: [cinemaId], references: [id])
+  cinema                  Cinema                    @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
   cinemaId                Int
   bookings                Booking[]
   MovieSessionMultiFactor MovieSessionMultiFactor[]
@@ -112,7 +115,7 @@ model Booking {
   userId         Int
   totalPrice     Float
   currency       Currency
-  user           User            @relation(fields: [userId], references: [id])
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   movieSession   MovieSession    @relation(fields: [movieSessionId], references: [id])
   movieSessionId Int
   seat           SeatOnBooking[]
@@ -121,9 +124,9 @@ model Booking {
 }
 
 model SeatOnBooking {
-  booking   Booking @relation(fields: [bookingId], references: [id])
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   bookingId Int
-  seat      Seat    @relation(fields: [seatId], references: [id])
+  seat      Seat    @relation(fields: [seatId], references: [id], onDelete: Cascade)
   seatId    Int
 
   @@id([bookingId, seatId])
@@ -140,11 +143,11 @@ model Seat {
 }
 
 model SeatOnCinema {
-  seat       Seat     @relation(fields: [seatId], references: [id])
+  seat       Seat     @relation(fields: [seatId], references: [id], onDelete: Cascade)
   seatId     Int
-  cinema     Cinema   @relation(fields: [cinemaId], references: [id])
+  cinema     Cinema   @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
   cinemaId   Int
-  type       TypeSeat @relation(fields: [typeSeatId], references: [id])
+  type       TypeSeat @relation(fields: [typeSeatId], references: [id], onDelete: Cascade)
   typeSeatId Int
 
   @@id([seatId, cinemaId])
@@ -159,9 +162,9 @@ model TypeSeat {
 
 model MovieSessionMultiFactor {
   id             Int          @id @default(autoincrement())
-  movieSession   MovieSession @relation(fields: [movieSessionId], references: [id])
+  movieSession   MovieSession @relation(fields: [movieSessionId], references: [id], onDelete: Cascade)
   movieSessionId Int
-  typeSeat       TypeSeat     @relation(fields: [typeSeatId], references: [id])
+  typeSeat       TypeSeat     @relation(fields: [typeSeatId], references: [id], onDelete: Cascade)
   typeSeatId     Int
   priceFactor    Float        @db.Real
 }
