@@ -3,8 +3,7 @@ import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const cookieParser = require('cookie-parser')
+import cookieParser from 'cookie-parser'
 
 async function bootstrap() {
   const globalPrefix = 'api/v1'
