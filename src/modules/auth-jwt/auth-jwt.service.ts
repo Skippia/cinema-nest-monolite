@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException, Res } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
-import { Prisma, RTSession, Role } from '@prisma/client'
+import { Prisma, RTSession, RoleEnum, AuthProviderEnum } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateUserDto } from '../users/dto/create-user.dto'
@@ -21,11 +21,15 @@ export class AuthJwtService {
 
   async signupLocal(dto: CreateUserDto): Promise<TokensWithRtSessionId> {
     try {
-      const newUser = await this.usersService.createUser(dto)
+      const newUser = await this.usersService.createUser({
+        ...dto,
+        provider: AuthProviderEnum.LOCAL,
+      })
 
       const tokens = await this.generateTokens({
         userId: newUser.id,
-        email: newUser.email,
+        email: newUser.email as string,
+        username: newUser.username ?? undefined,
         role: newUser.role,
       })
 
@@ -49,16 +53,16 @@ export class AuthJwtService {
 
     // 1. If user doesn't exist - throw 403
     if (!user) throw new ForbiddenException('Access Denied')
-
     const arePasswordEqual = bcrypt.compareSync(password, user?.hashedPassword || '')
 
     // 2. If user's password is not correct - throw 403
     if (!arePasswordEqual) throw new ForbiddenException('Access Denied')
 
     // 3. Generate tokens and add RT to current sessions
+
     const tokens = await this.generateTokens({
       userId: user.id,
-      email: user.email,
+      email: user.email as string,
       role: user.role,
     })
 
@@ -145,15 +149,18 @@ export class AuthJwtService {
   async generateTokens({
     userId,
     email,
+    username,
     role,
   }: {
     userId: number
-    email: string
-    role: Role
+    email?: string
+    username?: string
+    role: RoleEnum
   }): Promise<Tokens> {
     const jwtPayload = {
       sub: userId,
       email,
+      username,
       role,
     } as JwtPayload
 
