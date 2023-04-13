@@ -1,5 +1,5 @@
 import { Injectable, ForbiddenException } from '@nestjs/common'
-import { User } from '@prisma/client'
+import { AuthProviderEnum, User } from '@prisma/client'
 import { AuthJwtService } from '../auth-jwt/auth-jwt.service'
 import { TokensWithRtSessionId } from '../auth-jwt/types'
 import { UsersService } from '../users/users.service'
@@ -22,7 +22,7 @@ export class AuthGoogleService {
     const { email, firstName, lastName, avatar } = googlePayload
 
     user = await this.usersService.findUser({ email })
-
+    // email, username, firstName, lastName, gender, language, password, avatar
     // User with such email doesn't exist - create it
     if (!user) {
       user = await this.usersService.createUser({
@@ -30,13 +30,13 @@ export class AuthGoogleService {
         firstName,
         lastName,
         avatar,
-        isRegisteredWithGoogle: true,
+        provider: AuthProviderEnum.GMAIL,
       })
     }
 
     const tokens = await this.authJwtService.generateTokens({
       userId: user.id,
-      email: user.email,
+      email: user.email as string,
       role: user.role,
     })
 
