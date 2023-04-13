@@ -16,6 +16,7 @@ import { PrismaModule } from './modules/prisma/prisma.module'
 import { SeatModule } from './modules/seat/seat.module'
 import { SeatsInCinemaModule } from './modules/seats-in-cinema/seats-in-cinema.module'
 import { UsersModule } from './modules/users/users.module'
+import { AuthGithubModule } from './modules/auth-github/auth-github.module'
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UsersModule } from './modules/users/users.module'
     AuthJwtModule,
     AuthGoogleModule,
     UsersModule,
+    AuthGithubModule,
   ],
   controllers: [AppController],
   providers: [

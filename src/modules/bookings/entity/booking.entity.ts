@@ -1,9 +1,9 @@
-import { Booking, Currency } from '@prisma/client'
+import { Booking, CurrencyEnum } from '@prisma/client'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsArray, IsDate, IsEnum, IsInt, IsString, ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
 import { SeatPosWithTypeDto } from '../dto/create-booking.dto'
-import { SeatPosWithType, CurrencyEnum } from 'src/common/types'
+import { SeatPosWithType } from 'src/common/types'
 
 type TBookingEntity = Omit<Booking, 'updatedAt'> & { seats: SeatPosWithType[] }
 
@@ -33,13 +33,13 @@ export class BookingEntity implements TBookingEntity {
   totalPrice: number
 
   @IsString()
-  @IsEnum(Currency)
+  @IsEnum(CurrencyEnum)
   @ApiProperty({
     enumName: 'CurrencyEnum',
     enum: CurrencyEnum,
     example: CurrencyEnum.USD,
   })
-  currency: Currency
+  currency: CurrencyEnum
 
   @IsInt()
   @ApiProperty({ example: 1 })

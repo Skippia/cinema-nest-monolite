@@ -1,15 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { Gender, Language, Prisma } from '@prisma/client'
+import { AuthProviderEnum, GenderEnum, LanguageEnum, Prisma } from '@prisma/client'
 import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator'
 
 export class CreateUserDto implements Prisma.UserCreateInput {
+  @IsOptional()
   @IsEmail()
-  @ApiProperty({ example: 'john@example.com' })
-  email: string
+  @ApiPropertyOptional({ example: 'john@example.com' })
+  email?: string
 
+  @IsOptional()
   @IsString()
-  @ApiProperty({ example: 'John' })
-  firstName: string
+  @ApiPropertyOptional({ example: 'johndoe24' })
+  username?: string
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ example: 'John' })
+  firstName?: string
 
   @IsOptional()
   @IsString()
@@ -22,22 +29,21 @@ export class CreateUserDto implements Prisma.UserCreateInput {
   password?: string
 
   @IsOptional()
-  @IsEnum(Gender)
-  @ApiPropertyOptional({ enum: Gender, example: Gender.MALE })
-  gender?: Gender
+  @IsEnum(GenderEnum)
+  @ApiPropertyOptional({ enum: GenderEnum, example: GenderEnum.MALE })
+  gender?: GenderEnum
 
   @IsOptional()
-  @IsEnum(Language)
-  @ApiPropertyOptional({ enum: Language, example: Language.EN })
-  language?: Language
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiPropertyOptional()
-  isRegisteredWithGoogle?: boolean
+  @IsEnum(LanguageEnum)
+  @ApiPropertyOptional({ enum: LanguageEnum, example: LanguageEnum.EN })
+  language?: LanguageEnum
 
   @IsOptional()
   @IsBoolean()
   @ApiPropertyOptional()
   avatar?: string
+
+  @IsEnum(AuthProviderEnum)
+  @ApiProperty({ enum: AuthProviderEnum, example: AuthProviderEnum.LOCAL })
+  provider: AuthProviderEnum
 }
