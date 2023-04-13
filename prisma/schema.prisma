@@ -10,22 +10,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Language {
+enum LanguageEnum {
   EN
   RU
 }
 
-enum Gender {
+enum GenderEnum {
   MALE
   FEMALE
 }
 
-enum Role {
+enum RoleEnum {
   USER
   ADMIN
 }
 
-enum Currency {
+enum CurrencyEnum {
   USD
   EUR
   BYN
@@ -38,21 +38,29 @@ enum TypeSeatEnum {
   LOVE
 }
 
+enum AuthProviderEnum {
+  LOCAL
+  GMAIL
+  GITHUB
+  FACEBOOK
+}
+
 model User {
-  id                     Int         @id @default(autoincrement())
-  email                  String      @unique
-  firstName              String
-  lastName               String?
-  avatar                 String?
-  hashedPassword         String?
-  bookings               Booking[]
-  role                   Role        @default(USER)
-  gender                 Gender?
-  language               Language    @default(EN)
-  createdAt              DateTime    @default(now())
-  updatedAt              DateTime    @updatedAt
-  isRegisteredWithGoogle Boolean     @default(false)
-  rtSessions             RTSession[]
+  id             Int              @id @default(autoincrement())
+  email          String?          @unique
+  username       String?          @unique
+  firstName      String?
+  lastName       String?
+  avatar         String?
+  hashedPassword String?
+  bookings       Booking[]
+  role           RoleEnum         @default(USER)
+  gender         GenderEnum?
+  language       LanguageEnum     @default(EN)
+  rtSessions     RTSession[]
+  provider       AuthProviderEnum
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 model RTSession {
@@ -99,7 +107,7 @@ model MovieRecord {
 model MovieSession {
   id                      Int                       @id @default(autoincrement())
   price                   Float
-  currency                Currency                  @default(USD)
+  currency                CurrencyEnum              @default(USD)
   startDate               DateTime
   endDate                 DateTime
   movie                   MovieRecord               @relation(fields: [movieId], references: [id], onDelete: Cascade)
@@ -114,7 +122,7 @@ model Booking {
   id             Int             @id @default(autoincrement())
   userId         Int
   totalPrice     Float
-  currency       Currency
+  currency       CurrencyEnum
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   movieSession   MovieSession    @relation(fields: [movieSessionId], references: [id])
   movieSessionId Int

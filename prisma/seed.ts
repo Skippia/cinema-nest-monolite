@@ -2,8 +2,8 @@ import { ValidationPipe } from '@nestjs/common'
 import { NestApplication } from '@nestjs/core'
 import { TestingModule, Test } from '@nestjs/testing'
 import { PrismaClient, TypeSeatEnum } from '@prisma/client'
-import { AppModule } from 'src/app.module'
-import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { AppModule } from '../src/app.module'
+import { PrismaService } from '../src/modules/prisma/prisma.service'
 import { loadMovies } from 'test/helpers/common'
 import {
   createUsers,
