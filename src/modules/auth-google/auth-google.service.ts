@@ -13,7 +13,7 @@ export class AuthGoogleService {
   ) {}
 
   async signinGoogle(googlePayload: GooglePayload): Promise<TokensWithRtSessionId> {
-    if (!googlePayload) {
+    if (!googlePayload || !googlePayload.email) {
       throw new ForbiddenException('Google Auth error')
     }
 

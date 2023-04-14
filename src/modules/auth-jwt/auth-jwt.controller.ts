@@ -14,7 +14,6 @@ import { CreateUserDto } from '../users/dto/create-user.dto'
 import { AuthJwtService } from './auth-jwt.service'
 import { Public, GetCurrentUser, GetCurrentUserId } from './decorators'
 import { RtGuard } from './guards'
-import { TokensWithRtSessionId, Tokens } from './types'
 import { Response } from 'express'
 import { SigninDto, TokensDto } from './dto'
 
@@ -32,14 +31,12 @@ export class AuthJwtController {
   async signupLocal(
     @Res({ passthrough: true }) res: Response,
     @Body() dto: CreateUserDto,
-  ): Promise<TokensWithRtSessionId> {
+  ): Promise<void> {
     const { access_token, refresh_token, rt_session_id } = await this.authJwtService.signupLocal(
       dto,
     )
 
     this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
-
-    return { access_token, refresh_token, rt_session_id }
   }
 
   @Public()
@@ -50,14 +47,12 @@ export class AuthJwtController {
   async signinLocal(
     @Res({ passthrough: true }) res: Response,
     @Body() dto: SigninDto,
-  ): Promise<TokensWithRtSessionId> {
+  ): Promise<void> {
     const { access_token, refresh_token, rt_session_id } = await this.authJwtService.signinLocal(
       dto,
     )
 
     this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
-
-    return { access_token, refresh_token, rt_session_id }
   }
 
   @Public()
@@ -70,15 +65,13 @@ export class AuthJwtController {
     @GetCurrentUser('refreshToken') refreshToken: string,
     @GetCurrentUser('rtSessionId') rtSessionId: number,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<Tokens> {
+  ): Promise<void> {
     const { access_token, refresh_token, rt_session_id } = await this.authJwtService.refreshTokens({
       rtSessionId,
       refreshToken,
     })
 
     this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
-
-    return { refresh_token, access_token }
   }
 
   @Post('local/logout')

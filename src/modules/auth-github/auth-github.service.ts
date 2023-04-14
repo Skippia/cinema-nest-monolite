@@ -13,7 +13,7 @@ export class AuthGithubService {
   ) {}
 
   async signinGithub(githubPayload: GithubPayload): Promise<TokensWithRtSessionId> {
-    if (!githubPayload) {
+    if (!githubPayload || !githubPayload.username) {
       throw new ForbiddenException('Github Auth error')
     }
 

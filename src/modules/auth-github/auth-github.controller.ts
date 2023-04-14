@@ -44,12 +44,10 @@ export class AuthGithubController {
   async githubAuthRedirect(
     @GetCurrentUserGithubPayload() githubPayload: GithubPayload,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<void> {
     const { access_token, refresh_token, rt_session_id } =
       await this.authGithubService.signinGithub(githubPayload)
 
     this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
-
-    return { refresh_token, access_token, rt_session_id }
   }
 }

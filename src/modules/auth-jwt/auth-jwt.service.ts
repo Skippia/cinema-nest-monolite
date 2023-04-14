@@ -7,8 +7,9 @@ import { PrismaService } from '../prisma/prisma.service'
 import { CreateUserDto } from '../users/dto/create-user.dto'
 import { UsersService } from '../users/users.service'
 import { HASH_SALT, EXPIRES_IN_AT_MIN, EXPIRES_IN_RT_MIN } from './auth-jwt.constants'
-import { TokensWithRtSessionId, ISigninDto, JwtPayload, Tokens } from './types'
+import { TokensWithRtSessionId, JwtPayload, Tokens } from './types'
 import { Response } from 'express'
+import { SigninDto } from './dto'
 
 @Injectable()
 export class AuthJwtService {
@@ -46,7 +47,7 @@ export class AuthJwtService {
     }
   }
 
-  async signinLocal(dto: ISigninDto): Promise<TokensWithRtSessionId> {
+  async signinLocal(dto: SigninDto): Promise<TokensWithRtSessionId> {
     const { email, password } = dto
 
     const user = await this.usersService.findUser({ email })
