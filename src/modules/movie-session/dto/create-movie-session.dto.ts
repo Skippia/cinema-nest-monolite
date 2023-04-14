@@ -1,8 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { MovieSession, Currency, TypeSeatEnum } from '@prisma/client'
+import { MovieSession, CurrencyEnum, TypeSeatEnum } from '@prisma/client'
 import { Type } from 'class-transformer'
 import { IsDate, IsInt, IsString, IsOptional, IsEnum, IsObject, isNumber } from 'class-validator'
-import { CurrencyEnum } from 'src/common/types'
 import { IsRecord } from 'src/common/validators'
 
 export class CreateMovieSessionDto implements Omit<MovieSession, 'id' | 'currency' | 'endDate'> {
@@ -25,13 +24,13 @@ export class CreateMovieSessionDto implements Omit<MovieSession, 'id' | 'currenc
 
   @IsString()
   @IsOptional()
-  @IsEnum(Currency)
+  @IsEnum(CurrencyEnum)
   @ApiPropertyOptional({
     enumName: 'CurrencyEnum',
     enum: CurrencyEnum,
     example: CurrencyEnum.USD,
   })
-  currency?: Currency
+  currency?: CurrencyEnum
 
   @IsObject()
   @IsRecord(TypeSeatEnum, isNumber, {

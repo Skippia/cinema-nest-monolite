@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { MovieSession, Currency } from '@prisma/client'
+import { MovieSession, CurrencyEnum } from '@prisma/client'
 import { Type } from 'class-transformer'
 import { IsInt, IsDate, IsString, IsEnum } from 'class-validator'
-import { CurrencyEnum } from 'src/common/types'
 
 export class MovieSessionEntity implements MovieSession {
   constructor(movieSession: MovieSession) {
@@ -42,11 +41,11 @@ export class MovieSessionEntity implements MovieSession {
   price: number
 
   @IsString()
-  @IsEnum(Currency)
+  @IsEnum(CurrencyEnum)
   @ApiProperty({
     enumName: 'CurrencyEnum',
     enum: CurrencyEnum,
     example: CurrencyEnum.USD,
   })
-  currency: Currency
+  currency: CurrencyEnum
 }

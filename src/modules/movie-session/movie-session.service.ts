@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Currency, MovieSession, Prisma, TypeSeat, TypeSeatEnum } from '@prisma/client'
+import { CurrencyEnum, MovieSession, Prisma, TypeSeat, TypeSeatEnum } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { UpdateMovieSessionDto } from './dto/update-movie-session.dto'
 
@@ -21,7 +21,7 @@ export class MovieSessionService {
     movieId: number
     cinemaId: number
     price: number
-    currency?: Currency
+    currency?: CurrencyEnum
     priceFactors: Record<TypeSeatEnum, number>
   }): Promise<MovieSession> {
     const typeSeatArray = await this.prisma.typeSeat.findMany()

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt'
 import { HASH_SALT } from '../auth-jwt/auth-jwt.constants'
 import { PrismaService } from '../prisma/prisma.service'
 
+// TODO: refactor github
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -16,16 +17,8 @@ export class UsersService {
   }
 
   async createUser(dto: CreateUserDto): Promise<User> {
-    const {
-      email,
-      firstName,
-      lastName,
-      gender,
-      language,
-      password,
-      avatar,
-      isRegisteredWithGoogle,
-    } = dto
+    const { email, username, firstName, lastName, gender, language, password, avatar, provider } =
+      dto
     let hashedPassword: string | undefined = undefined
 
     if (password) {
@@ -35,13 +28,14 @@ export class UsersService {
     const newUser = await this.prisma.user.create({
       data: {
         email,
+        username,
         firstName,
         lastName,
         gender,
         language,
         avatar,
         hashedPassword,
-        isRegisteredWithGoogle,
+        provider,
       },
     })
 

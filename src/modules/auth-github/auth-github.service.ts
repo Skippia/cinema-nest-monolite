@@ -3,40 +3,40 @@ import { AuthProviderEnum, User } from '@prisma/client'
 import { AuthJwtService } from '../auth-jwt/auth-jwt.service'
 import { TokensWithRtSessionId } from '../auth-jwt/types'
 import { UsersService } from '../users/users.service'
-import { GooglePayload } from './types'
+import { GithubPayload } from './types'
 
 @Injectable()
-export class AuthGoogleService {
+export class AuthGithubService {
   constructor(
     private readonly usersService: UsersService,
     private readonly authJwtService: AuthJwtService,
   ) {}
 
-  async signinGoogle(googlePayload: GooglePayload): Promise<TokensWithRtSessionId> {
-    if (!googlePayload || !googlePayload.email) {
-      throw new ForbiddenException('Google Auth error')
+  async signinGithub(githubPayload: GithubPayload): Promise<TokensWithRtSessionId> {
+    if (!githubPayload || !githubPayload.username) {
+      throw new ForbiddenException('Github Auth error')
     }
 
     let user: User | null
 
-    const { email, firstName, lastName, avatar } = googlePayload
+    const { username, firstName, lastName, avatar } = githubPayload
 
-    user = await this.usersService.findUser({ email })
-    // email, username, firstName, lastName, gender, language, password, avatar
+    user = await this.usersService.findUser({ username })
+
     // User with such email doesn't exist - create it
     if (!user) {
       user = await this.usersService.createUser({
-        email,
+        username,
         firstName,
         lastName,
         avatar,
-        provider: AuthProviderEnum.GMAIL,
+        provider: AuthProviderEnum.GITHUB,
       })
     }
 
     const tokens = await this.authJwtService.generateTokens({
       userId: user.id,
-      email: user.email as string,
+      username: user.username as string,
       role: user.role,
     })
 
