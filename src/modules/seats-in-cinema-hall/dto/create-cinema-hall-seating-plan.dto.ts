@@ -31,7 +31,7 @@ class MatrixSeatPositions implements MatrixSeatPos {
   rowEnd: number
 }
 
-export class CreateCinemaSeatingSchemaDto {
+export class CreateCinemaHallSeatingSchemaDto {
   @IsInt()
   @ApiProperty({ example: 4 })
   colLength: number

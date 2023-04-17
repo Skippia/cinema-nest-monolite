@@ -15,7 +15,6 @@ import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger'
 import { Booking } from '@prisma/client'
 import { DeleteManyDto } from 'src/common/dtos/common/delete-many.dto'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
-import { SeatsInCinemaService } from '../seats-in-cinema/seats-in-cinema.service'
 import { MIN_DAYS_UNTIL_BOOKING } from './booking.constants'
 import { BookingsService } from './bookings.service'
 import {
@@ -31,6 +30,7 @@ import {
   convertSeatsArrayToString,
 } from './helpers'
 import { MergedFullCinemaBookingSeatingSchema, SeatPosWithType } from 'src/common/types'
+import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'
 
 @Controller('bookings')
 @ApiTags('Bookings')
@@ -38,7 +38,7 @@ import { MergedFullCinemaBookingSeatingSchema, SeatPosWithType } from 'src/commo
 export class BookingsController {
   constructor(
     private readonly bookingsService: BookingsService,
-    private readonly seatsInCinemaService: SeatsInCinemaService,
+    private readonly seatsInCinemaService: SeatsInCinemaHallService,
     private readonly movieSessionService: MovieSessionService,
   ) {}
 
@@ -61,7 +61,7 @@ export class BookingsController {
 
     const cinemaBookingSeatingSchema = await this.bookingsService.findCinemaBookingSeatingSchema({
       movieSessionId: movieSession.id,
-      cinemaId: movieSession.cinemaId,
+      cinemaHallId: movieSession.cinemaHallId,
     })
 
     return cinemaBookingSeatingSchema
@@ -82,7 +82,7 @@ export class BookingsController {
         const mergedFullCinemaBookingSeatingSchema =
           await this.bookingsService.findCinemaBookingSeatingSchema({
             movieSessionId: userBookingData.movieSessionId,
-            cinemaId: userBookingData.cinemaId,
+            cinemaHallId: userBookingData.cinemaHallId,
           })
 
         const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
@@ -144,7 +144,7 @@ export class BookingsController {
     const mergedFullCinemaBookingSeatingSchema =
       await this.bookingsService.findCinemaBookingSeatingSchema({
         movieSessionId: movieSession.id,
-        cinemaId: movieSession.cinemaId,
+        cinemaHallId: movieSession.cinemaHallId,
       })
 
     const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
@@ -176,7 +176,7 @@ export class BookingsController {
     const mergedFullCinemaBookingSeatingSchema =
       await this.bookingsService.findCinemaBookingSeatingSchema({
         movieSessionId: movieSession.id,
-        cinemaId: movieSession.cinemaId,
+        cinemaHallId: movieSession.cinemaHallId,
       })
 
     const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
@@ -219,8 +219,8 @@ export class BookingsController {
       )
     }
 
-    const cinemaSeatingSchema = await this.seatsInCinemaService.findCinemaSeatingSchema(
-      movieSession.cinemaId,
+    const cinemaSeatingSchema = await this.seatsInCinemaService.findCinemaHallSeatingSchema(
+      movieSession.cinemaHallId,
     )
     const sourceBookingSchema = generateSourceBookingSchema(cinemaSeatingSchema)
 
@@ -256,7 +256,7 @@ export class BookingsController {
     const mergedFullCinemaBookingSeatingSchema =
       await this.bookingsService.findCinemaBookingSeatingSchema({
         movieSessionId,
-        cinemaId: movieSession.cinemaId,
+        cinemaHallId: movieSession.cinemaHallId,
       })
 
     const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
@@ -290,7 +290,7 @@ export class BookingsController {
     const mergedFullCinemaBookingSeatingSchema =
       await this.bookingsService.findCinemaBookingSeatingSchema({
         movieSessionId: movieSession.id,
-        cinemaId: movieSession.cinemaId,
+        cinemaHallId: movieSession.cinemaHallId,
       })
 
     const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(

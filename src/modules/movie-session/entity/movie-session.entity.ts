@@ -9,7 +9,7 @@ export class MovieSessionEntity implements MovieSession {
     this.startDate = movieSession.startDate
     this.endDate = movieSession.endDate
     this.movieId = movieSession.movieId
-    this.cinemaId = movieSession.cinemaId
+    this.cinemaHallId = movieSession.cinemaHallId
     this.price = movieSession.price
     this.currency = movieSession.currency
   }
@@ -34,7 +34,7 @@ export class MovieSessionEntity implements MovieSession {
 
   @IsInt()
   @ApiProperty({ example: 1 })
-  cinemaId: number
+  cinemaHallId: number
 
   @IsInt()
   @ApiProperty({ example: 40 })

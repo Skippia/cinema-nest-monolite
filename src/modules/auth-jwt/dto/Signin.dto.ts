@@ -4,11 +4,11 @@ import { ISigninDto } from '../types'
 
 export class SigninDto implements ISigninDto {
   @IsEmail()
-  @ApiProperty({ example: 'john@example.com' })
+  @ApiProperty({ example: 'pocketbook.love24@gmail.com' })
   email: string
 
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ example: 'password123' })
+  @ApiProperty({ example: 'midapa' })
   password: string
 }

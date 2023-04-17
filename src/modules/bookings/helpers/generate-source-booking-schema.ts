@@ -5,8 +5,8 @@ import {
   findSeatsInLastRow,
   addSeatToBooking,
   findOtherSeatsForCurRow,
-} from 'src/modules/seats-in-cinema/utils/helpers/seat-helpers'
-import { SeatPos } from 'src/modules/seats-in-cinema/utils/types'
+} from 'src/modules/seats-in-cinema-hall/utils/helpers/seat-helpers'
+import { SeatPos } from 'src/modules/seats-in-cinema-hall/utils/types'
 
 export function generateSourceBookingSchema(seatSchema: SeatsSchema): BookingSchema {
   const bookingSchema = [] as BookingSchema

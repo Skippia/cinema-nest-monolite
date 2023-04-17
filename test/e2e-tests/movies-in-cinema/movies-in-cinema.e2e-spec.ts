@@ -40,11 +40,12 @@ describe('Movies in cinema endoints (e2e)', () => {
    * Create:
    *   2 movies,
    *   1 cinema,
+   *   1 user
    *   1 movie in cinema
    */
   async function runInitMovieDataMigration(prisma: PrismaService) {
     ;[movieId1, movieId2] = await addSomeMovieRecords(prisma, [imdbId1, imdbId2])
-    ;[cinemaId] = await createCinemas(prisma)
+    cinemaId = (await createCinemas(prisma))[0].id
 
     await createUsers(prisma)
     await addMoviesToCinemas(prisma, [{ movieId: movieId1, cinemaId: cinemaId }])

@@ -8,14 +8,16 @@ export class MoviesInCinemaService {
   constructor(private readonly prisma: PrismaService) {}
 
   async checkIfMovieAvailableForCinema(movieId: number, cinemaId: number): Promise<boolean> {
-    return !!(await this.prisma.movieOnCinema.findUnique({
-      where: {
-        cinemaId_movieId: {
-          movieId,
-          cinemaId,
+    return Boolean(
+      await this.prisma.movieOnCinema.findUnique({
+        where: {
+          cinemaId_movieId: {
+            movieId,
+            cinemaId,
+          },
         },
-      },
-    }))
+      }),
+    )
   }
 
   async addMoviesToCinema(moviesToCinemaData: AddMovieToCinemaDto): Promise<MovieOnCinema[]> {

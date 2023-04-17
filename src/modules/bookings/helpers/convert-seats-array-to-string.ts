@@ -1,4 +1,4 @@
-import { SeatPos } from 'src/modules/seats-in-cinema/utils/types'
+import { SeatPos } from 'src/modules/seats-in-cinema-hall/utils/types'
 
 export const convertSeatsArrayToString = (seats: SeatPos[]) => {
   const resultWithTrim = seats.reduce((acc, cur) => {

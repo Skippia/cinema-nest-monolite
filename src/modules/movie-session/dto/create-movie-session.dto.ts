@@ -16,7 +16,7 @@ export class CreateMovieSessionDto implements Omit<MovieSession, 'id' | 'currenc
 
   @IsInt()
   @ApiProperty({ example: 1 })
-  cinemaId: number
+  cinemaHallId: number
 
   @IsInt()
   @ApiProperty({ example: 40 })

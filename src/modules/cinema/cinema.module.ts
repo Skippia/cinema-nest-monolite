@@ -7,5 +7,6 @@ import { PrismaModule } from '../prisma/prisma.module'
   controllers: [CinemaController],
   providers: [CinemaService],
   imports: [PrismaModule],
+  exports: [CinemaService],
 })
 export class CinemaModule {}

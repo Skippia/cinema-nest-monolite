@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { Seat, TypeSeatEnum } from '@prisma/client'
 import { SeatPosWithType } from 'src/common/types'
 import { PrismaService } from '../prisma/prisma.service'
-import { SeatPos } from '../seats-in-cinema/utils/types'
+import { SeatPos } from '../seats-in-cinema-hall/utils/types'
 import { CreateSeatDto, UpdateSeatDto } from './dto'
 
 @Injectable()

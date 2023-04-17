@@ -56,7 +56,7 @@ const bookingMockDataOutput1 = (movieSession: MovieSession) => ({
 const bookingMockDataOutput2 = (movieSession: MovieSession) => ({
   id: 2,
   userId: bookingMockDataInput2.userId,
-  totalPrice: bookingMockDataInput2.desiredSeats.length * movieSession.price,
+  totalPrice: movieSession.price * 1 * 1 + movieSession.price * 1.5 * 1,
   currency: movieSession.currency,
   movieSessionId: movieSession.id,
   seats: bookingMockDataInput2.desiredSeats,
@@ -65,7 +65,7 @@ const bookingMockDataOutput2 = (movieSession: MovieSession) => ({
 const bookingMockDataOutput3 = (movieSession: MovieSession) => ({
   id: 3,
   userId: bookingMockDataInput3.userId,
-  totalPrice: bookingMockDataInput3.desiredSeats.length * movieSession.price,
+  totalPrice: movieSession.price * 1 * 2.25,
   currency: movieSession.currency,
   movieSessionId: movieSession.id,
   seats: bookingMockDataInput3.desiredSeats,

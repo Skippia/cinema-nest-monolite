@@ -6,14 +6,7 @@ export async function createMovieSession(
   params: Prisma.MovieSessionUncheckedCreateInput,
 ): Promise<MovieSession> {
   const movieSession = await prisma.movieSession.create({
-    data: {
-      startDate: params.startDate,
-      endDate: params.endDate,
-      movieId: params.movieId,
-      cinemaId: params.cinemaId,
-      price: params.price,
-      currency: params.currency,
-    },
+    data: params,
   })
 
   return movieSession

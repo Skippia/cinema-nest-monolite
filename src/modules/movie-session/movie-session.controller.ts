@@ -24,6 +24,7 @@ import { Prisma } from '@prisma/client'
 import { DeleteManyDto } from 'src/common/dtos/common'
 import { NotFoundResponseDto, BadRequestDto, ConflictRequestDto } from 'src/common/dtos/errors'
 import { Serialize } from 'src/common/interceptors'
+import { CinemaService } from '../cinema/cinema.service'
 import { MovieService } from '../movie/movie.service'
 import { MoviesInCinemaService } from '../movies-in-cinema/movies-in-cinema.service'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
@@ -40,6 +41,7 @@ export class MovieSessionController {
     private readonly movieSessionService: MovieSessionService,
     private readonly moviesInCinemaService: MoviesInCinemaService,
     private readonly movieService: MovieService,
+    private readonly cinemaService: CinemaService,
   ) {}
 
   @Get()
@@ -76,25 +78,21 @@ export class MovieSessionController {
   @ApiCreatedResponse({ type: MovieSessionEntity, isArray: true })
   @Serialize(MovieSessionEntity)
   async createMovieSession(@Body() dto: CreateMovieSessionDto): Promise<MovieSessionEntity> {
-    const { movieId, cinemaId, startDate, price, currency, priceFactors } = dto
+    const { movieId, cinemaHallId, startDate, price, currency, priceFactors } = dto
 
-    /**
-     * 1. Check if such movie is available for this cinema
-     */
+    const { id: cinemaId } = await this.cinemaService.findCinemaByCinemaHallId(cinemaHallId)
 
-    const isMovieAvailableForCinema =
+    //  1. Check if such movie is available for cinema (where is located this cinema hall)
+    const isMovieAvailableForCinemaHall =
       await this.moviesInCinemaService.checkIfMovieAvailableForCinema(movieId, cinemaId)
 
-    if (!isMovieAvailableForCinema) {
+    if (!isMovieAvailableForCinemaHall) {
       throw new BadRequestException(
-        `Movie with ${movieId} is not available for cinema with ${cinemaId}`,
+        `Movie with ${movieId} is not available for cinema hall with ${cinemaHallId}`,
       )
     }
 
-    /**
-     * 2. End of movie session is calculated based on duration of movie + extra movie session time
-     */
-
+    //  2. End of movie session is calculated based on duration of movie + extra movie session time
     const movie = await this.movieService.findOneMovie(movieId)
 
     if (!movie) {
@@ -107,23 +105,25 @@ export class MovieSessionController {
 
     /**
      * 3. Check if there is intersection with the session
-     * in this cinema (at this time) ∈ [startDate, endDate]
+     * in this cinema hall (at this time) ∈ [startDate, endDate]
      */
     const overlappingSession = await this.movieSessionService.findOverlappingMovieSession({
       startDate: new Date(startDate),
       endDate,
-      cinemaId,
+      cinemaHallId,
       timeGapBetweenMovieSession: TIME_GAP_BETWEEN_MOVIE_SESSION,
     })
 
     if (overlappingSession.length > 0) {
-      throw new BadRequestException(`Cinema with ${cinemaId} already has a session `)
+      throw new BadRequestException(
+        `Cinema hall with ${cinemaHallId} already has a session at this time`,
+      )
     }
 
     const newMovieSession = await this.movieSessionService.createMovieSession({
       startDate: new Date(startDate),
       movieId,
-      cinemaId,
+      cinemaHallId,
       endDate,
       price,
       currency,
@@ -164,18 +164,17 @@ export class MovieSessionController {
     return deletedMovieSession
   }
 
-  @Delete('cinema/:cinemaId')
+  @Delete('cinema/:cinemaHallId')
   @ApiOperation({
-    description: 'Delete all movies sessions for cinema by cinemaId',
+    description: 'Delete all movies sessions for cinema hall by cinemaHallId',
   })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: DeleteManyDto })
-  async resetMoviesSessions(
-    @Param('cinemaId', ParseIntPipe) cinemaId: number,
+  async resetMoviesSessionsForHall(
+    @Param('cinemaHallId', ParseIntPipe) cinemaHallId: number,
   ): Promise<Prisma.BatchPayload> {
-    const countDeletedMoviesSessionsFromCinema = await this.movieSessionService.resetMoviesSessions(
-      cinemaId,
-    )
+    const countDeletedMoviesSessionsFromCinema =
+      await this.movieSessionService.resetMoviesSessionsForCinemaHall(cinemaHallId)
 
     return countDeletedMoviesSessionsFromCinema
   }
