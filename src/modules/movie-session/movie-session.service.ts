@@ -7,11 +7,19 @@ import { UpdateMovieSessionDto } from './dto/update-movie-session.dto'
 export class MovieSessionService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findAllMovieSessions(): Promise<MovieSession[]> {
+    return await this.prisma.movieSession.findMany()
+  }
+
+  async findOneMovieSession(movieSessionId: number): Promise<MovieSession | null> {
+    return await this.prisma.movieSession.findUnique({ where: { id: movieSessionId } })
+  }
+
   async createMovieSession({
     startDate,
     endDate,
     movieId,
-    cinemaId,
+    cinemaHallId,
     price,
     currency,
     priceFactors,
@@ -19,7 +27,7 @@ export class MovieSessionService {
     startDate: Date
     endDate: Date
     movieId: number
-    cinemaId: number
+    cinemaHallId: number
     price: number
     currency?: CurrencyEnum
     priceFactors: Record<TypeSeatEnum, number>
@@ -28,7 +36,7 @@ export class MovieSessionService {
 
     const movieSession = await this.prisma.$transaction(async (tx) => {
       const movieSession = await tx.movieSession.create({
-        data: { startDate, endDate, movieId, cinemaId, price, currency },
+        data: { startDate, endDate, movieId, cinemaHallId, price, currency },
       })
 
       await tx.movieSessionMultiFactor.createMany({
@@ -48,12 +56,12 @@ export class MovieSessionService {
   async findOverlappingMovieSession({
     startDate,
     endDate,
-    cinemaId,
+    cinemaHallId,
     timeGapBetweenMovieSession,
   }: {
     startDate: Date
     endDate: Date
-    cinemaId: number
+    cinemaHallId: number
     timeGapBetweenMovieSession: number
   }) {
     const overlappingMovieSession = await this.prisma.movieSession.findMany({
@@ -64,14 +72,14 @@ export class MovieSessionService {
               gte: startDate,
               lte: new Date(endDate.getTime() + timeGapBetweenMovieSession * 60000),
             },
-            cinemaId,
+            cinemaHallId,
           },
           {
             endDate: {
               gte: new Date(startDate.getTime() - timeGapBetweenMovieSession * 60000),
               lte: endDate,
             },
-            cinemaId,
+            cinemaHallId,
           },
         ],
       },
@@ -80,29 +88,21 @@ export class MovieSessionService {
     return overlappingMovieSession
   }
 
-  async findAllMovieSessions(): Promise<MovieSession[]> {
-    return await this.prisma.movieSession.findMany()
-  }
-
-  async findOneMovieSession(id: number): Promise<MovieSession | null> {
-    return await this.prisma.movieSession.findUnique({ where: { id } })
-  }
-
   async updateMovieSession(
-    id: number,
+    movieSessionId: number,
     updateMovieSessionDto: UpdateMovieSessionDto,
   ): Promise<MovieSession> {
     return await this.prisma.movieSession.update({
-      where: { id },
+      where: { id: movieSessionId },
       data: updateMovieSessionDto,
     })
   }
 
-  async deleteMovieSession(id: number): Promise<MovieSession> {
-    return await this.prisma.movieSession.delete({ where: { id } })
+  async deleteMovieSession(movieSessionId: number): Promise<MovieSession> {
+    return await this.prisma.movieSession.delete({ where: { id: movieSessionId } })
   }
 
-  async resetMoviesSessions(cinemaId: number): Promise<Prisma.BatchPayload> {
-    return await this.prisma.movieSession.deleteMany({ where: { cinemaId } })
+  async resetMoviesSessionsForCinemaHall(cinemaHallId: number): Promise<Prisma.BatchPayload> {
+    return await this.prisma.movieSession.deleteMany({ where: { cinemaHallId } })
   }
 }
