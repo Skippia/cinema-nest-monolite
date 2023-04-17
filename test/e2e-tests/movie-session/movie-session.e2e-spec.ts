@@ -1,6 +1,10 @@
 import { INestApplication } from '@nestjs/common'
+import { Cinema, CinemaHall } from '@prisma/client'
 import { formatLogSessionTime } from 'src/common/helpers'
+import { CreateMovieSessionDto } from 'src/modules/movie-session/dto'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { seatsSchemaInput1 } from 'src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
+import { HallTypeEnum } from 'src/modules/seats-in-cinema-hall/utils/types'
 import request from 'supertest'
 import { initApp, signinAccount } from 'test/helpers/common'
 import {
@@ -23,7 +27,7 @@ describe('Movie Session endoints (e2e)', () => {
   const movieSessionShape = expect.objectContaining({
     id: expect.any(Number),
     movieId: expect.any(Number),
-    cinemaId: expect.any(Number),
+    cinemaHallId: expect.any(Number),
     startDate: expect.any(String),
     price: expect.any(Number),
   })
@@ -33,6 +37,8 @@ describe('Movie Session endoints (e2e)', () => {
   let movieId2: number
   let cinemaId1: number
   let cinemaId2: number
+  let cinemaHallId1: number
+  let cinemaHallId2: number
   const durationMovie1 = movies.find((m) => m.id === imdbId1)?.duration as number // 120 min for movie1
   const durationMovie2 = movies.find((m) => m.id === imdbId2)?.duration as number // 160 min for movie2
   /**
@@ -43,11 +49,61 @@ describe('Movie Session endoints (e2e)', () => {
    *   2 cinema
    *   1-2 movies for 2 cinemas
    */
+  async function createTwoCinemaHalls(
+    app: INestApplication,
+    cookies: string[],
+    cinema1: Cinema,
+    cinema2: Cinema,
+  ) {
+    const cinemaHallData1Cinema1 = {
+      cinemaId: cinema1.id,
+      data: {
+        name: `Hall ${cinema1.name} #1`,
+        hallType: HallTypeEnum['2D'],
+        ...seatsSchemaInput1,
+      },
+    }
+
+    const cinemaHallData1Cinema2 = {
+      cinemaId: cinema2.id,
+      data: {
+        name: `Hall ${cinema2.name} #1`,
+        hallType: HallTypeEnum['2D'],
+        ...seatsSchemaInput1,
+      },
+    }
+
+    const cinemaHallsData = [cinemaHallData1Cinema1, cinemaHallData1Cinema2]
+
+    const cinemaHalls = [] as CinemaHall[]
+
+    for (const cinemaHallData of cinemaHallsData) {
+      const { body } = await request(app.getHttpServer())
+        .post(`/cinema-hall/${cinemaHallData.cinemaId}`)
+        .set('Cookie', cookies)
+        .send(cinemaHallData.data)
+
+      cinemaHalls.push(body)
+    }
+
+    return cinemaHalls
+  }
+
   async function runInitMovieDataMigration(prisma: PrismaService) {
     await createUsers(prisma)
+
+    cookies = await signinAccount(app)
+
+    // Seats for creating hall seat schema
     await createTypeSeats(prisma)
     ;[movieId1, movieId2] = await addSomeMovieRecords(prisma, [imdbId1, imdbId2])
-    ;[cinemaId1, cinemaId2] = await createCinemas(prisma)
+    const [cinema1, cinema2] = await createCinemas(prisma)
+    cinemaId1 = cinema1.id
+    cinemaId2 = cinema2.id
+
+    const [cinemaHall1, cinemaHall2] = await createTwoCinemaHalls(app, cookies, cinema1, cinema2)
+    cinemaHallId1 = cinemaHall1.id
+    cinemaHallId2 = cinemaHall2.id
 
     await addMoviesToCinemas(prisma, [
       { movieId: movieId1, cinemaId: cinemaId1 },
@@ -61,7 +117,7 @@ describe('Movie Session endoints (e2e)', () => {
 
     await runInitMovieDataMigration(prisma)
 
-    cookies = await signinAccount(app)
+    // cookies = await signinAccount(app)
   })
 
   afterAll(async () => {
@@ -86,12 +142,12 @@ describe('Movie Session endoints (e2e)', () => {
           .post('/movies-sessions')
           .set('Cookie', cookies)
           .send({
-            cinemaId: cinemaId1,
+            cinemaHallId: cinemaHallId1,
             movieId: movieId1,
             startDate: test.startDate,
             price: test.price,
             priceFactors: test.priceFactors,
-          })
+          } as CreateMovieSessionDto)
 
         expect(status).toBe(201)
         expect(body).toStrictEqual(movieSessionShape)
@@ -107,12 +163,12 @@ describe('Movie Session endoints (e2e)', () => {
           .post('/movies-sessions')
           .set('Cookie', cookies)
           .send({
-            cinemaId: cinemaId1,
+            cinemaHallId: cinemaHallId1,
             movieId: movieId1,
             startDate: test.startDate,
             price: test.price,
             priceFactors: test.priceFactors,
-          })
+          } as CreateMovieSessionDto)
 
         expect(status).toBe(400)
       })
@@ -127,12 +183,12 @@ describe('Movie Session endoints (e2e)', () => {
           .post('/movies-sessions')
           .set('Cookie', cookies)
           .send({
-            cinemaId: cinemaId1,
+            cinemaHallId: cinemaHallId1,
             movieId: movieId1,
             startDate: test.startDate,
             price: test.price,
             priceFactors: test.priceFactors,
-          })
+          } as CreateMovieSessionDto)
 
         expect(status).toBe(201)
         expect(body).toStrictEqual(movieSessionShape)
@@ -148,12 +204,12 @@ describe('Movie Session endoints (e2e)', () => {
           .post('/movies-sessions')
           .set('Cookie', cookies)
           .send({
-            cinemaId: cinemaId1,
+            cinemaHallId: cinemaHallId1,
             movieId: movieId1,
             startDate: test.startDate,
             price: test.price,
             priceFactors: test.priceFactors,
-          })
+          } as CreateMovieSessionDto)
 
         expect(status).toBe(400)
       })
@@ -168,7 +224,7 @@ describe('Movie Session endoints (e2e)', () => {
         .post('/movies-sessions')
         .set('Cookie', cookies)
         .send({
-          cinemaId: cinemaId2,
+          cinemaHallId: cinemaHallId2,
           movieId: movieId1,
           startDate: new Date(
             new Date(new Date().setDate(new Date().getDate() + 6)).setHours(16, 0),
@@ -179,7 +235,7 @@ describe('Movie Session endoints (e2e)', () => {
             VIP: 1.5,
             LOVE: 2.25,
           },
-        })
+        } as CreateMovieSessionDto)
 
       expect(status).toBe(201)
       expect(body).toStrictEqual(movieSessionShape)
@@ -193,7 +249,7 @@ describe('Movie Session endoints (e2e)', () => {
         .post('/movies-sessions')
         .set('Cookie', cookies)
         .send({
-          cinemaId: cinemaId2,
+          cinemaHallId: cinemaHallId2,
           movieId: movieId2,
           startDate: new Date('July 2, 2022, 22:00:00'),
           price: 50,
@@ -202,7 +258,7 @@ describe('Movie Session endoints (e2e)', () => {
             VIP: 1.5,
             LOVE: 2.25,
           },
-        })
+        } as CreateMovieSessionDto)
 
       expect(status).toBe(400)
     })

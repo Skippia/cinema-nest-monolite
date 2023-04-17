@@ -10,7 +10,7 @@ import {
   mergedCinemaSchema2,
   seatsSchemaInput3,
   mergedCinemaSchema3,
-} from 'src/modules/seats-in-cinema/tests/seats-in-cinema.mocks'
+} from 'src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
 import request from 'supertest'
 import { loadMovies, initApp, signinAccount } from 'test/helpers/common'
 import {
@@ -19,8 +19,9 @@ import {
   createCinemas,
   addMoviesToCinemas,
   createUsers,
+  createCinemaHalls,
 } from 'test/helpers/create'
-import { createMovieSessions } from 'test/helpers/createMovieSessions'
+import { createMovieSessions } from 'test/helpers/create/createMoviesSessions.'
 import {
   bookingMockDataInput1,
   bookingMockDataOutput1,
@@ -30,7 +31,7 @@ import {
   mergedCinemaSchemaAfterSecondBooking,
   bookingMockDataInput3,
   bookingMockDataOutput3,
-} from './bookings.mock'
+} from './bookings.static-mock'
 
 describe('Movies in cinema endoints (e2e)', () => {
   const movieSessionId1 = 1
@@ -41,35 +42,45 @@ describe('Movies in cinema endoints (e2e)', () => {
   let prisma: PrismaService
   let cookies: string[]
   let userId1: number
+
+  let cinemaHallId1: number
+  let cinemaHallId2: number
+
   let movieSession1: MovieSession
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let movieSession2: MovieSession
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let movieSession3: MovieSession
 
   /**
+   *   add 1 user
    *   load all movies
    *   add 100 seats,
    *   add 3 type seats
-   *   add 3 cinemas,
+   *   add 2 cinemas,
    *   add 1-2 movies to 3 cinemas
-   *   add 1 user
    *   add 3 movie sessions
    */
   async function runInitMovieDataMigration(prisma: PrismaService) {
+    // 1
+    userId1 = (await createUsers(prisma)).id
+
+    const cookies = await signinAccount(app)
+
     await loadMovies(prisma)
     await createSeats(prisma)
     await createTypeSeats(prisma)
-    await createCinemas(prisma)
+    const [cinema1, cinema2] = await createCinemas(prisma)
+
+    // 2
+    const [cinemaHall1, cinemaHall2] = await createCinemaHalls(app, cookies, cinema1, cinema2)
+    cinemaHallId1 = cinemaHall1.id
+    cinemaHallId2 = cinemaHall2.id
     await addMoviesToCinemas(prisma, [
-      { movieId: 1, cinemaId: 1 },
-      { movieId: 2, cinemaId: 1 },
-      { movieId: 1, cinemaId: 2 },
-      { movieId: 1, cinemaId: 3 },
-      { movieId: 2, cinemaId: 3 },
+      { cinemaId: cinema1.id, movieId: 1 },
+      { cinemaId: cinema1.id, movieId: 2 },
+      { cinemaId: cinema2.id, movieId: 1 },
     ])
 
-    userId1 = (await createUsers(prisma)).id
+    // 3
     ;[movieSession1, movieSession2, movieSession3] = await createMovieSessions(prisma)
   }
 
@@ -88,13 +99,6 @@ describe('Movies in cinema endoints (e2e)', () => {
 
   describe('GET booking schema - /bookings/booking-schema/:sessionId', () => {
     it('get booking schema for movieSession1 (cinemaId = 1) (success)', async () => {
-      // Creating seating schema for cinema1
-
-      await request(app.getHttpServer())
-        .post('/seats-in-cinema/1')
-        .set('Cookie', cookies)
-        .send({ ...seatsSchemaInput1 })
-
       const { status, body } = await request(app.getHttpServer())
         .get(`/bookings/booking-schema/${movieSessionId1}`)
         .set('Cookie', cookies)
@@ -104,12 +108,6 @@ describe('Movies in cinema endoints (e2e)', () => {
     })
 
     it('get booking schema for movieSession2 (cinemaId = 2) (success)', async () => {
-      // Creating seating schema for cinema2
-      await request(app.getHttpServer())
-        .post('/seats-in-cinema/2')
-        .set('Cookie', cookies)
-        .send({ ...seatsSchemaInput2 })
-
       const { status, body } = await request(app.getHttpServer())
         .get(`/bookings/booking-schema/${movieSessionId2}`)
         .set('Cookie', cookies)
@@ -119,12 +117,6 @@ describe('Movies in cinema endoints (e2e)', () => {
     })
 
     it('get booking schema for movieSession3 (cinemaId = 3) (success)', async () => {
-      // Creating seating schema for cinema3
-      await request(app.getHttpServer())
-        .post('/seats-in-cinema/3')
-        .set('Cookie', cookies)
-        .send({ ...seatsSchemaInput3 })
-
       const { status, body } = await request(app.getHttpServer())
         .get(`/bookings/booking-schema/${movieSessionId3}`)
         .set('Cookie', cookies)
@@ -370,7 +362,7 @@ describe('Movies in cinema endoints (e2e)', () => {
             ),
           ),
           movieId: 1,
-          cinemaId: 1,
+          cinemaHallId: 1,
           price: 40,
           currency: 'USD',
           priceFactors: {
