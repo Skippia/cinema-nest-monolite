@@ -14,9 +14,10 @@ import { MovieModule } from './modules/movie/movie.module'
 import { MoviesInCinemaModule } from './modules/movies-in-cinema/movies-in-cinema.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { SeatModule } from './modules/seat/seat.module'
-import { SeatsInCinemaModule } from './modules/seats-in-cinema/seats-in-cinema.module'
 import { UsersModule } from './modules/users/users.module'
 import { AuthGithubModule } from './modules/auth-github/auth-github.module'
+import { SeatsInCinemaHallModule } from './modules/seats-in-cinema-hall/seats-in-cinema-hall.module'
+import { CinemaHallModule } from './modules/cinema-hall/cinema-hall.module'
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { AuthGithubModule } from './modules/auth-github/auth-github.module'
     SeatModule,
     MovieModule,
     CinemaModule,
-    SeatsInCinemaModule,
+    SeatsInCinemaHallModule,
     MovieSessionModule,
     MoviesInCinemaModule,
     MovieReviewsModule,
@@ -36,6 +37,7 @@ import { AuthGithubModule } from './modules/auth-github/auth-github.module'
     AuthGoogleModule,
     UsersModule,
     AuthGithubModule,
+    CinemaHallModule,
   ],
   controllers: [AppController],
   providers: [
