@@ -15,6 +15,19 @@ export class CinemaService {
     return await this.prisma.cinema.findMany()
   }
 
+  async findCinemaByCinemaHallId(cinemaHallId: number): Promise<Cinema> {
+    const cinemaHallWithCinema = await this.prisma.cinemaHall.findUniqueOrThrow({
+      where: {
+        id: cinemaHallId,
+      },
+      include: {
+        cinema: true,
+      },
+    })
+
+    return cinemaHallWithCinema.cinema
+  }
+
   async findOneCinema(id: number): Promise<Cinema | null> {
     return await this.prisma.cinema.findUnique({ where: { id } })
   }
