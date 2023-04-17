@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { TypeSeatEnum, TypeSeat, Seat, SeatOnCinema } from '@prisma/client'
+import { TypeSeatEnum, TypeSeat, Seat, SeatOnCinemaHall } from '@prisma/client'
 import { SeatsSchema, SeatPosWithType } from 'src/common/types'
 import { PrismaService } from '../prisma/prisma.service'
 import { SeatService } from '../seat/seat.service'
-import { CreateCinemaSeatingSchemaDto } from './dto'
+import { CreateCinemaHallSeatingSchemaDto } from './dto'
 import { generateBaseSeatSchema } from './utils/helpers'
 import {
   ChainSeatsOverrider,
@@ -12,17 +12,15 @@ import {
 } from './utils/helpers/OverrideSeats'
 
 @Injectable()
-export class SeatsInCinemaService {
+export class SeatsInCinemaHallService {
   constructor(private readonly prisma: PrismaService, private readonly seatService: SeatService) {}
 
-  async createCinemaSeatingSchema(
-    cinemaId: number,
-    seatsSchemaData: CreateCinemaSeatingSchemaDto,
+  async createCinemaHallSeatingSchema(
+    cinemaHallId: number,
+    seatsSchemaData: CreateCinemaHallSeatingSchemaDto,
   ): Promise<SeatsSchema> {
-    /**
-     * Generate seats schema (only seats, without empties)
-     */
     const { vipSeats = [], loveSeats = [] } = seatsSchemaData
+    // Generate seats schema (only seats, without empties)
     const basedSeatsSchema = generateBaseSeatSchema(seatsSchemaData)
 
     const chainSeatsOverrider = new ChainSeatsOverrider({
@@ -30,11 +28,10 @@ export class SeatsInCinemaService {
       mappers: [overrideWithVipSeats(vipSeats), overrideWithLoveSeats(loveSeats)],
     })
 
+    // Override default seats by vip, love seats from input
     const processedSchema = chainSeatsOverrider.run()
 
-    /**
-     * Replace seats for real seats or create
-     */
+    // Replace seats for real seats or create
     const realSeatsSchema = await this.seatService.replaceSeatsPositionsToRealOrCreateSeats(
       processedSchema,
     )
@@ -47,64 +44,54 @@ export class SeatsInCinemaService {
       TypeSeatEnum.LOVE,
     )
 
-    /**
-     * Add generated seats from realSeatsSchema to cinema (db)
-     */
-    const addedSeatsToCinemaArray = await this.addSeatsToCinemaByType(cinemaId, [
+    // Add generated seats from realSeatsSchema to cinema hall (db)
+    const addedSeatsToCinemaHallArray = await this.addSeatsToCinemaHallByType(cinemaHallId, [
       {
-        schema: realSeatsSchema,
-        typeSeat: { id: defaultSeatTypeId, type: TypeSeatEnum.SEAT },
+        schema: realSeatsSchema.filter((e) => e.type === TypeSeatEnum.SEAT),
+        typeSeatId: defaultSeatTypeId,
       },
       {
-        schema: realSeatsSchema,
-        typeSeat: { id: vipSeatTypeId, type: TypeSeatEnum.VIP },
+        schema: realSeatsSchema.filter((e) => e.type === TypeSeatEnum.VIP),
+        typeSeatId: vipSeatTypeId,
       },
       {
-        schema: realSeatsSchema,
-        typeSeat: { id: loveSeatTypeId, type: TypeSeatEnum.LOVE },
+        schema: realSeatsSchema.filter((e) => e.type === TypeSeatEnum.LOVE),
+        typeSeatId: loveSeatTypeId,
       },
     ])
 
-    return addedSeatsToCinemaArray
+    return addedSeatsToCinemaHallArray
   }
 
-  async addSeatsToCinemaByType(
-    cinemaId: number,
+  async addSeatsToCinemaHallByType(
+    cinemaHallId: number,
     data: {
       schema: (SeatPosWithType & { id: number })[]
-      typeSeat: TypeSeat
+      typeSeatId: number
     }[],
   ): Promise<SeatPosWithType[]> {
-    const addedSeatsToCinemaDoubleArray = await Promise.all(
-      data.map((el) =>
-        this.addSeatsSchemaToCinema(
-          cinemaId,
-          el.schema.filter((e) => e.type === el.typeSeat.type),
-          el.typeSeat.id,
-        ),
-      ),
+    const addedSeatsToCinemaHallDoubleArray = await Promise.all(
+      data.map((el) => this.addSeatsSchemaToCinemaHall(cinemaHallId, el.schema, el.typeSeatId)),
     )
-    const addedSeatsToCinemaArray = addedSeatsToCinemaDoubleArray.flatMap((el) => el)
+    const addedSeatsToCinemaHallArray = addedSeatsToCinemaHallDoubleArray.flatMap((el) => el)
 
-    return addedSeatsToCinemaArray
+    return addedSeatsToCinemaHallArray
   }
 
-  async addSeatsSchemaToCinema(
-    cinemaId: number,
+  async addSeatsSchemaToCinemaHall(
+    cinemaHallId: number,
     seats: Seat[],
     typeSeatId: number,
   ): Promise<SeatPosWithType[]> {
     const seatCinemaElements = seats.reduce(
-      (acc, seat) => [...acc, { cinemaId, seatId: seat.id, typeSeatId }],
-      [] as SeatOnCinema[],
+      (acc, seat) => [...acc, { cinemaHallId, seatId: seat.id, typeSeatId }],
+      [] as SeatOnCinemaHall[],
     )
 
-    /**
-     * In createMany is impossible to return created records
-     * */
+    // In createMany is impossible to return created records
     const data = await this.prisma.$transaction(
       seatCinemaElements.map((seatCinemaElement) =>
-        this.prisma.seatOnCinema.create({
+        this.prisma.seatOnCinemaHall.create({
           data: seatCinemaElement,
           include: {
             seat: true,
@@ -113,6 +100,7 @@ export class SeatsInCinemaService {
         }),
       ),
     )
+
     return data.map((seatFull) => ({
       row: seatFull.seat.row,
       col: seatFull.seat.col,
@@ -120,10 +108,10 @@ export class SeatsInCinemaService {
     }))
   }
 
-  async findCinemaSeatingSchema(cinemaId: number): Promise<SeatsSchema> {
-    const seats = await this.prisma.seatOnCinema.findMany({
+  async findCinemaHallSeatingSchema(cinemaHallId: number): Promise<SeatsSchema> {
+    const seats = await this.prisma.seatOnCinemaHall.findMany({
       where: {
-        cinemaId,
+        cinemaHallId,
       },
       include: {
         seat: true,
@@ -138,10 +126,10 @@ export class SeatsInCinemaService {
     }))
   }
 
-  async resetCinemaSeatingSchema(cinemaId: number) {
-    return await this.prisma.seatOnCinema.deleteMany({
+  async resetCinemaHallSeatingSchema(cinemaHallId: number) {
+    return await this.prisma.seatOnCinemaHall.deleteMany({
       where: {
-        cinemaId,
+        cinemaHallId,
       },
     })
   }
