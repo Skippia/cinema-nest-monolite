@@ -7,7 +7,7 @@ import {
 } from 'src/common/types'
 import { PrismaService } from '../prisma/prisma.service'
 import { SeatService } from '../seat/seat.service'
-import { SeatsInCinemaService } from '../seats-in-cinema/seats-in-cinema.service'
+import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'
 import { SeatPosWithTypeDto } from './dto'
 import {
   generateSourceBookingSchema,
@@ -21,18 +21,20 @@ export class BookingsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly seatService: SeatService,
-    private readonly seatsInCinemaService: SeatsInCinemaService,
+    private readonly seatsInCinemaService: SeatsInCinemaHallService,
   ) {}
 
   async findCinemaBookingSeatingSchema({
     movieSessionId,
-    cinemaId,
+    cinemaHallId,
   }: {
     movieSessionId: number
-    cinemaId: number
+    cinemaHallId: number
   }): Promise<MergedFullCinemaBookingSeatingSchema> {
     // 1. Get cinema schema
-    const cinemaSeatingSchema = await this.seatsInCinemaService.findCinemaSeatingSchema(cinemaId)
+    const cinemaSeatingSchema = await this.seatsInCinemaService.findCinemaHallSeatingSchema(
+      cinemaHallId,
+    )
 
     // 2. Generate source bookingSeatingSchema  (BookingSchema)
     const sourceBookingSchema = generateSourceBookingSchema(cinemaSeatingSchema)
@@ -87,9 +89,9 @@ export class BookingsService {
 
   async findBookingsDataByUser(
     userId: number,
-  ): Promise<{ bookingId: number; movieSessionId: number; cinemaId: number }[]> {
+  ): Promise<{ bookingId: number; movieSessionId: number; cinemaHallId: number }[]> {
     const bookingsDataByUser = await this.prisma.$queryRaw(Prisma.sql`
-    SELECT B."id" AS "bookingId", B."movieSessionId", S."cinemaId"
+    SELECT B."id" AS "bookingId", B."movieSessionId", S."cinemaHallId"
     FROM (
         SELECT "id", "movieSessionId"
         FROM "Booking"
@@ -101,7 +103,7 @@ export class BookingsService {
     return bookingsDataByUser as {
       bookingId: number
       movieSessionId: number
-      cinemaId: number
+      cinemaHallId: number
     }[]
   }
 
@@ -151,7 +153,7 @@ export class BookingsService {
 
     const mergedFullCinemaBookingSeatingSchema = await this.findCinemaBookingSeatingSchema({
       movieSessionId,
-      cinemaId: movieSession.cinemaId,
+      cinemaHallId: movieSession.cinemaHallId,
     })
 
     // 2. Get seat types for desired seats (first off need to recovery full cinema booking schema)

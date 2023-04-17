@@ -1,5 +1,5 @@
 import { BookingSchema } from 'src/common/types'
-import { SeatPos } from 'src/modules/seats-in-cinema/utils/types'
+import { SeatPos } from 'src/modules/seats-in-cinema-hall/utils/types'
 
 export function generateActualBookingSchema(
   sourceBookingSchema: BookingSchema,
