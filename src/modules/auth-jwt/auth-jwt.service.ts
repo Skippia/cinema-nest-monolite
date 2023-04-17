@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import { CreateUserDto } from '../users/dto/create-user.dto'
 import { UsersService } from '../users/users.service'
 import { HASH_SALT, EXPIRES_IN_AT_MIN, EXPIRES_IN_RT_MIN } from './auth-jwt.constants'
-import { TokensWithRtSessionId, JwtPayload, Tokens } from './types'
+import { TokensWithClientData, JwtPayload, Tokens } from './types'
 import { Response } from 'express'
 import { SigninDto } from './dto'
 
@@ -20,7 +20,7 @@ export class AuthJwtService {
     private config: ConfigService,
   ) {}
 
-  async signupLocal(dto: CreateUserDto): Promise<TokensWithRtSessionId> {
+  async signupLocal(dto: CreateUserDto): Promise<TokensWithClientData> {
     try {
       const newUser = await this.usersService.createUser({
         ...dto,
@@ -36,7 +36,7 @@ export class AuthJwtService {
 
       const newRtSession = await this.createRtSession(newUser.id, tokens.refresh_token)
 
-      return { ...tokens, rt_session_id: newRtSession.id }
+      return { ...tokens, rt_session_id: newRtSession.id, user_id: newUser.id }
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -47,7 +47,7 @@ export class AuthJwtService {
     }
   }
 
-  async signinLocal(dto: SigninDto): Promise<TokensWithRtSessionId> {
+  async signinLocal(dto: SigninDto): Promise<TokensWithClientData> {
     const { email, password } = dto
 
     const user = await this.usersService.findUser({ email })
@@ -69,7 +69,7 @@ export class AuthJwtService {
 
     const newRtSession = await this.createRtSession(user.id, tokens.refresh_token)
 
-    return { ...tokens, rt_session_id: newRtSession.id }
+    return { ...tokens, rt_session_id: newRtSession.id, user_id: user.id }
   }
 
   async logout(userId: number): Promise<boolean> {
@@ -88,7 +88,7 @@ export class AuthJwtService {
   }: {
     rtSessionId: number
     refreshToken: string
-  }): Promise<TokensWithRtSessionId> {
+  }): Promise<TokensWithClientData> {
     const { sub: userId, email, role } = this.jwtService.decode(refreshToken) as JwtPayload
 
     // Generate new pair of tokens and new session
@@ -103,7 +103,7 @@ export class AuthJwtService {
       newRt: tokens.refresh_token,
     })
 
-    return { ...tokens, rt_session_id: rtSessionId }
+    return { ...tokens, rt_session_id: rtSessionId, user_id: userId }
   }
 
   async updateRtSession({
@@ -225,29 +225,38 @@ export class AuthJwtService {
       access_token,
       refresh_token,
       rt_session_id,
+      user_id,
     }: {
       access_token: string
       refresh_token: string
       rt_session_id: number
+      user_id: number
     },
   ): void {
     res.cookie('Authentication', access_token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'lax',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_AT_MIN),
     })
 
     res.cookie('Refresh', refresh_token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'lax',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
     })
 
     res.cookie('RtSessionId', rt_session_id, {
       httpOnly: true,
-      secure: false,
+      secure: true,
+      sameSite: 'lax',
+      expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
+    })
+
+    res.cookie('UserId', user_id, {
+      httpOnly: true,
+      secure: true,
       sameSite: 'lax',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
     })
@@ -257,5 +266,6 @@ export class AuthJwtService {
     res.clearCookie('Authentication')
     res.clearCookie('Refresh')
     res.clearCookie('RtSessionId')
+    res.clearCookie('UserId')
   }
 }

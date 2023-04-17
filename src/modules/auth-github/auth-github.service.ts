@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException } from '@nestjs/common'
 import { AuthProviderEnum, User } from '@prisma/client'
 import { AuthJwtService } from '../auth-jwt/auth-jwt.service'
-import { TokensWithRtSessionId } from '../auth-jwt/types'
+import { TokensWithClientData } from '../auth-jwt/types'
 import { UsersService } from '../users/users.service'
 import { GithubPayload } from './types'
 
@@ -12,7 +12,7 @@ export class AuthGithubService {
     private readonly authJwtService: AuthJwtService,
   ) {}
 
-  async signinGithub(githubPayload: GithubPayload): Promise<TokensWithRtSessionId> {
+  async signinGithub(githubPayload: GithubPayload): Promise<TokensWithClientData> {
     if (!githubPayload || !githubPayload.username) {
       throw new ForbiddenException('Github Auth error')
     }
@@ -42,6 +42,6 @@ export class AuthGithubService {
 
     const newRtSession = await this.authJwtService.createRtSession(user.id, tokens.refresh_token)
 
-    return { ...tokens, rt_session_id: newRtSession.id }
+    return { ...tokens, rt_session_id: newRtSession.id, user_id: user.id }
   }
 }

@@ -3,4 +3,4 @@ export type Tokens = {
   refresh_token: string
 }
 
-export type TokensWithRtSessionId = Tokens & { rt_session_id: number }
+export type TokensWithClientData = Tokens & { rt_session_id: number; user_id: number }
