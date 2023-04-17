@@ -1,9 +1,15 @@
+import { IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { CinemaHall } from '@prisma/client'
-import { IsNotEmpty, IsString, IsInt, IsEnum } from 'class-validator'
 import { HallTypeEnum } from 'src/modules/seats-in-cinema-hall/utils/types'
 
-export class FindCinemaHallDto implements CinemaHall {
+export class CinemaHallEntity implements CinemaHall {
+  constructor(cinemaHallWithSchema: CinemaHall) {
+    this.id = cinemaHallWithSchema.id
+    this.name = cinemaHallWithSchema.name
+    this.cinemaId = cinemaHallWithSchema.cinemaId
+    this.hallType = cinemaHallWithSchema.hallType as HallTypeEnum
+  }
   @IsInt()
   @ApiProperty({ example: 1 })
   id: number

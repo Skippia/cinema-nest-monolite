@@ -19,16 +19,14 @@ import {
   ApiOkResponse,
   ApiNotFoundResponse,
 } from '@nestjs/swagger'
-import { Prisma } from '@prisma/client'
-import { DeleteManyDto } from 'src/common/dtos/common'
 import { BadRequestDto, ConflictRequestDto, NotFoundResponseDto } from 'src/common/dtos/errors'
-// import { Serialize } from 'src/common/interceptors'
+import { Serialize } from 'src/common/interceptors'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
-import { SeatWithTypeEntity } from '../seats-in-cinema-hall/entity'
 import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'
 import { HallTypeEnum } from '../seats-in-cinema-hall/utils/types'
 import { CinemaHallService } from './cinema-hall.service'
-import { CreateCinemaHallDto, FindCinemaHallDto, FindCinemaHallWithSchemaDto } from './dto'
+import { CinemaHallEntity, CinemaHallWithSchemaEntity } from './entity'
+import { CreateCinemaHallDto } from './dto'
 
 @Controller('/cinema-hall')
 @ApiTags('Cinema hall')
@@ -46,12 +44,12 @@ export class CinemaHallController {
   })
   @ApiBadRequestResponse({ type: BadRequestDto })
   @ApiConflictResponse({ type: ConflictRequestDto })
-  @ApiCreatedResponse({ type: FindCinemaHallWithSchemaDto })
-  // @Serialize(SeatWithTypeEntity)
+  @ApiCreatedResponse({ type: CinemaHallWithSchemaEntity })
+  @Serialize(CinemaHallWithSchemaEntity)
   async createCinemaHallWithSeatingSchema(
     @Body() dto: CreateCinemaHallDto,
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
-  ): Promise<FindCinemaHallWithSchemaDto> {
+  ): Promise<CinemaHallWithSchemaEntity> {
     const newCinemaHall = await this.cinemaHallService.createCinemaHall({
       name: dto.name,
       hallType: dto.hallType,
@@ -73,13 +71,15 @@ export class CinemaHallController {
         seatsSchemaData,
       )
 
-    return {
+    const cinemaHallWithSchema: CinemaHallWithSchemaEntity = {
       schema: newCinemaSeatingSchema,
       id: newCinemaHall.id,
       name: newCinemaHall.name,
       cinemaId: newCinemaHall.cinemaId,
       hallType: newCinemaHall.hallType as HallTypeEnum,
     }
+
+    return cinemaHallWithSchema
   }
 
   @Get(':cinemaHallId')
@@ -87,11 +87,11 @@ export class CinemaHallController {
     description: 'Get (full info) cinema hall by cinemaHallId',
   })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  @ApiOkResponse({ type: FindCinemaHallWithSchemaDto })
-  // @Serialize(SeatWithTypeEntity)
+  @ApiOkResponse({ type: CinemaHallWithSchemaEntity })
+  @Serialize(CinemaHallWithSchemaEntity)
   async findCinemaHallWithSeatingSchema(
     @Param('cinemaHallId', ParseIntPipe) cinemaHallId: number,
-  ): Promise<FindCinemaHallWithSchemaDto> {
+  ): Promise<CinemaHallWithSchemaEntity> {
     const cinemaHallSeatinsSchema = await this.seatsInCinemaHallService.findCinemaHallSeatingSchema(
       cinemaHallId,
     )
@@ -102,27 +102,34 @@ export class CinemaHallController {
       throw new NotFoundException(`Could not find cinema hall with ${cinemaHallId}.`)
     }
 
-    return {
+    const cinemaHallWithSchema: CinemaHallWithSchemaEntity = {
       schema: cinemaHallSeatinsSchema,
       id: cinemaHall.id,
       name: cinemaHall.name,
       cinemaId: cinemaHall.cinemaId,
       hallType: cinemaHall.hallType as HallTypeEnum,
     }
+
+    return cinemaHallWithSchema
   }
 
   @Delete(':cinemaHallId')
   @ApiOperation({
     description: 'Delete cinema hall by cinemaHallId',
   })
-  @ApiOkResponse({ type: FindCinemaHallDto })
+  @ApiOkResponse({ type: CinemaHallEntity })
   async resetCinemaSeatingSchema(
     @Param('cinemaHallId', ParseIntPipe) cinemaHallId: number,
-  ): Promise<FindCinemaHallDto> {
+  ): Promise<CinemaHallEntity> {
     await this.seatsInCinemaHallService.resetCinemaHallSeatingSchema(cinemaHallId)
 
     const deletedCinemaHall = await this.cinemaHallService.deleteCinemaHallById(cinemaHallId)
 
-    return { ...deletedCinemaHall, hallType: deletedCinemaHall.hallType as HallTypeEnum }
+    const deletedCinemaHallWithHallType: CinemaHallEntity = {
+      ...deletedCinemaHall,
+      hallType: deletedCinemaHall.hallType as HallTypeEnum,
+    }
+
+    return deletedCinemaHallWithHallType
   }
 }
