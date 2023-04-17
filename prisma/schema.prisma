@@ -76,14 +76,26 @@ model RTSession {
   @@unique([hashedRt, userId])
 }
 
-model Cinema {
-  id            Int             @id @default(autoincrement())
+// hallType should have hallTypeEnum (1D, 2D, 3D, 4D, 5D)
+model CinemaHall {
+  id            Int                @id @default(autoincrement())
   name          String
-  address       String
-  city          String
-  movies        MovieOnCinema[]
+  cinema        Cinema             @relation(fields: [cinemaId], references: [id])
+  cinemaId      Int
+  hallType      String
   movieSessions MovieSession[]
-  seats         SeatOnCinema[]
+  seats         SeatOnCinemaHall[]
+
+  @@unique([name, cinemaId])
+}
+
+model Cinema {
+  id         Int             @id @default(autoincrement())
+  name       String
+  address    String
+  city       String
+  movies     MovieOnCinema[]
+  cinemaHall CinemaHall[]
 
   @@unique([name, address, city])
 }
@@ -112,10 +124,10 @@ model MovieSession {
   endDate                 DateTime
   movie                   MovieRecord               @relation(fields: [movieId], references: [id], onDelete: Cascade)
   movieId                 Int
-  cinema                  Cinema                    @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
-  cinemaId                Int
+  cinemaHall              CinemaHall                @relation(fields: [cinemaHallId], references: [id], onDelete: Cascade)
+  cinemaHallId            Int
   bookings                Booking[]
-  MovieSessionMultiFactor MovieSessionMultiFactor[]
+  movieSessionMultiFactor MovieSessionMultiFactor[]
 }
 
 model Booking {
@@ -141,30 +153,30 @@ model SeatOnBooking {
 }
 
 model Seat {
-  id      Int             @id @default(autoincrement())
+  id      Int                @id @default(autoincrement())
   booking SeatOnBooking[]
-  cinema  SeatOnCinema[]
+  cinema  SeatOnCinemaHall[]
   row     Int
   col     Int
 
   @@unique([row, col])
 }
 
-model SeatOnCinema {
-  seat       Seat     @relation(fields: [seatId], references: [id], onDelete: Cascade)
-  seatId     Int
-  cinema     Cinema   @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
-  cinemaId   Int
-  type       TypeSeat @relation(fields: [typeSeatId], references: [id], onDelete: Cascade)
-  typeSeatId Int
+model SeatOnCinemaHall {
+  seat         Seat       @relation(fields: [seatId], references: [id], onDelete: Cascade)
+  seatId       Int
+  type         TypeSeat   @relation(fields: [typeSeatId], references: [id], onDelete: Cascade)
+  typeSeatId   Int
+  cinemaHall   CinemaHall @relation(fields: [cinemaHallId], references: [id])
+  cinemaHallId Int
 
-  @@id([seatId, cinemaId])
+  @@id([seatId, cinemaHallId])
 }
 
 model TypeSeat {
   id                      Int                       @id @default(autoincrement())
   type                    TypeSeatEnum              @unique
-  SeatOnCinema            SeatOnCinema[]
+  SeatOnCinemaHall        SeatOnCinemaHall[]
   MovieSessionMultiFactor MovieSessionMultiFactor[]
 }
 
