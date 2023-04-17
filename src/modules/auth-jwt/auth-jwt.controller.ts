@@ -32,11 +32,15 @@ export class AuthJwtController {
     @Res({ passthrough: true }) res: Response,
     @Body() dto: CreateUserDto,
   ): Promise<void> {
-    const { access_token, refresh_token, rt_session_id } = await this.authJwtService.signupLocal(
-      dto,
-    )
+    const { access_token, refresh_token, rt_session_id, user_id } =
+      await this.authJwtService.signupLocal(dto)
 
-    this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
+    this.authJwtService.addTokensToCookies(res, {
+      access_token,
+      refresh_token,
+      rt_session_id,
+      user_id,
+    })
   }
 
   @Public()
@@ -48,11 +52,15 @@ export class AuthJwtController {
     @Res({ passthrough: true }) res: Response,
     @Body() dto: SigninDto,
   ): Promise<void> {
-    const { access_token, refresh_token, rt_session_id } = await this.authJwtService.signinLocal(
-      dto,
-    )
+    const { access_token, refresh_token, rt_session_id, user_id } =
+      await this.authJwtService.signinLocal(dto)
 
-    this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
+    this.authJwtService.addTokensToCookies(res, {
+      access_token,
+      refresh_token,
+      rt_session_id,
+      user_id,
+    })
   }
 
   @Public()
@@ -66,12 +74,18 @@ export class AuthJwtController {
     @GetCurrentUser('rtSessionId') rtSessionId: number,
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
-    const { access_token, refresh_token, rt_session_id } = await this.authJwtService.refreshTokens({
-      rtSessionId,
-      refreshToken,
-    })
+    const { access_token, refresh_token, rt_session_id, user_id } =
+      await this.authJwtService.refreshTokens({
+        rtSessionId,
+        refreshToken,
+      })
 
-    this.authJwtService.addTokensToCookies(res, { access_token, refresh_token, rt_session_id })
+    this.authJwtService.addTokensToCookies(res, {
+      access_token,
+      refresh_token,
+      rt_session_id,
+      user_id,
+    })
   }
 
   @Post('local/logout')
