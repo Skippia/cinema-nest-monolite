@@ -4,11 +4,8 @@ import { MIN_DAYS_UNTIL_BOOKING } from 'src/modules/bookings/booking.constants'
 import { convertSeatsArrayToString } from 'src/modules/bookings/helpers'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
 import {
-  seatsSchemaInput1,
   mergedCinemaSchema1,
-  seatsSchemaInput2,
   mergedCinemaSchema2,
-  seatsSchemaInput3,
   mergedCinemaSchema3,
 } from 'src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
 import request from 'supertest'
