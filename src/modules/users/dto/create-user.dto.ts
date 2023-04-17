@@ -5,7 +5,7 @@ import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from 'class-validato
 export class CreateUserDto implements Prisma.UserCreateInput {
   @IsOptional()
   @IsEmail()
-  @ApiPropertyOptional({ example: 'john@example.com' })
+  @ApiPropertyOptional({ example: 'pocketbook.love24@gmail.com' })
   email?: string
 
   @IsOptional()
@@ -25,7 +25,7 @@ export class CreateUserDto implements Prisma.UserCreateInput {
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'password123' })
+  @ApiPropertyOptional({ example: 'midapa' })
   password?: string
 
   @IsOptional()
