@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { TypeSeatEnum } from '@prisma/client'
 import { IsInt, IsString, IsEnum } from 'class-validator'
-import { SeatPosWithType } from 'src/common/types'
+import { SeatPosWithType } from '../../../common/types'
 
 export class FindSeatBookingDto implements SeatPosWithType {
   @IsInt()

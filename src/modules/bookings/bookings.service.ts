@@ -4,7 +4,7 @@ import {
   MergedFullCinemaBookingSeatingSchema,
   SeatPosWithType,
   SeatsSchema,
-} from 'src/common/types'
+} from '../../common/types'
 import { PrismaService } from '../prisma/prisma.service'
 import { SeatService } from '../seat/seat.service'
 import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'

@@ -1,4 +1,4 @@
-import { SeatPosWithType, TypeSeatEnumFull } from 'src/common/types'
+import { SeatPosWithType, TypeSeatEnumFull } from '../../../../common/types'
 import { SeatsSchemaInput } from '../types'
 import { generateSeatsOnRectangle } from './generate-seats-on-rectangle'
 import { excludeAreaSeatsPositions } from './seat-postition-helpers'

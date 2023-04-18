@@ -1,10 +1,10 @@
 import { IsArray, IsEnum, IsInt, IsNotEmpty, IsString, ValidateNested } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { CinemaHall } from '@prisma/client'
-import { SeatsSchema } from 'src/common/types'
-import { HallTypeEnum } from 'src/modules/seats-in-cinema-hall/utils/types'
 import { Type } from 'class-transformer'
-import { SeatPosDto, SeatPosWithTypeDto } from 'src/modules/bookings/dto'
+import { SeatsSchema } from '../../../common/types'
+import { SeatPosDto, SeatPosWithTypeDto } from '../../bookings/dto'
+import { HallTypeEnum } from '../../seats-in-cinema-hall/utils/types'
 
 export type CinemaHallWithSchema = CinemaHall & { schema: SeatsSchema }
 

@@ -1,4 +1,4 @@
-import { FullSeatsSchema, TypeSeatEnumFull } from 'src/common/types'
+import { FullSeatsSchema, TypeSeatEnumFull } from '../../../common/types'
 import { SeatsSchemaInput } from '../utils/types'
 
 const seatsSchemaInput1: SeatsSchemaInput = {

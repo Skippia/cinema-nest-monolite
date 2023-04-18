@@ -1,12 +1,13 @@
 import { HallTypeEnum } from './../../../src/modules/seats-in-cinema-hall/utils/types/Enum'
 import { INestApplication } from '@nestjs/common'
+
+import request from 'supertest'
+import { Cinema, CinemaHall } from '@prisma/client'
 import {
   seatsSchemaInput1,
   seatsSchemaInput2,
   seatsSchemaInput3,
-} from 'src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
-import request from 'supertest'
-import { Cinema, CinemaHall } from '@prisma/client'
+} from '../../../src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
 
 export async function createCinemaHalls(
   app: INestApplication,

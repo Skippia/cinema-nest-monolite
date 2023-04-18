@@ -19,14 +19,14 @@ import {
   ApiOkResponse,
   ApiNotFoundResponse,
 } from '@nestjs/swagger'
-import { BadRequestDto, ConflictRequestDto, NotFoundResponseDto } from 'src/common/dtos/errors'
-import { Serialize } from 'src/common/interceptors'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'
 import { HallTypeEnum } from '../seats-in-cinema-hall/utils/types'
 import { CinemaHallService } from './cinema-hall.service'
 import { CinemaHallEntity, CinemaHallWithSchemaEntity } from './entity'
 import { CreateCinemaHallDto } from './dto'
+import { BadRequestDto, ConflictRequestDto, NotFoundResponseDto } from '../../common/dtos/errors'
+import { Serialize } from '../../common/interceptors'
 
 @Controller('/cinema-hall')
 @ApiTags('Cinema hall')
