@@ -58,7 +58,7 @@ export class SeatController {
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: SeatEntity })
   async findOneSeat(@Param('seatId', ParseIntPipe) seatId: number): Promise<SeatEntity> {
-    const seat = await this.seatService.findOneSeat(seatId)
+    const seat = await this.seatService.findOneSeat({ id: seatId })
 
     if (!seat) {
       throw new NotFoundException(`Could not find seat with ${seatId}.`)

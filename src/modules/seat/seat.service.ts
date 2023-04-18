@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Seat, TypeSeatEnum } from '@prisma/client'
+import { Prisma, Seat, TypeSeatEnum } from '@prisma/client'
 import { SeatPosWithType } from '../../common/types'
 import { PrismaService } from '../prisma/prisma.service'
 import { SeatPos } from '../seats-in-cinema-hall/utils/types'
@@ -17,8 +17,8 @@ export class SeatService {
     return await this.prisma.seat.findMany()
   }
 
-  async findOneSeat(id: number): Promise<Seat | null> {
-    return await this.prisma.seat.findUnique({ where: { id } })
+  async findOneSeat(uniqueCriteria: Prisma.SeatWhereUniqueInput): Promise<Seat | null> {
+    return await this.prisma.seat.findUnique({ where: uniqueCriteria })
   }
 
   async findSeatTypeIdBySeatType(typeSeatName: TypeSeatEnum): Promise<{ id: number }> {

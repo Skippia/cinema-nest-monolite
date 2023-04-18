@@ -96,7 +96,7 @@ export class CinemaHallController {
       cinemaHallId,
     )
 
-    const cinemaHall = await this.cinemaHallService.findOneCinemaHall(cinemaHallId)
+    const cinemaHall = await this.cinemaHallService.findOneCinemaHall({ id: cinemaHallId })
 
     if (!cinemaHall) {
       throw new NotFoundException(`Could not find cinema hall with ${cinemaHallId}.`)

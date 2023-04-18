@@ -90,10 +90,11 @@ export class BookingsController {
           userBookingData.bookingId,
         )
 
-        const booking = (await this.bookingsService.findBookingById(
-          userBookingData.bookingId,
-        )) as Booking
-        return new BookingEntity(seatsByBookingId, booking)
+        const booking = await this.bookingsService.findOneBooking({
+          id: userBookingData.bookingId,
+        })
+
+        return new BookingEntity(seatsByBookingId, booking as Booking)
       }),
     )
 
@@ -129,7 +130,7 @@ export class BookingsController {
   async findSeatsByBookingId(
     @Param('bookingId', ParseIntPipe) bookingId: number,
   ): Promise<SeatPosWithType[]> {
-    const booking = await this.bookingsService.findBookingById(bookingId)
+    const booking = await this.bookingsService.findOneBooking({ id: bookingId })
 
     if (!booking) {
       throw new NotFoundException(`Could not find booking with ${bookingId}.`)
@@ -163,7 +164,7 @@ export class BookingsController {
   async getBookingByBookingId(
     @Param('bookingId', ParseIntPipe) bookingId: number,
   ): Promise<BookingEntity> {
-    const booking = await this.bookingsService.findBookingById(bookingId)
+    const booking = await this.bookingsService.findOneBooking({ id: bookingId })
 
     if (!booking) {
       throw new NotFoundException(`Could not find booking with ${bookingId}.`)
@@ -277,7 +278,7 @@ export class BookingsController {
   @ApiOperation({ description: 'Cancel booking by bookingId' })
   @ApiOkResponse({ type: BookingEntity })
   async cancelBooking(@Param('bookingId', ParseIntPipe) bookingId: number): Promise<BookingEntity> {
-    const booking = await this.bookingsService.findBookingById(bookingId)
+    const booking = await this.bookingsService.findOneBooking({ id: bookingId })
 
     // TODO: check if such booking belong this user
 

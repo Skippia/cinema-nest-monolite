@@ -62,11 +62,9 @@ export class BookingsService {
     return mergedFullCinemaBookingSeatingSchema
   }
 
-  async findBookingById(bookingId: number): Promise<Booking | null> {
+  async findOneBooking(uniqueCriteria: Prisma.BookingWhereUniqueInput): Promise<Booking | null> {
     return await this.prisma.booking.findUnique({
-      where: {
-        id: bookingId,
-      },
+      where: uniqueCriteria,
     })
   }
 
