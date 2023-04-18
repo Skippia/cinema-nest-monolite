@@ -21,9 +21,9 @@ import {
   ApiCreatedResponse,
 } from '@nestjs/swagger'
 import { Prisma } from '@prisma/client'
-import { DeleteManyDto } from 'src/common/dtos/common'
-import { NotFoundResponseDto, BadRequestDto, ConflictRequestDto } from 'src/common/dtos/errors'
-import { Serialize } from 'src/common/interceptors'
+import { DeleteManyDto } from '../../common/dtos/common'
+import { NotFoundResponseDto, BadRequestDto, ConflictRequestDto } from '../../common/dtos/errors'
+import { Serialize } from '../../common/interceptors'
 import { CinemaService } from '../cinema/cinema.service'
 import { MovieService } from '../movie/movie.service'
 import { MoviesInCinemaService } from '../movies-in-cinema/movies-in-cinema.service'

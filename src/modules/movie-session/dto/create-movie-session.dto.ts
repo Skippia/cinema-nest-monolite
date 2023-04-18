@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { MovieSession, CurrencyEnum, TypeSeatEnum } from '@prisma/client'
 import { Type } from 'class-transformer'
 import { IsDate, IsInt, IsString, IsOptional, IsEnum, IsObject, isNumber } from 'class-validator'
-import { IsRecord } from 'src/common/validators'
+import { IsRecord } from '../../../common/validators'
 
 export class CreateMovieSessionDto implements Omit<MovieSession, 'id' | 'currency' | 'endDate'> {
   @Type(() => Date)

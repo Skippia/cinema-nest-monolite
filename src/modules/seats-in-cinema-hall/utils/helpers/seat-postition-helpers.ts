@@ -1,5 +1,5 @@
 import { TypeSeatEnum } from '@prisma/client'
-import { TypeSeatEnumFull } from 'src/common/types'
+import { TypeSeatEnumFull } from '../../../../common/types'
 import { MatrixSeatPos, SeatPos } from '../types'
 
 export const isPositionExcluded = (excludeMatrices: MatrixSeatPos[], { col, row }: SeatPos) =>

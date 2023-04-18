@@ -1,4 +1,4 @@
-import { SeatPosWithType } from 'src/common/types'
+import { SeatPosWithType } from '../../../../../common/types'
 
 export type TFnOverride = (input: SeatPosWithType[]) => SeatPosWithType[]
 

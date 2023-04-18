@@ -1,5 +1,5 @@
 import { RoleEnum } from '@prisma/client'
-import { UnixDate } from 'src/common/types/UnixDate.type'
+import { UnixDate } from '../../../common/types/UnixDate.type'
 
 export type JwtPayload = {
   email?: string

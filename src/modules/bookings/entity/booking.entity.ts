@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { IsArray, IsDate, IsEnum, IsInt, IsString, ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
 import { SeatPosWithTypeDto } from '../dto/create-booking.dto'
-import { SeatPosWithType } from 'src/common/types'
+import { SeatPosWithType } from '../../../common/types'
 
 type TBookingEntity = Omit<Booking, 'updatedAt'> & { seats: SeatPosWithType[] }
 

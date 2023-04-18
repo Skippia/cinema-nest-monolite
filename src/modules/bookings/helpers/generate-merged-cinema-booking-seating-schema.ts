@@ -3,7 +3,7 @@ import {
   BookingSchema,
   MergedFullCinemaBookingSeatingSchema,
   TypeSeatEnumFull,
-} from 'src/common/types'
+} from '../../../common/types'
 
 export function generateMergedCinemaBookingSeatingSchema(
   seatSchema: FullSeatsSchema,

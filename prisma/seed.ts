@@ -4,21 +4,16 @@ import { TestingModule, Test } from '@nestjs/testing'
 import { PrismaClient } from '@prisma/client'
 import { AppModule } from '../src/app.module'
 import { PrismaService } from '../src/modules/prisma/prisma.service'
-import { loadMovies, signinAccount } from 'test/helpers/common'
+import { signinAccount, loadMovies } from '../test/helpers/common'
 import {
   createUsers,
   createSeats,
   createTypeSeats,
   createCinemas,
-  addMoviesToCinemas,
   createCinemaHalls,
-} from 'test/helpers/create'
-import { createMovieSessions } from 'test/helpers/create/createMoviesSessions.'
-import request from 'supertest'
-import { seatsSchemaInput1 } from 'src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
-import { CreateCinemaHallDto } from 'src/modules/cinema-hall/dto'
-import fs from 'fs'
-import path from 'path'
+  addMoviesToCinemas,
+} from '../test/helpers/create'
+import { createMovieSessions } from '../test/helpers/create/createMoviesSessions.'
 
 const prisma = new PrismaClient() as PrismaService
 

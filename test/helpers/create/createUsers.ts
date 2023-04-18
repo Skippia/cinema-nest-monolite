@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt'
 import { AuthProviderEnum, User } from '@prisma/client'
-import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { PrismaService } from '../../../src/modules/prisma/prisma.service'
 
 export async function createUsers(prisma: PrismaService): Promise<User> {
   return await prisma.user.create({

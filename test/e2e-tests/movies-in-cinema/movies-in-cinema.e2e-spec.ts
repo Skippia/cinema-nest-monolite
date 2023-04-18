@@ -1,14 +1,14 @@
 import { INestApplication } from '@nestjs/common'
-import { PrismaService } from 'src/modules/prisma/prisma.service'
-import { initApp, signinAccount } from 'test/helpers/common'
+import request from 'supertest'
+import { PrismaService } from '../../../src/modules/prisma/prisma.service'
+import { initApp, signinAccount } from '../../helpers/common'
 import {
   addSomeMovieRecords,
   createCinemas,
   createUsers,
   addMoviesToCinemas,
-} from 'test/helpers/create'
-import { deleteMoviesInCinema } from 'test/helpers/delete'
-import request from 'supertest'
+} from '../../helpers/create'
+import { deleteMoviesInCinema } from '../../helpers/delete'
 
 describe('Movies in cinema endoints (e2e)', () => {
   const imdbId1 = 'tt0068646'

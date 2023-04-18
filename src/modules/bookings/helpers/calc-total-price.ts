@@ -1,5 +1,5 @@
 import { MovieSession, TypeSeat } from '@prisma/client'
-import { SeatsSchema } from 'src/common/types'
+import { SeatsSchema } from '../../../common/types'
 
 export const calcTotalPrice = (
   seatsSchema: SeatsSchema,

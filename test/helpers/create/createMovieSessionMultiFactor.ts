@@ -1,5 +1,5 @@
-import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { MovieSession, TypeSeat, TypeSeatEnum } from '@prisma/client'
+import { PrismaService } from '../../../src/modules/prisma/prisma.service'
 
 export async function createMovieSessionMultiFactor(
   prisma: PrismaService,

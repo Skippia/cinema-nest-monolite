@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger'
 import { Booking } from '@prisma/client'
-import { DeleteManyDto } from 'src/common/dtos/common/delete-many.dto'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { MIN_DAYS_UNTIL_BOOKING } from './booking.constants'
 import { BookingsService } from './bookings.service'
@@ -29,8 +28,9 @@ import {
   checkIfDesiredSeatsCanExist,
   convertSeatsArrayToString,
 } from './helpers'
-import { MergedFullCinemaBookingSeatingSchema, SeatPosWithType } from 'src/common/types'
 import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'
+import { MergedFullCinemaBookingSeatingSchema, SeatPosWithType } from '../../common/types'
+import { DeleteManyDto } from '../../common/dtos/common'
 
 @Controller('bookings')
 @ApiTags('Bookings')
