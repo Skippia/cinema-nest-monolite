@@ -1,6 +1,6 @@
 import { CreateUserDto } from './dto/create-user.dto'
 import { Injectable } from '@nestjs/common'
-import { User, Prisma } from '@prisma/client'
+import { User, Prisma, AuthProviderEnum } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
 import { HASH_SALT } from '../auth-jwt/auth-jwt.constants'
 import { PrismaService } from '../prisma/prisma.service'
@@ -16,7 +16,7 @@ export class UsersService {
     })
   }
 
-  async createUser(dto: CreateUserDto): Promise<User> {
+  async createUser(dto: Partial<CreateUserDto> & { provider: AuthProviderEnum }): Promise<User> {
     const { email, username, firstName, lastName, gender, language, password, avatar, provider } =
       dto
     let hashedPassword: string | undefined = undefined
