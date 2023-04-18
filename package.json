@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "type": "commonjs",
   "scripts": {
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es2017",
@@ -9,7 +9,7 @@
     "strictPropertyInitialization": false,
     "declaration": true,
     "removeComments": true,
-    "emitDecoratorMetadata": true,
+    "emitDecoratorMetadata": true,  
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
@@ -17,9 +17,6 @@
     "incremental": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "paths": {
-      "src/*": ["./src/*"],
-    },
   },
   "exclude": ["node_modules"],
   "include": ["./src/**/*.ts", "./test/**/*.ts", "./utils/**/*.ts", "./prisma/**/*.ts"]
