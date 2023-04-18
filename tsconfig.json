@@ -17,6 +17,9 @@
     "incremental": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "paths": {
+      "src/*": ["./src/*"],
+    },
   },
   "exclude": ["node_modules"],
   "include": ["./src/**/*.ts", "./test/**/*.ts", "./utils/**/*.ts", "./prisma/**/*.ts"]
