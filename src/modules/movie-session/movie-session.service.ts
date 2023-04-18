@@ -7,12 +7,16 @@ import { UpdateMovieSessionDto } from './dto/update-movie-session.dto'
 export class MovieSessionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllMovieSessions(): Promise<MovieSession[]> {
-    return await this.prisma.movieSession.findMany()
+  async findAllMovieSessions(where?: Prisma.MovieSessionWhereInput): Promise<MovieSession[]> {
+    return await this.prisma.movieSession.findMany({
+      where,
+    })
   }
 
-  async findOneMovieSession(movieSessionId: number): Promise<MovieSession | null> {
-    return await this.prisma.movieSession.findUnique({ where: { id: movieSessionId } })
+  async findOneMovieSession(
+    uniqueCriteria: Prisma.MovieSessionWhereUniqueInput,
+  ): Promise<MovieSession | null> {
+    return await this.prisma.movieSession.findUnique({ where: uniqueCriteria })
   }
 
   async createMovieSession({

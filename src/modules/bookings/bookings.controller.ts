@@ -53,7 +53,7 @@ export class BookingsController {
   async findCinemaBookingSeatingSchema(
     @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
   ): Promise<MergedFullCinemaBookingSeatingSchema> {
-    const movieSession = await this.movieSessionService.findOneMovieSession(movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({ id: movieSessionId })
 
     if (!movieSession) {
       throw new NotFoundException(`Movie session not found with ${movieSessionId}`)
@@ -106,7 +106,7 @@ export class BookingsController {
   async cancelAllBookingForMovieSessionForUser(
     @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
   ): Promise<DeleteManyDto> {
-    const movieSession = await this.movieSessionService.findOneMovieSession(movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({ id: movieSessionId })
 
     // TODO: check if such booking belong this user
 
@@ -135,7 +135,9 @@ export class BookingsController {
       throw new NotFoundException(`Could not find booking with ${bookingId}.`)
     }
 
-    const movieSession = await this.movieSessionService.findOneMovieSession(booking.movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({
+      id: booking.movieSessionId,
+    })
 
     if (!movieSession) {
       throw new NotFoundException(`Could not movie session with ${booking.movieSessionId}.`)
@@ -167,7 +169,9 @@ export class BookingsController {
       throw new NotFoundException(`Could not find booking with ${bookingId}.`)
     }
 
-    const movieSession = await this.movieSessionService.findOneMovieSession(booking.movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({
+      id: booking.movieSessionId,
+    })
 
     if (!movieSession) {
       throw new NotFoundException(`Could not movie session with ${booking.movieSessionId}.`)
@@ -201,7 +205,7 @@ export class BookingsController {
       throw new NotFoundException(`User with id: ${userId} is not exist`)
     }
 
-    const movieSession = await this.movieSessionService.findOneMovieSession(movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({ id: movieSessionId })
 
     // 2. Check if such movie session exists
     if (!movieSession) {
@@ -281,7 +285,9 @@ export class BookingsController {
       throw new NotFoundException(`Could not find booking with ${bookingId}.`)
     }
 
-    const movieSession = await this.movieSessionService.findOneMovieSession(booking.movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({
+      id: booking.movieSessionId,
+    })
 
     if (!movieSession) {
       throw new NotFoundException(`Could not movie session with ${booking.movieSessionId}.`)
