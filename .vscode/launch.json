@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug nestjs", // Give your task a name
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn start:dev" // Enter the command to run
+    }
+  ]
+}

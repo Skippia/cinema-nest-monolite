@@ -10,60 +10,100 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Language {
+enum LanguageEnum {
   EN
   RU
 }
 
-enum Gender {
+enum GenderEnum {
   MALE
   FEMALE
 }
 
-enum Role {
+enum RoleEnum {
   USER
   ADMIN
 }
 
+enum CurrencyEnum {
+  USD
+  EUR
+  BYN
+  RUB
+}
+
+enum TypeSeatEnum {
+  SEAT
+  VIP
+  LOVE
+}
+
+enum AuthProviderEnum {
+  LOCAL
+  GMAIL
+  GITHUB
+  FACEBOOK
+}
+
 model User {
-  id         Int         @id @default(autoincrement())
-  email      String      @unique
-  name       String
-  lastName   String
-  password   String
-  bookings   Booking[]
-  role       Role        @default(USER)
-  gender     Gender
-  language   Language
-  rtSessions RTSession[]
+  id             Int              @id @default(autoincrement())
+  email          String?          @unique
+  username       String?          @unique
+  firstName      String?
+  lastName       String?
+  avatar         String?
+  hashedPassword String?
+  bookings       Booking[]
+  role           RoleEnum         @default(USER)
+  gender         GenderEnum?
+  language       LanguageEnum     @default(EN)
+  rtSessions     RTSession[]
+  provider       AuthProviderEnum
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 model RTSession {
-  id           Int      @id @default(autoincrement())
-  refreshToken String
-  userAgent    String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  User         User?    @relation(fields: [userId], references: [id])
-  userId       Int?
+  id        Int      @id @default(autoincrement())
+  hashedRt  String
+  rtExpDate DateTime
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  @@unique([hashedRt, userId])
+}
+
+// hallType should have hallTypeEnum (1D, 2D, 3D, 4D, 5D)
+model CinemaHall {
+  id            Int                @id @default(autoincrement())
+  name          String
+  cinema        Cinema             @relation(fields: [cinemaId], references: [id])
+  cinemaId      Int
+  hallType      String
+  movieSessions MovieSession[]
+  seats         SeatOnCinemaHall[]
+
+  @@unique([name, cinemaId])
 }
 
 model Cinema {
-  id            Int             @id @default(autoincrement())
-  name          String
-  address       String
-  city          String
-  movies        MovieOnCinema[]
-  movieSessions MovieSession[]
-  seats         SeatOnCinema[]
+  id         Int             @id @default(autoincrement())
+  name       String
+  address    String
+  city       String
+  movies     MovieOnCinema[]
+  cinemaHall CinemaHall[]
 
   @@unique([name, address, city])
 }
 
 model MovieOnCinema {
-  cinema   Cinema      @relation(fields: [cinemaId], references: [id])
+  cinema   Cinema      @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
   cinemaId Int
-  movie    MovieRecord @relation(fields: [movieId], references: [id])
+  movie    MovieRecord @relation(fields: [movieId], references: [id], onDelete: Cascade)
   movieId  Int
 
   @@id([cinemaId, movieId])
@@ -77,21 +117,25 @@ model MovieRecord {
 }
 
 model MovieSession {
-  id        Int         @id @default(autoincrement())
-  startDate DateTime
-  endDate   DateTime
-  movie     MovieRecord @relation(fields: [movieId], references: [id])
-  movieId   Int
-  cinema    Cinema      @relation(fields: [cinemaId], references: [id])
-  cinemaId  Int
-  bookings  Booking[]
+  id                      Int                       @id @default(autoincrement())
+  price                   Float
+  currency                CurrencyEnum              @default(USD)
+  startDate               DateTime
+  endDate                 DateTime
+  movie                   MovieRecord               @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  movieId                 Int
+  cinemaHall              CinemaHall                @relation(fields: [cinemaHallId], references: [id], onDelete: Cascade)
+  cinemaHallId            Int
+  bookings                Booking[]
+  movieSessionMultiFactor MovieSessionMultiFactor[]
 }
 
 model Booking {
   id             Int             @id @default(autoincrement())
   userId         Int
   totalPrice     Float
-  user           User            @relation(fields: [userId], references: [id])
+  currency       CurrencyEnum
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   movieSession   MovieSession    @relation(fields: [movieSessionId], references: [id])
   movieSessionId Int
   seat           SeatOnBooking[]
@@ -100,29 +144,47 @@ model Booking {
 }
 
 model SeatOnBooking {
-  booking   Booking @relation(fields: [bookingId], references: [id])
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   bookingId Int
-  seat      Seat    @relation(fields: [seatId], references: [id])
+  seat      Seat    @relation(fields: [seatId], references: [id], onDelete: Cascade)
   seatId    Int
 
   @@id([bookingId, seatId])
 }
 
 model Seat {
-  id      Int             @id @default(autoincrement())
+  id      Int                @id @default(autoincrement())
   booking SeatOnBooking[]
-  cinema  SeatOnCinema[]
+  cinema  SeatOnCinemaHall[]
   row     Int
   col     Int
 
   @@unique([row, col])
 }
 
-model SeatOnCinema {
-  seat     Seat   @relation(fields: [seatId], references: [id])
-  seatId   Int
-  cinema   Cinema @relation(fields: [cinemaId], references: [id])
-  cinemaId Int
+model SeatOnCinemaHall {
+  seat         Seat       @relation(fields: [seatId], references: [id], onDelete: Cascade)
+  seatId       Int
+  type         TypeSeat   @relation(fields: [typeSeatId], references: [id], onDelete: Cascade)
+  typeSeatId   Int
+  cinemaHall   CinemaHall @relation(fields: [cinemaHallId], references: [id])
+  cinemaHallId Int
 
-  @@id([seatId, cinemaId])
+  @@id([seatId, cinemaHallId])
+}
+
+model TypeSeat {
+  id                      Int                       @id @default(autoincrement())
+  type                    TypeSeatEnum              @unique
+  SeatOnCinemaHall        SeatOnCinemaHall[]
+  MovieSessionMultiFactor MovieSessionMultiFactor[]
+}
+
+model MovieSessionMultiFactor {
+  id             Int          @id @default(autoincrement())
+  movieSession   MovieSession @relation(fields: [movieSessionId], references: [id], onDelete: Cascade)
+  movieSessionId Int
+  typeSeat       TypeSeat     @relation(fields: [typeSeatId], references: [id], onDelete: Cascade)
+  typeSeatId     Int
+  priceFactor    Float        @db.Real
 }

@@ -9,12 +9,14 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "db:restart": "yarn docker:down && yarn docker:up && sleep 1",
+    "db:clear": "ts-node -r tsconfig-paths/register prisma/clearDb.ts",
     "pretest:int": "yarn db:restart && dotenv -e .env.test -- prisma migrate reset --force",
     "test:e2e:restart": "yarn pretest:int && yarn test:e2e",
     "test:e2e": "dotenv -e .env.test -- jest -i --no-cache --config ./test/jest-e2e.json --verbose",
     "studio": "npx prisma studio",
-    "seed":"ts-node prisma/seed.ts",
+    "seed": "ts-node -r tsconfig-paths/register prisma/seed.ts",
     "prisma:format": "npx prisma format",
+    "prisma:generate": "npx prisma generate",
     "migrate:create": "npx prisma migrate dev --create-only",
     "migrate:reset": "npx prisma migrate reset --force",
     "migrate": "npx prisma migrate dev",
@@ -23,6 +25,7 @@
     "build": "nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "run:local": "yarn pretest:int && dotenv -e .env.test yarn start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -34,14 +37,23 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "^0.4.3",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/jwt": "^10.0.3",
+    "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.2.1",
     "@prisma/client": "^4.11.0",
+    "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "cookie-parser": "^1.4.6",
+    "passport": "^0.6.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^4.6.2"
@@ -53,9 +65,14 @@
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/cookie-parser": "^1.4.3",
     "@types/express": "^4.17.13",
     "@types/jest": "29.2.4",
     "@types/node": "18.11.18",
+    "@types/passport-github2": "^1.2.5",
+    "@types/passport-google-oauth20": "^2.0.11",
+    "@types/passport-jwt": "^3.0.8",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
@@ -84,7 +101,6 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -93,6 +109,10 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "rootDir": "src",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    }
   }
 }
