@@ -38,7 +38,7 @@ import { DeleteManyDto } from '../../common/dtos/common'
 export class BookingsController {
   constructor(
     private readonly bookingsService: BookingService,
-    private readonly seatsInCinemaService: SeatsInCinemaHallService,
+    private readonly seatsInCinemaHallService: SeatsInCinemaHallService,
     private readonly movieSessionService: MovieSessionService,
   ) {}
 
@@ -209,7 +209,7 @@ export class BookingsController {
       )
     }
 
-    const cinemaSeatingSchema = await this.seatsInCinemaService.findCinemaHallSeatingSchema(
+    const cinemaSeatingSchema = await this.seatsInCinemaHallService.findCinemaHallSeatingSchema(
       movieSession.cinemaHallId,
     )
     const sourceBookingSchema = generateSourceBookingSchema(cinemaSeatingSchema)

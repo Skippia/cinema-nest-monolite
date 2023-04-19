@@ -17,7 +17,7 @@ import { UsersModule } from './modules/users/users.module'
 import { AuthGithubModule } from './modules/auth-github/auth-github.module'
 import { SeatsInCinemaHallModule } from './modules/seats-in-cinema-hall/seats-in-cinema-hall.module'
 import { CinemaHallModule } from './modules/cinema-hall/cinema-hall.module'
-import { BookingsModule } from './modules/bookings/bookings.module'
+import { BookingModule } from './modules/bookings/bookings.module'
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ import { BookingsModule } from './modules/bookings/bookings.module'
     MovieSessionModule,
     MoviesInCinemaModule,
     MovieReviewsModule,
-    BookingsModule,
+    BookingModule,
     AuthJwtModule,
     AuthGoogleModule,
     UsersModule,
