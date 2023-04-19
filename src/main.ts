@@ -11,10 +11,10 @@ async function bootstrap() {
 
   app.enableCors({
     credentials: true,
-    origin: '*',
-    methods: ['POST', 'GET', 'PATCH', 'DELETE', 'OPTIONS'],
+    origin: 'http://localhost:4000',
+    methods: ['POST', 'GET', 'HEAD', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
-      'Content-type',
+      'Content-Type',
       'Authorization',
       'Origin',
       'Access-Control-Allow-Origin',
@@ -23,6 +23,7 @@ async function bootstrap() {
       'X-Requested-With',
     ],
   })
+
   app.use(cookieParser())
   app.useGlobalPipes(new ValidationPipe())
   app.setGlobalPrefix(globalPrefix)
