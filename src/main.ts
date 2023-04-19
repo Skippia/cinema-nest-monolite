@@ -13,6 +13,15 @@ async function bootstrap() {
     credentials: true,
     origin: '*',
     methods: ['POST', 'GET', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-type',
+      'Authorization',
+      'Origin',
+      'Access-Control-Allow-Origin',
+      'Accept',
+      'Options',
+      'X-Requested-With',
+    ],
   })
   app.use(cookieParser())
   app.useGlobalPipes(new ValidationPipe())
