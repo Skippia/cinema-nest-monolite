@@ -1,12 +1,12 @@
-import { SeatsSchema, BookingSchema } from 'src/common/types'
+import { SeatsSchema, BookingSchema } from '../../../common/types'
 import {
   sortSeatBy,
   findLastSeatByCurRow,
   findSeatsInLastRow,
   addSeatToBooking,
   findOtherSeatsForCurRow,
-} from 'src/modules/seats-in-cinema-hall/utils/helpers/seat-helpers'
-import { SeatPos } from 'src/modules/seats-in-cinema-hall/utils/types'
+} from '../../seats-in-cinema-hall/utils/helpers'
+import { SeatPos } from '../../seats-in-cinema-hall/utils/types'
 
 export function generateSourceBookingSchema(seatSchema: SeatsSchema): BookingSchema {
   const bookingSchema = [] as BookingSchema

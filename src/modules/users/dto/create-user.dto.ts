@@ -1,12 +1,12 @@
+/* eslint-disable @darraghor/nestjs-typed/all-properties-have-explicit-defined */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { AuthProviderEnum, GenderEnum, LanguageEnum, Prisma } from '@prisma/client'
-import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator'
+import { GenderEnum, LanguageEnum, Prisma } from '@prisma/client'
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator'
 
-export class CreateUserDto implements Prisma.UserCreateInput {
-  @IsOptional()
+export class CreateUserDto implements Omit<Prisma.UserCreateInput, 'provider'> {
   @IsEmail()
-  @ApiPropertyOptional({ example: 'pocketbook.love24@gmail.com' })
-  email?: string
+  @ApiProperty({ example: 'pocketbook.love24@gmail.com' })
+  email: string
 
   @IsOptional()
   @IsString()
@@ -23,10 +23,9 @@ export class CreateUserDto implements Prisma.UserCreateInput {
   @ApiPropertyOptional({ example: 'Doe' })
   lastName?: string
 
-  @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'midapa' })
-  password?: string
+  @ApiProperty({ example: 'midapa' })
+  password: string
 
   @IsOptional()
   @IsEnum(GenderEnum)
@@ -39,11 +38,6 @@ export class CreateUserDto implements Prisma.UserCreateInput {
   language?: LanguageEnum
 
   @IsOptional()
-  @IsBoolean()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'file' })
   avatar?: string
-
-  @IsEnum(AuthProviderEnum)
-  @ApiProperty({ enum: AuthProviderEnum, example: AuthProviderEnum.LOCAL })
-  provider: AuthProviderEnum
 }

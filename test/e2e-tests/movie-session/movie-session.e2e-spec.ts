@@ -1,20 +1,20 @@
 import { INestApplication } from '@nestjs/common'
 import { Cinema, CinemaHall } from '@prisma/client'
-import { formatLogSessionTime } from 'src/common/helpers'
-import { CreateMovieSessionDto } from 'src/modules/movie-session/dto'
-import { PrismaService } from 'src/modules/prisma/prisma.service'
-import { seatsSchemaInput1 } from 'src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
-import { HallTypeEnum } from 'src/modules/seats-in-cinema-hall/utils/types'
+import movies from '../../../data/movies.json'
+import { formatLogSessionTime } from '../../../src/common/helpers'
+import { CreateMovieSessionDto } from '../../../src/modules/movie-session/dto'
+import { PrismaService } from '../../../src/modules/prisma/prisma.service'
+import { seatsSchemaInput1 } from '../../../src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
+import { HallTypeEnum } from '../../../src/modules/seats-in-cinema-hall/utils/types'
+import { signinAccount, initApp } from '../../helpers/common'
 import request from 'supertest'
-import { initApp, signinAccount } from 'test/helpers/common'
 import {
   createUsers,
   createTypeSeats,
   addSomeMovieRecords,
   createCinemas,
   addMoviesToCinemas,
-} from 'test/helpers/create'
-import movies from '../../../data/movies.json'
+} from '../../helpers/create'
 import { initMovieSessionMocks } from './movie-session.mock'
 
 describe('Movie Session endoints (e2e)', () => {

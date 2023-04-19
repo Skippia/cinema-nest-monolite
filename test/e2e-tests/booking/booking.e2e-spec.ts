@@ -1,24 +1,24 @@
 import { INestApplication } from '@nestjs/common'
 import { MovieSession, TypeSeatEnum } from '@prisma/client'
-import { MIN_DAYS_UNTIL_BOOKING } from 'src/modules/bookings/booking.constants'
-import { convertSeatsArrayToString } from 'src/modules/bookings/helpers'
-import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { MIN_DAYS_UNTIL_BOOKING } from '../../../src/modules/bookings/booking.constants'
+import { convertSeatsArrayToString } from '../../../src/modules/bookings/helpers'
+import { PrismaService } from '../../../src/modules/prisma/prisma.service'
 import {
   mergedCinemaSchema1,
   mergedCinemaSchema2,
   mergedCinemaSchema3,
-} from 'src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
-import request from 'supertest'
-import { loadMovies, initApp, signinAccount } from 'test/helpers/common'
+} from '../../../src/modules/seats-in-cinema-hall/tests/seats-in-cinema.mocks'
+import { signinAccount, loadMovies, initApp } from '../../helpers/common'
 import {
+  createUsers,
   createSeats,
   createTypeSeats,
   createCinemas,
-  addMoviesToCinemas,
-  createUsers,
   createCinemaHalls,
-} from 'test/helpers/create'
-import { createMovieSessions } from 'test/helpers/create/createMoviesSessions.'
+  addMoviesToCinemas,
+} from '../../helpers/create'
+import { createMovieSessions } from '../../helpers/create/createMoviesSessions.'
+import request from 'supertest'
 import {
   bookingMockDataInput1,
   bookingMockDataOutput1,

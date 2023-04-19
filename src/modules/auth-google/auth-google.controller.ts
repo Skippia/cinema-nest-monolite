@@ -16,8 +16,7 @@ import { AuthGoogleService } from './auth-google.service'
 import { GetCurrentUserGooglePayload } from './decorators'
 import { GoogleOauthGuard } from './guards/google.guard'
 import { GooglePayload } from './types'
-import { Response } from 'express'
-import { Request } from 'express'
+import { Request, Response } from 'express'
 
 @Controller('auth/google')
 @ApiTags('Authorization Google')

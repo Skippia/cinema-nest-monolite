@@ -1,4 +1,4 @@
-import { SeatPos } from 'src/modules/seats-in-cinema-hall/utils/types'
+import { SeatPos } from '../../seats-in-cinema-hall/utils/types'
 
 export function checkIfDesiredSeatsCanExist({
   set,

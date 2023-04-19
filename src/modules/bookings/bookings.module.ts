@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common'
-import { BookingsService } from './bookings.service'
+import { BookingService } from './bookings.service'
 import { BookingsController } from './bookings.controller'
-import { MovieSessionService } from '../movie-session/movie-session.service'
 import { SeatService } from '../seat/seat.service'
-import { PrismaModule } from '../prisma/prisma.module'
-import { SeatsInCinemaHallModule } from '../seats-in-cinema-hall/seats-in-cinema-hall.module'
+import { MovieSessionService } from '../movie-session/movie-session.service'
+import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'
 
 @Module({
   controllers: [BookingsController],
-  providers: [BookingsService, MovieSessionService, SeatService],
-  imports: [PrismaModule, SeatsInCinemaHallModule],
+  providers: [BookingService, SeatService, MovieSessionService, SeatsInCinemaHallService],
+  exports: [BookingService],
 })
-export class BookingsModule {}
+export class BookingModule {}

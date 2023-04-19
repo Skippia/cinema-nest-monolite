@@ -1,4 +1,4 @@
-import { SeatPosWithType, TypeSeatEnumFull } from 'src/common/types'
+import { SeatPosWithType, TypeSeatEnumFull } from '../../../../../common/types'
 import { SeatPos } from '../../types'
 import { TFnOverride } from './chain-seats-overrider'
 

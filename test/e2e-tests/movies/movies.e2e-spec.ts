@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
-import { PrismaService } from 'src/modules/prisma/prisma.service'
-import { initApp, signinAccount } from 'test/helpers/common'
-import { addSomeMovieRecords, createUsers } from 'test/helpers/create'
+import { PrismaService } from '../../../src/modules/prisma/prisma.service'
+import { initApp, signinAccount } from '../../helpers/common'
+import { addSomeMovieRecords, createUsers } from '../../helpers/create'
 
 describe('Movies endoints (e2e)', () => {
   const imdbId1 = 'tt0068646'

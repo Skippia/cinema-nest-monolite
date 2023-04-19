@@ -19,9 +19,9 @@ import {
   ApiNotFoundResponse,
 } from '@nestjs/swagger'
 import { Prisma } from '@prisma/client'
-import { DeleteManyDto } from 'src/common/dtos/common'
-import { BadRequestDto, ConflictRequestDto, NotFoundResponseDto } from 'src/common/dtos/errors'
-import { Serialize } from 'src/common/interceptors'
+import { DeleteManyDto } from '../../common/dtos/common'
+import { BadRequestDto, ConflictRequestDto, NotFoundResponseDto } from '../../common/dtos/errors'
+import { Serialize } from '../../common/interceptors'
 import { CinemaService } from '../cinema/cinema.service'
 import { MovieEntity } from '../movie/entity'
 import { MovieService } from '../movie/movie.service'
@@ -83,13 +83,15 @@ export class MoviesInCinemaController {
   async findMoviesInCinema(
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
   ): Promise<(MovieEntity | undefined)[]> {
-    const cinema = await this.cinemaService.findOneCinema(cinemaId)
+    const cinema = await this.cinemaService.findOneCinema({ id: cinemaId })
 
     if (!cinema) {
       throw new NotFoundException(`Could not find cinema with ${cinemaId}.`)
     }
 
-    const moviesInCinema = await this.moviesInCinemaService.findMoviesInCinema(cinemaId)
+    const moviesInCinema = await this.moviesInCinemaService.findMoviesInCinema({
+      cinemaId: cinemaId,
+    })
 
     const detailedMoviesInCinema = (await Promise.all(
       moviesInCinema.map((m) => this.movieService.findOneMovie(m.movieId)),

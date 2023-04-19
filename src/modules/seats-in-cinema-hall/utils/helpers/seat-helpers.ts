@@ -1,4 +1,9 @@
-import { BookingSchema, SeatPosWithType, SeatsSchema, TypeSeatEnumFull } from 'src/common/types'
+import {
+  BookingSchema,
+  SeatPosWithType,
+  SeatsSchema,
+  TypeSeatEnumFull,
+} from '../../../../common/types'
 import { SeatPos } from '../types'
 
 export const sortSeatBy = (seats: SeatPos[], criteria: 'row' | 'col') =>

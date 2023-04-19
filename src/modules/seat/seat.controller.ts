@@ -19,8 +19,8 @@ import {
   ApiOkResponse,
   ApiNotFoundResponse,
 } from '@nestjs/swagger'
-import { BadRequestDto, ConflictRequestDto, NotFoundResponseDto } from 'src/common/dtos/errors'
-import { Serialize } from 'src/common/interceptors'
+import { BadRequestDto, ConflictRequestDto, NotFoundResponseDto } from '../../common/dtos/errors'
+import { Serialize } from '../../common/interceptors'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { CreateSeatDto, UpdateSeatDto } from './dto'
 import { SeatEntity } from './entity'
@@ -58,7 +58,7 @@ export class SeatController {
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: SeatEntity })
   async findOneSeat(@Param('seatId', ParseIntPipe) seatId: number): Promise<SeatEntity> {
-    const seat = await this.seatService.findOneSeat(seatId)
+    const seat = await this.seatService.findOneSeat({ id: seatId })
 
     if (!seat) {
       throw new NotFoundException(`Could not find seat with ${seatId}.`)

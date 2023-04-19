@@ -1,7 +1,7 @@
 import { Controller, Get, Param, ParseIntPipe, NotFoundException } from '@nestjs/common'
 import { ApiTags, ApiOkResponse, ApiOperation, ApiNotFoundResponse } from '@nestjs/swagger'
-import { NotFoundResponseDto } from 'src/common/dtos/errors'
-import { Serialize } from 'src/common/interceptors'
+import { NotFoundResponseDto } from '../../common/dtos/errors'
+import { Serialize } from '../../common/interceptors'
 import { MovieReviewsEntity } from './entity'
 import { MovieReviewsService } from './movie-reviews.service'
 

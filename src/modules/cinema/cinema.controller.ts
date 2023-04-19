@@ -19,8 +19,8 @@ import {
   ApiOkResponse,
   ApiNotFoundResponse,
 } from '@nestjs/swagger'
-import { BadRequestDto, ConflictRequestDto, NotFoundResponseDto } from 'src/common/dtos/errors'
-import { Serialize } from 'src/common/interceptors'
+import { BadRequestDto, ConflictRequestDto, NotFoundResponseDto } from '../../common/dtos/errors'
+import { Serialize } from '../../common/interceptors'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { CinemaService } from './cinema.service'
 import { FindCinemaDto, CreateCinemaDto, UpdateCinemaDto } from './dto'
@@ -58,7 +58,7 @@ export class CinemaController {
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: FindCinemaDto })
   async findOneCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<CinemaEntity> {
-    const cinema = await this.cinemaService.findOneCinema(cinemaId)
+    const cinema = await this.cinemaService.findOneCinema({ id: cinemaId })
 
     if (!cinema) {
       throw new NotFoundException(`Could not find cinema with ${cinemaId}.`)

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { TypeSeatEnum } from '@prisma/client'
 import { IsInt, IsBoolean, IsString, IsEnum } from 'class-validator'
-import { ArrElement, MergedFullCinemaBookingSeatingSchema } from 'src/common/types'
+import { ArrElement, MergedFullCinemaBookingSeatingSchema } from '../../../common/types'
 
 export class FindMergedCinemaBookingSeatingSchemaDto
   implements ArrElement<MergedFullCinemaBookingSeatingSchema>

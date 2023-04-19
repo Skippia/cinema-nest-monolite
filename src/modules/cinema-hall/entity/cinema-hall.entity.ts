@@ -1,7 +1,7 @@
 import { IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { CinemaHall } from '@prisma/client'
-import { HallTypeEnum } from 'src/modules/seats-in-cinema-hall/utils/types'
+import { HallTypeEnum } from '../../seats-in-cinema-hall/utils/types'
 
 export class CinemaHallEntity implements CinemaHall {
   constructor(cinemaHallWithSchema: CinemaHall) {

@@ -1,10 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { MovieSession, CurrencyEnum } from '@prisma/client'
 import { Type } from 'class-transformer'
-import { IsInt, IsDate, IsString, IsEnum } from 'class-validator'
+import { IsInt, IsDate, IsString, IsEnum, IsOptional } from 'class-validator'
+import { HallTypeEnum } from 'src/modules/seats-in-cinema-hall/utils/types'
 
 export class MovieSessionEntity implements MovieSession {
-  constructor(movieSession: MovieSession) {
+  constructor(
+    movieSession: MovieSession & { hallType: HallTypeEnum; amountAvailableSeats?: number },
+  ) {
     this.id = movieSession.id
     this.startDate = movieSession.startDate
     this.endDate = movieSession.endDate
@@ -12,6 +15,8 @@ export class MovieSessionEntity implements MovieSession {
     this.cinemaHallId = movieSession.cinemaHallId
     this.price = movieSession.price
     this.currency = movieSession.currency
+    this.hallType = movieSession?.hallType
+    this.amountAvailableSeats = movieSession?.amountAvailableSeats
   }
 
   @IsInt()
@@ -40,6 +45,11 @@ export class MovieSessionEntity implements MovieSession {
   @ApiProperty({ example: 40 })
   price: number
 
+  @IsOptional()
+  @IsInt()
+  @ApiPropertyOptional({ example: 5 })
+  amountAvailableSeats?: number
+
   @IsString()
   @IsEnum(CurrencyEnum)
   @ApiProperty({
@@ -48,4 +58,14 @@ export class MovieSessionEntity implements MovieSession {
     example: CurrencyEnum.USD,
   })
   currency: CurrencyEnum
+
+  @IsString()
+  @IsOptional()
+  @IsEnum(HallTypeEnum)
+  @ApiPropertyOptional({
+    enumName: 'HallTypeEnum',
+    enum: HallTypeEnum,
+    example: HallTypeEnum['2D'],
+  })
+  hallType?: HallTypeEnum
 }

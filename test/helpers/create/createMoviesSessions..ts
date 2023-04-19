@@ -6,7 +6,7 @@ import {
   movieSession1DataMock,
   movieSession2DataMock,
   movieSession3DataMock,
-} from 'test/e2e-tests/movie-session/movie-session.static-mock'
+} from '../../e2e-tests/movie-session/movie-session.static-mock'
 
 const priceFactors: Record<TypeSeatEnum, number> = {
   SEAT: 1,

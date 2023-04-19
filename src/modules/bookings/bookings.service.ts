@@ -1,90 +1,35 @@
-import { Injectable } from '@nestjs/common'
+import { SeatsInCinemaHallService } from './../seats-in-cinema-hall/seats-in-cinema-hall.service'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { Booking, Prisma, TypeSeatEnum, TypeSeat } from '@prisma/client'
 import {
   MergedFullCinemaBookingSeatingSchema,
   SeatPosWithType,
   SeatsSchema,
-} from 'src/common/types'
+} from '../../common/types'
+import { MovieSessionService } from '../movie-session/movie-session.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { SeatService } from '../seat/seat.service'
-import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'
 import { SeatPosWithTypeDto } from './dto'
 import {
-  generateSourceBookingSchema,
+  calcTotalPrice,
   generateActualBookingSchema,
   generateMergedCinemaBookingSeatingSchema,
-  calcTotalPrice,
+  generateSourceBookingSchema,
 } from './helpers'
 
 @Injectable()
-export class BookingsService {
+export class BookingService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly seatService: SeatService,
-    private readonly seatsInCinemaService: SeatsInCinemaHallService,
+    private readonly seatsInCinemaHallService: SeatsInCinemaHallService,
+    private readonly movieSessionService: MovieSessionService,
   ) {}
 
-  async findCinemaBookingSeatingSchema({
-    movieSessionId,
-    cinemaHallId,
-  }: {
-    movieSessionId: number
-    cinemaHallId: number
-  }): Promise<MergedFullCinemaBookingSeatingSchema> {
-    // 1. Get cinema schema
-    const cinemaSeatingSchema = await this.seatsInCinemaService.findCinemaHallSeatingSchema(
-      cinemaHallId,
-    )
-
-    // 2. Generate source bookingSeatingSchema  (BookingSchema)
-    const sourceBookingSchema = generateSourceBookingSchema(cinemaSeatingSchema)
-
-    // 3. Get already booked seats positions
-    const bookedSeatsPositionsForMovieSession = await this.findBookedSeatsPositionsForMovieSession(
-      movieSessionId,
-    )
-
-    /**
-     * 4. Overlap already booked seats to source booking schema
-     * (in order to get actual booking schema)
-     */
-    const actualBookingSchema = generateActualBookingSchema(
-      sourceBookingSchema,
-      bookedSeatsPositionsForMovieSession,
-    )
-
-    // 5. Merge to schema and return to frontend only real seats (MergedCinemaBookingSeatingSchema)
-    const mergedFullCinemaBookingSeatingSchema = generateMergedCinemaBookingSeatingSchema(
-      cinemaSeatingSchema,
-      actualBookingSchema,
-    )
-
-    return mergedFullCinemaBookingSeatingSchema
-  }
-
-  async findBookingById(bookingId: number): Promise<Booking | null> {
+  async findOneBooking(uniqueCriteria: Prisma.BookingWhereUniqueInput): Promise<Booking | null> {
     return await this.prisma.booking.findUnique({
-      where: {
-        id: bookingId,
-      },
+      where: uniqueCriteria,
     })
-  }
-
-  async findBookedSeatsPositionsForMovieSession(
-    movieSessionId: number,
-  ): Promise<SeatPosWithTypeDto[]> {
-    const seatsArray = await this.prisma.$queryRaw(Prisma.sql`
-      SELECT col, row FROM (SELECT "seatId"
-      FROM "SeatOnBooking"
-      WHERE "bookingId" IN (
-        SELECT "id"
-        FROM "Booking"
-        WHERE "movieSessionId" = ${movieSessionId}
-      )) as M
-      JOIN "Seat" as S ON M."seatId" = S."id"
-  `)
-
-    return seatsArray as SeatPosWithTypeDto[]
   }
 
   async findBookingsDataByUser(
@@ -151,10 +96,8 @@ export class BookingsService {
       },
     })
 
-    const mergedFullCinemaBookingSeatingSchema = await this.findCinemaBookingSeatingSchema({
-      movieSessionId,
-      cinemaHallId: movieSession.cinemaHallId,
-    })
+    const mergedFullCinemaBookingSeatingSchema =
+      await this.findCinemaBookingSeatingSchemaByMovieSessionId(movieSessionId)
 
     // 2. Get seat types for desired seats (first off need to recovery full cinema booking schema)
     const desiredSeatsSchemaWithType = mergedFullCinemaBookingSeatingSchema
@@ -166,14 +109,15 @@ export class BookingsService {
       })) as SeatsSchema
 
     // 3. Get info about price multiplication factors for our movie session
-    const multiFactorsForThisMovieSession = (await this.prisma.movieSessionMultiFactor.findMany({
-      where: {
-        movieSessionId,
-      },
-      include: {
-        typeSeat: true,
-      },
-    })) as { priceFactor: number; typeSeat: TypeSeat }[]
+    const multiFactorsForThisMovieSession: { priceFactor: number; typeSeat: TypeSeat }[] =
+      await this.prisma.movieSessionMultiFactor.findMany({
+        where: {
+          movieSessionId,
+        },
+        include: {
+          typeSeat: true,
+        },
+      })
 
     // 4. Calculate total price basded on multiplication factors and base price on movie session
     const totalPrice = calcTotalPrice(
@@ -289,5 +233,66 @@ export class BookingsService {
     ])
 
     return result
+  }
+
+  async findCinemaBookingSeatingSchemaByMovieSessionId(
+    movieSessionId: number,
+  ): Promise<MergedFullCinemaBookingSeatingSchema> {
+    // 0. Get cinema hall by movieSessionId
+    const movieSession = await this.movieSessionService.findOneMovieSession(
+      { id: movieSessionId },
+      true,
+    )
+
+    if (!movieSession) {
+      throw new BadRequestException(`Movie session with id = ${movieSessionId} is not existed`)
+    }
+
+    // 1. Get cinema schema
+    const cinemaSeatingSchema = await this.seatsInCinemaHallService.findCinemaHallSeatingSchema(
+      movieSession.cinemaHallId,
+    )
+
+    // 2. Generate source bookingSeatingSchema  (BookingSchema)
+    const sourceBookingSchema = generateSourceBookingSchema(cinemaSeatingSchema)
+
+    // 3. Get already booked seats positions
+    const bookedSeatsPositionsForMovieSession = await this.findBookedSeatsPositionsForMovieSession(
+      movieSessionId,
+    )
+
+    /**
+     * 4. Overlap already booked seats to source booking schema
+     * (in order to get actual booking schema)
+     */
+    const actualBookingSchema = generateActualBookingSchema(
+      sourceBookingSchema,
+      bookedSeatsPositionsForMovieSession,
+    )
+
+    // 5. Merge to schema and return to frontend only real seats (MergedCinemaBookingSeatingSchema)
+    const mergedFullCinemaBookingSeatingSchema = generateMergedCinemaBookingSeatingSchema(
+      cinemaSeatingSchema,
+      actualBookingSchema,
+    )
+
+    return mergedFullCinemaBookingSeatingSchema
+  }
+
+  async findBookedSeatsPositionsForMovieSession(
+    movieSessionId: number,
+  ): Promise<SeatPosWithTypeDto[]> {
+    const seatsArray = await this.prisma.$queryRaw(Prisma.sql`
+      SELECT col, row FROM (SELECT "seatId"
+      FROM "SeatOnBooking"
+      WHERE "bookingId" IN (
+        SELECT "id"
+        FROM "Booking"
+        WHERE "movieSessionId" = ${movieSessionId}
+      )) as M
+      JOIN "Seat" as S ON M."seatId" = S."id"
+  `)
+
+    return seatsArray as SeatPosWithTypeDto[]
   }
 }
