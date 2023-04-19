@@ -9,7 +9,7 @@ async function bootstrap() {
   const globalPrefix = 'api/v1'
   const app: NestExpressApplication = await NestFactory.create(AppModule)
 
-  app.enableCors({ credentials: true, origin: true })
+  app.enableCors({ credentials: true, origin: '*' })
   app.use(cookieParser())
   app.useGlobalPipes(new ValidationPipe())
   app.setGlobalPrefix(globalPrefix)
