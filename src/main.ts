@@ -7,16 +7,14 @@ import cookieParser from 'cookie-parser'
 
 async function bootstrap() {
   const globalPrefix = 'api/v1'
-  const app: NestExpressApplication = await NestFactory.create(AppModule, { cors: true })
+  const app: NestExpressApplication = await NestFactory.create(AppModule)
 
   app.enableCors({
     credentials: true,
-    origin: ['*'],
+    origin: ['http://localhost:3000', 'http://localhost:4000'],
     methods: ['POST', 'GET', 'HEAD', 'PATCH', 'DELETE', 'OPTIONS'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    preflightContinue: true,
     allowedHeaders: [
-      'Content-type',
       'Content-Type',
       'Authorization',
       'Origin',
@@ -26,6 +24,7 @@ async function bootstrap() {
       'X-Requested-With',
     ],
   })
+
   app.use(cookieParser())
   app.useGlobalPipes(new ValidationPipe())
   app.setGlobalPrefix(globalPrefix)
