@@ -9,9 +9,21 @@ async function bootstrap() {
   const globalPrefix = 'api/v1'
   const app: NestExpressApplication = await NestFactory.create(AppModule)
 
+  const whitelist = ['http://localhost:3000', 'http://localhost:3333', 'http://localhost:4000']
+
   app.enableCors({
     credentials: true,
-    origin: 'http://localhost:4000',
+    origin: function (origin, callback) {
+      if (
+        !origin ||
+        whitelist.indexOf(origin) !== -1 ||
+        /https?:\/\/(([a-z0-9-]+\.)?vercel\.app)$/i
+      ) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
     methods: ['POST', 'GET', 'HEAD', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
