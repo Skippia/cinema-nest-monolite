@@ -8,5 +8,6 @@ import { CinemaService } from '../cinema/cinema.service'
 @Module({
   controllers: [MovieSessionController],
   providers: [MovieSessionService, MoviesInCinemaService, MovieService, CinemaService],
+  exports: [MovieSessionService],
 })
 export class MovieSessionModule {}
