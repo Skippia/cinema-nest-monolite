@@ -1,18 +1,15 @@
-import { Injectable } from '@nestjs/common'
+import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { CurrencyEnum, MovieSession, Prisma, TypeSeat, TypeSeatEnum } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { HallTypeEnum } from '../seats-in-cinema-hall/utils/types'
 import { UpdateMovieSessionDto } from './dto/update-movie-session.dto'
+import { FullMovieSession } from './types'
 
 @Injectable()
 export class MovieSessionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllMovieSessions(where?: Prisma.MovieSessionWhereInput): Promise<
-    (MovieSession & {
-      hallType: HallTypeEnum
-    })[]
-  > {
+  async findAllMovieSessions(where?: Prisma.MovieSessionWhereInput): Promise<FullMovieSession[]> {
     const moviesSessionsWithHall = await this.prisma.movieSession.findMany({
       where,
       include: {
@@ -20,7 +17,11 @@ export class MovieSessionService {
       },
     })
 
-    const moviesSessions = moviesSessionsWithHall.map((el) => ({
+    const amountAvailableSeatsArray = await Promise.all(
+      moviesSessionsWithHall.map((el) => this.getAmountAvailableSeatsInMovieSession(el.id)),
+    )
+
+    const moviesSessions = moviesSessionsWithHall.map((el, idx) => ({
       id: el.id,
       price: el.price,
       currency: el.currency,
@@ -29,17 +30,15 @@ export class MovieSessionService {
       movieId: el.movieId,
       cinemaHallId: el.cinemaHallId,
       hallType: el.cinemaHall.hallType as HallTypeEnum,
+      amountAvailableSeats: amountAvailableSeatsArray[idx],
     }))
 
     return moviesSessions
   }
 
-  async findOneMovieSession(uniqueCriteria: Prisma.MovieSessionWhereUniqueInput): Promise<
-    | (MovieSession & {
-        hallType: HallTypeEnum
-      })
-    | null
-  > {
+  async findOneMovieSession(
+    uniqueCriteria: Prisma.MovieSessionWhereUniqueInput,
+  ): Promise<FullMovieSession | null> {
     const movieSessionWithHall = await this.prisma.movieSession.findUnique({
       where: uniqueCriteria,
       include: {
@@ -49,9 +48,11 @@ export class MovieSessionService {
 
     if (!movieSessionWithHall) return null
 
-    const movieSession: MovieSession & {
-      hallType: HallTypeEnum
-    } = {
+    const amountAvailableSeats = await this.getAmountAvailableSeatsInMovieSession(
+      movieSessionWithHall.id,
+    )
+
+    const movieSession: FullMovieSession = {
       id: movieSessionWithHall.id,
       price: movieSessionWithHall.price,
       currency: movieSessionWithHall.currency,
@@ -60,6 +61,7 @@ export class MovieSessionService {
       movieId: movieSessionWithHall.movieId,
       cinemaHallId: movieSessionWithHall.cinemaHallId,
       hallType: movieSessionWithHall.cinemaHall.hallType as HallTypeEnum,
+      amountAvailableSeats,
     }
 
     return movieSession
@@ -141,7 +143,7 @@ export class MovieSessionService {
   async updateMovieSession(
     movieSessionId: number,
     updateMovieSessionDto: UpdateMovieSessionDto,
-  ): Promise<MovieSession & { hallType: HallTypeEnum }> {
+  ): Promise<Omit<FullMovieSession, 'amountAvailableSeats'>> {
     const updadedMovieSessionWithHall = await this.prisma.movieSession.update({
       where: { id: movieSessionId },
       data: updateMovieSessionDto,
@@ -150,9 +152,7 @@ export class MovieSessionService {
       },
     })
 
-    const updadedMovieSession: MovieSession & {
-      hallType: HallTypeEnum
-    } = {
+    const updadedMovieSession = {
       id: updadedMovieSessionWithHall.id,
       price: updadedMovieSessionWithHall.price,
       currency: updadedMovieSessionWithHall.currency,
@@ -172,5 +172,20 @@ export class MovieSessionService {
 
   async resetMoviesSessionsForCinemaHall(cinemaHallId: number): Promise<Prisma.BatchPayload> {
     return await this.prisma.movieSession.deleteMany({ where: { cinemaHallId } })
+  }
+
+  async getAmountAvailableSeatsInMovieSession(movieSessionId: number): Promise<number | any> {
+    /*    const cinemaBookingSeatingSchema =
+      await this.bookingService.findCinemaBookingSeatingSchemaByMovieSessionId(movieSessionId)
+
+    const amountAvailableSeatsInMovieSession = cinemaBookingSeatingSchema.reduce(
+      (acc: number, cur: ArrElement<MergedFullCinemaBookingSeatingSchema>) => {
+        const curValue = cur.isBooked ? 1 : 0
+        return acc + curValue
+      },
+      0,
+    )
+
+    return amountAvailableSeatsInMovieSession */
   }
 }

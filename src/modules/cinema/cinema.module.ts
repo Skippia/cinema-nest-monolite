@@ -6,7 +6,6 @@ import { PrismaModule } from '../prisma/prisma.module'
 @Module({
   controllers: [CinemaController],
   providers: [CinemaService],
-  imports: [PrismaModule],
   exports: [CinemaService],
 })
 export class CinemaModule {}

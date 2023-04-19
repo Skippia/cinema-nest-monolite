@@ -114,6 +114,7 @@ export class MovieSessionController {
     //  1. Check if such movie is available for cinema (where is located this cinema hall)
     const isMovieAvailableForCinemaHall =
       await this.moviesInCinemaService.checkIfMovieAvailableForCinema(movieId, cinemaId)
+    // await this.moviesInCinemaService.
 
     if (!isMovieAvailableForCinemaHall) {
       throw new BadRequestException(

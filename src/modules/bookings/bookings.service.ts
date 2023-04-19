@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { Booking, Prisma, TypeSeatEnum, TypeSeat } from '@prisma/client'
 import {
   MergedFullCinemaBookingSeatingSchema,
   SeatPosWithType,
   SeatsSchema,
 } from '../../common/types'
+import { MovieSessionService } from '../movie-session/movie-session.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { SeatService } from '../seat/seat.service'
 import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'
@@ -17,23 +18,27 @@ import {
 } from './helpers'
 
 @Injectable()
-export class BookingsService {
+export class BookingService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly seatService: SeatService,
+    private readonly movieSessionService: MovieSessionService,
     private readonly seatsInCinemaService: SeatsInCinemaHallService,
   ) {}
 
-  async findCinemaBookingSeatingSchema({
-    movieSessionId,
-    cinemaHallId,
-  }: {
-    movieSessionId: number
-    cinemaHallId: number
-  }): Promise<MergedFullCinemaBookingSeatingSchema> {
+  async findCinemaBookingSeatingSchemaByMovieSessionId(
+    movieSessionId: number,
+  ): Promise<MergedFullCinemaBookingSeatingSchema> {
+    // 0. Get cinema hall by movieSessionId
+    const movieSession = await this.movieSessionService.findOneMovieSession({ id: movieSessionId })
+
+    if (!movieSession) {
+      throw new BadRequestException(`Movie session with id = ${movieSessionId} is not existed`)
+    }
+
     // 1. Get cinema schema
     const cinemaSeatingSchema = await this.seatsInCinemaService.findCinemaHallSeatingSchema(
-      cinemaHallId,
+      movieSession.cinemaHallId,
     )
 
     // 2. Generate source bookingSeatingSchema  (BookingSchema)
@@ -149,10 +154,8 @@ export class BookingsService {
       },
     })
 
-    const mergedFullCinemaBookingSeatingSchema = await this.findCinemaBookingSeatingSchema({
-      movieSessionId,
-      cinemaHallId: movieSession.cinemaHallId,
-    })
+    const mergedFullCinemaBookingSeatingSchema =
+      await this.findCinemaBookingSeatingSchemaByMovieSessionId(movieSessionId)
 
     // 2. Get seat types for desired seats (first off need to recovery full cinema booking schema)
     const desiredSeatsSchemaWithType = mergedFullCinemaBookingSeatingSchema
@@ -164,14 +167,15 @@ export class BookingsService {
       })) as SeatsSchema
 
     // 3. Get info about price multiplication factors for our movie session
-    const multiFactorsForThisMovieSession = (await this.prisma.movieSessionMultiFactor.findMany({
-      where: {
-        movieSessionId,
-      },
-      include: {
-        typeSeat: true,
-      },
-    })) as { priceFactor: number; typeSeat: TypeSeat }[]
+    const multiFactorsForThisMovieSession: { priceFactor: number; typeSeat: TypeSeat }[] =
+      await this.prisma.movieSessionMultiFactor.findMany({
+        where: {
+          movieSessionId,
+        },
+        include: {
+          typeSeat: true,
+        },
+      })
 
     // 4. Calculate total price basded on multiplication factors and base price on movie session
     const totalPrice = calcTotalPrice(
