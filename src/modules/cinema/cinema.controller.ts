@@ -58,7 +58,7 @@ export class CinemaController {
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: FindCinemaDto })
   async findOneCinema(@Param('cinemaId', ParseIntPipe) cinemaId: number): Promise<CinemaEntity> {
-    const cinema = await this.cinemaService.findOneCinema(cinemaId)
+    const cinema = await this.cinemaService.findOneCinema({ id: cinemaId })
 
     if (!cinema) {
       throw new NotFoundException(`Could not find cinema with ${cinemaId}.`)

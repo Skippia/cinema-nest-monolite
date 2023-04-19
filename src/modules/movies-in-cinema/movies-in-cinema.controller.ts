@@ -83,13 +83,15 @@ export class MoviesInCinemaController {
   async findMoviesInCinema(
     @Param('cinemaId', ParseIntPipe) cinemaId: number,
   ): Promise<(MovieEntity | undefined)[]> {
-    const cinema = await this.cinemaService.findOneCinema(cinemaId)
+    const cinema = await this.cinemaService.findOneCinema({ id: cinemaId })
 
     if (!cinema) {
       throw new NotFoundException(`Could not find cinema with ${cinemaId}.`)
     }
 
-    const moviesInCinema = await this.moviesInCinemaService.findMoviesInCinema(cinemaId)
+    const moviesInCinema = await this.moviesInCinemaService.findMoviesInCinema({
+      cinemaId: cinemaId,
+    })
 
     const detailedMoviesInCinema = (await Promise.all(
       moviesInCinema.map((m) => this.movieService.findOneMovie(m.movieId)),

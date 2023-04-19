@@ -11,10 +11,17 @@ async function bootstrap() {
 
   app.enableCors({
     credentials: true,
-    origin: '*',
-    methods: 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
-    allowedHeaders:
-      'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+    origin: 'http://localhost:4000',
+    methods: ['POST', 'GET', 'HEAD', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Origin',
+      'Access-Control-Allow-Origin',
+      'Accept',
+      'Options',
+      'X-Requested-With',
+    ],
   })
 
   app.use(cookieParser())

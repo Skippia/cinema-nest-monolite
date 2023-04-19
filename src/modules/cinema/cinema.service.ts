@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Cinema } from '@prisma/client'
+import { Cinema, Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateCinemaDto, UpdateCinemaDto } from './dto'
 
@@ -28,8 +28,8 @@ export class CinemaService {
     return cinemaHallWithCinema.cinema
   }
 
-  async findOneCinema(id: number): Promise<Cinema | null> {
-    return await this.prisma.cinema.findUnique({ where: { id } })
+  async findOneCinema(uniqueCriteria: Prisma.CinemaWhereUniqueInput): Promise<Cinema | null> {
+    return await this.prisma.cinema.findUnique({ where: uniqueCriteria })
   }
 
   async updateCinema(id: number, updateCinemaData: UpdateCinemaDto): Promise<Cinema> {

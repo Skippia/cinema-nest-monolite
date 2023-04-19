@@ -41,11 +41,9 @@ export class MoviesInCinemaService {
     return newMoviesInCinema
   }
 
-  async findMoviesInCinema(cinemaId: number): Promise<MovieOnCinema[]> {
+  async findMoviesInCinema(where?: Prisma.MovieOnCinemaWhereInput): Promise<MovieOnCinema[]> {
     return await this.prisma.movieOnCinema.findMany({
-      where: {
-        cinemaId,
-      },
+      where,
     })
   }
 

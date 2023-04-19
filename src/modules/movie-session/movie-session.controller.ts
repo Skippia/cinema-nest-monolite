@@ -32,6 +32,9 @@ import { CreateMovieSessionDto, UpdateMovieSessionDto } from './dto'
 import { MovieSessionEntity } from './entity'
 import { EXTRA_MOVIE_SESSION_TIME, TIME_GAP_BETWEEN_MOVIE_SESSION } from './movie-session.constants'
 import { MovieSessionService } from './movie-session.service'
+import { Temporal } from '@js-temporal/polyfill'
+import { Public } from '../auth-jwt/decorators'
+import { ParseDatePipe } from '../../common/pipes'
 
 @Controller('movies-sessions')
 @ApiTags('Movies sessions')
@@ -54,15 +57,41 @@ export class MovieSessionController {
     return moviesSessions
   }
 
+  @Public()
+  @Get(':startDate/:movieId')
+  @ApiOperation({ description: 'Get movies sessions by day and movieId' })
+  @ApiOkResponse({ type: MovieSessionEntity, isArray: true })
+  @Serialize(MovieSessionEntity)
+  async findMovieSessionsByDayAndMovie(
+    @Param('startDate', ParseDatePipe) startDate: string,
+    @Param('movieId', ParseIntPipe) movieId: number,
+  ): Promise<MovieSessionEntity[]> {
+    const endDate = Temporal.PlainDate.from(startDate)
+      .add({
+        days: 1,
+      })
+      .toString()
+
+    const fitMoviesSession = await this.movieSessionService.findAllMovieSessions({
+      movieId,
+      startDate: {
+        gte: new Date(startDate),
+        lte: new Date(endDate),
+      },
+    })
+
+    return fitMoviesSession
+  }
+
   @Get(':movieSessionId')
   @ApiOperation({ description: 'Get movie session by movieSessionId' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: MovieSessionEntity })
   @Serialize(MovieSessionEntity)
-  async findOneMovieSession(
+  async findMovieSessionById(
     @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
   ): Promise<MovieSessionEntity> {
-    const movieSession = await this.movieSessionService.findOneMovieSession(movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({ id: movieSessionId })
 
     if (!movieSession) {
       throw new NotFoundException(`Could not find movie session with ${movieSessionId}.`)
@@ -85,6 +114,7 @@ export class MovieSessionController {
     //  1. Check if such movie is available for cinema (where is located this cinema hall)
     const isMovieAvailableForCinemaHall =
       await this.moviesInCinemaService.checkIfMovieAvailableForCinema(movieId, cinemaId)
+    // await this.moviesInCinemaService.
 
     if (!isMovieAvailableForCinemaHall) {
       throw new BadRequestException(

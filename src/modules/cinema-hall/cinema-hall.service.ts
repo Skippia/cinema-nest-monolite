@@ -24,11 +24,9 @@ export class CinemaHallService {
     return deletedCinemaHall
   }
 
-  async findOneCinemaHall(cinemaHallId: number) {
+  async findOneCinemaHall(uniqueCriteria: Prisma.CinemaHallWhereUniqueInput) {
     const deletedCinemaHall = await this.prisma.cinemaHall.findUnique({
-      where: {
-        id: cinemaHallId,
-      },
+      where: uniqueCriteria,
     })
 
     return deletedCinemaHall

@@ -235,29 +235,29 @@ export class AuthJwtService {
   ): void {
     res.cookie('Authentication', access_token, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_AT_MIN),
     })
 
     res.cookie('Refresh', refresh_token, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
     })
 
     res.cookie('RtSessionId', rt_session_id, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
     })
 
     res.cookie('UserId', user_id, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
     })
   }

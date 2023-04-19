@@ -15,7 +15,7 @@ import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger'
 import { Booking } from '@prisma/client'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { MIN_DAYS_UNTIL_BOOKING } from './booking.constants'
-import { BookingsService } from './bookings.service'
+import { BookingService } from './bookings.service'
 import {
   FindMergedCinemaBookingSeatingSchemaDto,
   FindSeatBookingDto,
@@ -37,8 +37,8 @@ import { DeleteManyDto } from '../../common/dtos/common'
 @UseFilters(PrismaClientExceptionFilter)
 export class BookingsController {
   constructor(
-    private readonly bookingsService: BookingsService,
-    private readonly seatsInCinemaService: SeatsInCinemaHallService,
+    private readonly bookingsService: BookingService,
+    private readonly seatsInCinemaHallService: SeatsInCinemaHallService,
     private readonly movieSessionService: MovieSessionService,
   ) {}
 
@@ -50,19 +50,11 @@ export class BookingsController {
     type: FindMergedCinemaBookingSeatingSchemaDto,
     isArray: true,
   })
-  async findCinemaBookingSeatingSchema(
+  async findCinemaBookingSeatingSchemaByMovieSessionId(
     @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
   ): Promise<MergedFullCinemaBookingSeatingSchema> {
-    const movieSession = await this.movieSessionService.findOneMovieSession(movieSessionId)
-
-    if (!movieSession) {
-      throw new NotFoundException(`Movie session not found with ${movieSessionId}`)
-    }
-
-    const cinemaBookingSeatingSchema = await this.bookingsService.findCinemaBookingSeatingSchema({
-      movieSessionId: movieSession.id,
-      cinemaHallId: movieSession.cinemaHallId,
-    })
+    const cinemaBookingSeatingSchema =
+      await this.bookingsService.findCinemaBookingSeatingSchemaByMovieSessionId(movieSessionId)
 
     return cinemaBookingSeatingSchema
   }
@@ -80,20 +72,20 @@ export class BookingsController {
     const userBookings = await Promise.all(
       userBookingsData.map(async (userBookingData) => {
         const mergedFullCinemaBookingSeatingSchema =
-          await this.bookingsService.findCinemaBookingSeatingSchema({
-            movieSessionId: userBookingData.movieSessionId,
-            cinemaHallId: userBookingData.cinemaHallId,
-          })
+          await this.bookingsService.findCinemaBookingSeatingSchemaByMovieSessionId(
+            userBookingData.movieSessionId,
+          )
 
         const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
           mergedFullCinemaBookingSeatingSchema,
           userBookingData.bookingId,
         )
 
-        const booking = (await this.bookingsService.findBookingById(
-          userBookingData.bookingId,
-        )) as Booking
-        return new BookingEntity(seatsByBookingId, booking)
+        const booking = await this.bookingsService.findOneBooking({
+          id: userBookingData.bookingId,
+        })
+
+        return new BookingEntity(seatsByBookingId, booking as Booking)
       }),
     )
 
@@ -106,7 +98,7 @@ export class BookingsController {
   async cancelAllBookingForMovieSessionForUser(
     @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
   ): Promise<DeleteManyDto> {
-    const movieSession = await this.movieSessionService.findOneMovieSession(movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({ id: movieSessionId })
 
     // TODO: check if such booking belong this user
 
@@ -129,23 +121,22 @@ export class BookingsController {
   async findSeatsByBookingId(
     @Param('bookingId', ParseIntPipe) bookingId: number,
   ): Promise<SeatPosWithType[]> {
-    const booking = await this.bookingsService.findBookingById(bookingId)
+    const booking = await this.bookingsService.findOneBooking({ id: bookingId })
 
     if (!booking) {
       throw new NotFoundException(`Could not find booking with ${bookingId}.`)
     }
 
-    const movieSession = await this.movieSessionService.findOneMovieSession(booking.movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({
+      id: booking.movieSessionId,
+    })
 
     if (!movieSession) {
       throw new NotFoundException(`Could not movie session with ${booking.movieSessionId}.`)
     }
 
     const mergedFullCinemaBookingSeatingSchema =
-      await this.bookingsService.findCinemaBookingSeatingSchema({
-        movieSessionId: movieSession.id,
-        cinemaHallId: movieSession.cinemaHallId,
-      })
+      await this.bookingsService.findCinemaBookingSeatingSchemaByMovieSessionId(movieSession.id)
 
     const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
       mergedFullCinemaBookingSeatingSchema,
@@ -161,23 +152,22 @@ export class BookingsController {
   async getBookingByBookingId(
     @Param('bookingId', ParseIntPipe) bookingId: number,
   ): Promise<BookingEntity> {
-    const booking = await this.bookingsService.findBookingById(bookingId)
+    const booking = await this.bookingsService.findOneBooking({ id: bookingId })
 
     if (!booking) {
       throw new NotFoundException(`Could not find booking with ${bookingId}.`)
     }
 
-    const movieSession = await this.movieSessionService.findOneMovieSession(booking.movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({
+      id: booking.movieSessionId,
+    })
 
     if (!movieSession) {
       throw new NotFoundException(`Could not movie session with ${booking.movieSessionId}.`)
     }
 
     const mergedFullCinemaBookingSeatingSchema =
-      await this.bookingsService.findCinemaBookingSeatingSchema({
-        movieSessionId: movieSession.id,
-        cinemaHallId: movieSession.cinemaHallId,
-      })
+      await this.bookingsService.findCinemaBookingSeatingSchemaByMovieSessionId(movieSession.id)
 
     const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
       mergedFullCinemaBookingSeatingSchema,
@@ -201,7 +191,7 @@ export class BookingsController {
       throw new NotFoundException(`User with id: ${userId} is not exist`)
     }
 
-    const movieSession = await this.movieSessionService.findOneMovieSession(movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({ id: movieSessionId })
 
     // 2. Check if such movie session exists
     if (!movieSession) {
@@ -219,7 +209,7 @@ export class BookingsController {
       )
     }
 
-    const cinemaSeatingSchema = await this.seatsInCinemaService.findCinemaHallSeatingSchema(
+    const cinemaSeatingSchema = await this.seatsInCinemaHallService.findCinemaHallSeatingSchema(
       movieSession.cinemaHallId,
     )
     const sourceBookingSchema = generateSourceBookingSchema(cinemaSeatingSchema)
@@ -254,10 +244,7 @@ export class BookingsController {
     )
 
     const mergedFullCinemaBookingSeatingSchema =
-      await this.bookingsService.findCinemaBookingSeatingSchema({
-        movieSessionId,
-        cinemaHallId: movieSession.cinemaHallId,
-      })
+      await this.bookingsService.findCinemaBookingSeatingSchemaByMovieSessionId(movieSessionId)
 
     const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
       mergedFullCinemaBookingSeatingSchema,
@@ -273,7 +260,7 @@ export class BookingsController {
   @ApiOperation({ description: 'Cancel booking by bookingId' })
   @ApiOkResponse({ type: BookingEntity })
   async cancelBooking(@Param('bookingId', ParseIntPipe) bookingId: number): Promise<BookingEntity> {
-    const booking = await this.bookingsService.findBookingById(bookingId)
+    const booking = await this.bookingsService.findOneBooking({ id: bookingId })
 
     // TODO: check if such booking belong this user
 
@@ -281,17 +268,16 @@ export class BookingsController {
       throw new NotFoundException(`Could not find booking with ${bookingId}.`)
     }
 
-    const movieSession = await this.movieSessionService.findOneMovieSession(booking.movieSessionId)
+    const movieSession = await this.movieSessionService.findOneMovieSession({
+      id: booking.movieSessionId,
+    })
 
     if (!movieSession) {
       throw new NotFoundException(`Could not movie session with ${booking.movieSessionId}.`)
     }
 
     const mergedFullCinemaBookingSeatingSchema =
-      await this.bookingsService.findCinemaBookingSeatingSchema({
-        movieSessionId: movieSession.id,
-        cinemaHallId: movieSession.cinemaHallId,
-      })
+      await this.bookingsService.findCinemaBookingSeatingSchemaByMovieSessionId(movieSession.id)
 
     const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
       mergedFullCinemaBookingSeatingSchema,
