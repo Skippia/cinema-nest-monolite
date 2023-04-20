@@ -12,8 +12,8 @@ import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { CreateUserDto } from '../users/dto/create-user.dto'
 import { AuthJwtService } from './auth-jwt.service'
-import { Public, GetCurrentUser, GetCurrentUserId } from './decorators'
-import { RtGuard } from './guards'
+import { GetCurrentUser, GetCurrentUserId } from './decorators'
+import { AtGuard, RtGuard } from './guards'
 import { Response } from 'express'
 import { SigninDto, TokensDto } from './dto'
 
@@ -23,7 +23,6 @@ import { SigninDto, TokensDto } from './dto'
 export class AuthJwtController {
   constructor(private authJwtService: AuthJwtService) {}
 
-  @Public()
   @Post('local/signup')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ description: 'Signup locally' })
@@ -43,7 +42,6 @@ export class AuthJwtController {
     })
   }
 
-  @Public()
   @Post('local/signin')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ description: 'Signin locally' })
@@ -63,7 +61,6 @@ export class AuthJwtController {
     })
   }
 
-  @Public()
   @UseGuards(RtGuard)
   @Post('local/refresh')
   @HttpCode(HttpStatus.OK)
@@ -88,6 +85,7 @@ export class AuthJwtController {
     })
   }
 
+  @UseGuards(AtGuard)
   @Post('local/logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ description: 'Logout' })

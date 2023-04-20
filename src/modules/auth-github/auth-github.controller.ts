@@ -13,7 +13,6 @@ import { AuthGithubService } from '../auth-github/auth-github.service'
 import { GithubOauthGuard } from '../auth-github/guards/github.guard'
 import { GithubPayload } from '../auth-github/types'
 import { AuthJwtService } from '../auth-jwt/auth-jwt.service'
-import { Public } from '../auth-jwt/decorators'
 import { Response } from 'express'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { GetCurrentUserGithubPayload } from './decorators'
@@ -27,7 +26,6 @@ export class AuthGithubController {
     private readonly authJwtService: AuthJwtService,
   ) {}
 
-  @Public()
   @Get()
   @HttpCode(HttpStatus.PERMANENT_REDIRECT)
   @ApiOperation({ description: 'Authorize through Github' })
@@ -36,7 +34,6 @@ export class AuthGithubController {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async githubAuth(@Req() req: Request) {}
 
-  @Public()
   @ApiOperation({ description: 'Redirected here after Github authorization' })
   @ApiOkResponse()
   @Get('redirect')

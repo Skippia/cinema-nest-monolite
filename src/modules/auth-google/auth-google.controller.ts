@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger'
 import { AuthJwtService } from '../auth-jwt/auth-jwt.service'
-import { Public } from '../auth-jwt/decorators'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { AuthGoogleService } from './auth-google.service'
 import { GetCurrentUserGooglePayload } from './decorators'
@@ -27,7 +26,6 @@ export class AuthGoogleController {
     private readonly authJwtService: AuthJwtService,
   ) {}
 
-  @Public()
   @Get()
   @HttpCode(HttpStatus.PERMANENT_REDIRECT)
   @ApiOperation({ description: 'Authorize through Google' })
@@ -36,7 +34,6 @@ export class AuthGoogleController {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async googleAuth(@Req() req: Request) {}
 
-  @Public()
   @ApiOperation({ description: 'Redirected here after Google authorization' })
   @ApiOkResponse()
   @Get('redirect')
