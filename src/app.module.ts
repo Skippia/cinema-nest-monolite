@@ -18,6 +18,7 @@ import { AuthGithubModule } from './modules/auth-github/auth-github.module'
 import { SeatsInCinemaHallModule } from './modules/seats-in-cinema-hall/seats-in-cinema-hall.module'
 import { CinemaHallModule } from './modules/cinema-hall/cinema-hall.module'
 import { BookingModule } from './modules/bookings/bookings.module'
+import { S3Module } from './modules/s3/s3.module'
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { BookingModule } from './modules/bookings/bookings.module'
     UsersModule,
     AuthGithubModule,
     CinemaHallModule,
+    S3Module,
   ],
   controllers: [AppController],
   providers: [
