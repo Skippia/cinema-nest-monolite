@@ -1,4 +1,3 @@
-export * from './ArrElement.type'
 export * from './FullSeatType.type'
 export * from './BookingSchema.type'
 export * from './FullSeatPosWithType.type'

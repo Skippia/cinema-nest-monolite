@@ -21,7 +21,7 @@ export class AuthGoogleService {
 
     const { email, firstName, lastName, avatar } = googlePayload
 
-    user = await this.usersService.findUser({ email })
+    user = await this.usersService.findOneUser({ email })
     // email, username, firstName, lastName, gender, language, password, avatar
     // User with such email doesn't exist - create it
     if (!user) {

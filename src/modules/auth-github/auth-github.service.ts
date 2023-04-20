@@ -21,7 +21,7 @@ export class AuthGithubService {
 
     const { username, firstName, lastName, avatar } = githubPayload
 
-    user = await this.usersService.findUser({ username })
+    user = await this.usersService.findOneUser({ username })
 
     // User with such email doesn't exist - create it
     if (!user) {

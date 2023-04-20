@@ -40,7 +40,7 @@ export class AuthJwtService {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new ForbiddenException('Credentials incorrect')
+          throw new ForbiddenException('User with such credentials already exist')
         }
       }
       throw error
@@ -50,7 +50,7 @@ export class AuthJwtService {
   async signinLocal(dto: SigninDto): Promise<TokensWithClientData> {
     const { email, password } = dto
 
-    const user = await this.usersService.findUser({ email })
+    const user = await this.usersService.findOneUser({ email })
 
     // 1. If user doesn't exist - throw 403
     if (!user) throw new ForbiddenException('Access Denied')
@@ -201,7 +201,7 @@ export class AuthJwtService {
     rtSessionId: number
     refreshToken: string
   }) {
-    const user = await this.usersService.findUser({ id: userId })
+    const user = await this.usersService.findOneUser({ id: userId })
 
     // 1. Check if user with such RT exists
     if (!user) throw new ForbiddenException(`User with id ${userId} is not exist`)

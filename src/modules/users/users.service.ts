@@ -1,19 +1,29 @@
 import { CreateUserDto } from './dto/create-user.dto'
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { User, Prisma, AuthProviderEnum } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
 import { HASH_SALT } from '../auth-jwt/auth-jwt.constants'
 import { PrismaService } from '../prisma/prisma.service'
+import { S3Service } from '../s3/s3.service'
 
-// TODO: refactor github
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly s3Service: S3Service) {}
 
-  async findUser(uniqueCriteria: Prisma.UserWhereUniqueInput): Promise<User | null> {
-    return await this.prisma.user.findUnique({
+  async findAllUsers(where?: Prisma.MovieSessionWhereInput): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      where,
+    })
+
+    return users
+  }
+
+  async findOneUser(uniqueCriteria: Prisma.UserWhereUniqueInput): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
       where: uniqueCriteria,
     })
+
+    return user
   }
 
   async createUser(dto: Partial<CreateUserDto> & { provider: AuthProviderEnum }): Promise<User> {
@@ -40,5 +50,71 @@ export class UsersService {
     })
 
     return newUser
+  }
+
+  async updateUserAvatar(userId: number, file: Express.Multer.File): Promise<User | null> {
+    // 1. Get user
+
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: {
+        id: userId,
+      },
+    })
+
+    // 2. If avatar already exists - remove old
+
+    if (user?.avatar) {
+      const fileName = this.getFileNameFromAvatarUrl(user.avatar)
+      await this.s3Service.deleteAvatarFile(fileName)
+    }
+    // 3. If avatar doesn't exist - do nothing
+
+    // 4. Add new avatar and update user db
+
+    const bucketKey = `${file.fieldname}${Date.now()}`
+
+    await this.s3Service.uploadFile(file, bucketKey)
+    const avatarUrl = this.s3Service.getFileURL(bucketKey)
+
+    const updadedUser = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        avatar: avatarUrl,
+      },
+    })
+
+    return updadedUser
+  }
+
+  async deleteUserAvatar(userId: number): Promise<User> {
+    const user = await this.findOneUser({ id: userId })
+
+    if (!user?.avatar) {
+      throw new BadRequestException(`User with id ${userId} not found or doesn't have avatar`)
+    }
+
+    // 1. Get filename for deleting
+    const fileName = this.getFileNameFromAvatarUrl(user.avatar)
+
+    // 2. Delete this file from bucket
+    await this.s3Service.deleteAvatarFile(fileName)
+
+    // 3. Update user db
+    const updadedUser = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        avatar: null,
+      },
+    })
+
+    return updadedUser
+  }
+
+  getFileNameFromAvatarUrl(avatarUrl: string) {
+    return avatarUrl?.split('/')?.at(-1) as string
   }
 }
