@@ -33,7 +33,6 @@ import { MovieSessionEntity } from './entity'
 import { EXTRA_MOVIE_SESSION_TIME, TIME_GAP_BETWEEN_MOVIE_SESSION } from './movie-session.constants'
 import { MovieSessionService } from './movie-session.service'
 import { Temporal } from '@js-temporal/polyfill'
-import { Public } from '../auth-jwt/decorators'
 import { ParseDatePipe } from '../../common/pipes'
 
 @Controller('movies-sessions')
@@ -57,7 +56,6 @@ export class MovieSessionController {
     return moviesSessions
   }
 
-  @Public()
   @Get(':startDate/:movieId')
   @ApiOperation({ description: 'Get movies sessions by day and movieId' })
   @ApiOkResponse({ type: MovieSessionEntity, isArray: true })

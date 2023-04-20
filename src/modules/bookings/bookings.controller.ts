@@ -10,6 +10,7 @@ import {
   NotFoundException,
   UseFilters,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger'
 import { Booking } from '@prisma/client'
@@ -31,8 +32,10 @@ import {
 import { SeatsInCinemaHallService } from '../seats-in-cinema-hall/seats-in-cinema-hall.service'
 import { MergedFullCinemaBookingSeatingSchema, SeatPosWithType } from '../../common/types'
 import { DeleteManyDto } from '../../common/dtos/common'
+import { AtGuard } from '../auth-jwt/guards'
 
 @Controller('bookings')
+@UseGuards(AtGuard)
 @ApiTags('Bookings')
 @UseFilters(PrismaClientExceptionFilter)
 export class BookingsController {

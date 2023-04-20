@@ -42,10 +42,10 @@ import { BookingModule } from './modules/bookings/bookings.module'
   controllers: [AppController],
   providers: [
     AppService,
-    {
+    /* {
       provide: APP_GUARD,
       useClass: AtGuard,
-    },
+    }, */
   ],
 })
 export class AppModule {}

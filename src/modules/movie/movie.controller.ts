@@ -2,7 +2,6 @@ import { Controller, UseFilters, Get, Param, ParseIntPipe, NotFoundException } f
 import { ApiTags, ApiOperation, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger'
 import { NotFoundResponseDto } from '../../common/dtos/errors'
 import { Serialize } from '../../common/interceptors'
-import { Public } from '../auth-jwt/decorators'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { MovieEntity } from './entity'
 import { MovieService } from './movie.service'
@@ -23,7 +22,6 @@ export class MovieController {
     return movies
   }
 
-  @Public()
   @Get(':movieId')
   @ApiOperation({ description: 'Get one movie by movieId (from MovieRecord)' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
