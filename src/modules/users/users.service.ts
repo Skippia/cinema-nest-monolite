@@ -1,11 +1,10 @@
 import { CreateUserDto } from './dto/create-user.dto'
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { User, Prisma, AuthProviderEnum } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
 import { HASH_SALT } from '../auth-jwt/auth-jwt.constants'
 import { PrismaService } from '../prisma/prisma.service'
 import { S3Service } from '../s3/s3.service'
-import { Express } from 'express'
 
 @Injectable()
 export class UsersService {
@@ -93,7 +92,7 @@ export class UsersService {
     const user = await this.findOneUser({ id: userId })
 
     if (!user?.avatar) {
-      throw new NotFoundException(`User with id ${userId} not found or doesn't have avatar`)
+      throw new BadRequestException(`User with id ${userId} not found or doesn't have avatar`)
     }
 
     // 1. Get filename for deleting
