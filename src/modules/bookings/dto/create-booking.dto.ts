@@ -35,10 +35,6 @@ export class SeatPosDto {
 export class CreateBookingDto {
   @IsInt()
   @ApiProperty({ example: 1 })
-  userId: number
-
-  @IsInt()
-  @ApiProperty({ example: 1 })
   movieSessionId: number
 
   @ValidateNested({ each: true })
