@@ -22,5 +22,5 @@
     },
   },
   "exclude": ["node_modules"],
-  "include": ["./src/**/*.ts", "./test/**/*.ts", "./utils/**/*.ts", "./prisma/**/*.ts"]
+  "include": ["./src/**/*.ts", "./test/**/*.ts", "./utils/**/*.ts", "./prisma/**/*.ts", "./shared-kernel.d.ts"]
 }
