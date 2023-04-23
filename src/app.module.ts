@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
-import { APP_GUARD } from '@nestjs/core'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthGoogleModule } from './modules/auth-google/auth-google.module'
 import { AuthJwtModule } from './modules/auth-jwt/auth-jwt.module'
-import { AtGuard } from './modules/auth-jwt/guards'
 import { CinemaModule } from './modules/cinema/cinema.module'
 import { MovieReviewsModule } from './modules/movie-reviews/movie-reviews.module'
 import { MovieSessionModule } from './modules/movie-session/movie-session.module'
@@ -42,12 +40,6 @@ import { S3Module } from './modules/s3/s3.module'
     S3Module,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    /* {
-      provide: APP_GUARD,
-      useClass: AtGuard,
-    }, */
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

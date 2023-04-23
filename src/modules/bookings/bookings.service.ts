@@ -283,13 +283,17 @@ export class BookingService {
     movieSessionId: number,
   ): Promise<SeatPosWithTypeDto[]> {
     const seatsArray = await this.prisma.$queryRaw(Prisma.sql`
-      SELECT col, row FROM (SELECT "seatId"
-      FROM "SeatOnBooking"
-      WHERE "bookingId" IN (
-        SELECT "id"
-        FROM "Booking"
-        WHERE "movieSessionId" = ${movieSessionId}
-      )) as M
+      SELECT col, row FROM 
+        (
+          SELECT "seatId"
+          FROM "SeatOnBooking"
+          WHERE "bookingId" IN 
+            (
+              SELECT "id"
+              FROM "Booking"
+              WHERE "movieSessionId" = ${movieSessionId}
+            )
+        ) as M
       JOIN "Seat" as S ON M."seatId" = S."id"
   `)
 
