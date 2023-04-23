@@ -87,8 +87,6 @@ export class BookingService {
     { userId, movieSessionId }: { userId: number; movieSessionId: number },
     desiredSeats: SeatPosWithTypeDto[],
   ): Promise<Booking> {
-    // TODO: I guess can be optimized via SQL
-
     // 1. Check if such movie session exists
     const movieSession = await this.prisma.movieSession.findUniqueOrThrow({
       where: {
@@ -298,5 +296,33 @@ export class BookingService {
   `)
 
     return seatsArray as SeatPosWithTypeDto[]
+  }
+
+  async findUserBookingsWithSeats(
+    userBookingsData: {
+      bookingId: number
+      movieSessionId: number
+      cinemaHallId: number
+    }[],
+  ) {
+    const userBookings = await Promise.all(
+      userBookingsData.map(async (userBookingData) => {
+        const mergedFullCinemaBookingSeatingSchema =
+          await this.findCinemaBookingSeatingSchemaByMovieSessionId(userBookingData.movieSessionId)
+
+        const seatsByBookingId = await this.findSeatsByBookingId(
+          mergedFullCinemaBookingSeatingSchema,
+          userBookingData.bookingId,
+        )
+
+        const booking = (await this.findOneBooking({
+          id: userBookingData.bookingId,
+        })) as Booking
+
+        return { seatsByBookingId, booking }
+      }),
+    )
+
+    return userBookings
   }
 }
