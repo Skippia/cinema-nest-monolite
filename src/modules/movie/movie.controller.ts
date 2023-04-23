@@ -5,6 +5,7 @@ import { Serialize } from '../../common/interceptors'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { MovieEntity } from './entity'
 import { MovieService } from './movie.service'
+import { GetMovieQuery } from './decorators'
 
 @Controller('movies')
 @ApiTags('Movie')
@@ -16,10 +17,26 @@ export class MovieController {
   @Get()
   @ApiOperation({ description: 'Get all movies' })
   @ApiOkResponse({ type: MovieEntity, isArray: true })
-  findAllMovies(): MovieEntity[] {
-    const movies = this.movieService.findAllMovies()
+  async findAllMovies(): Promise<MovieEntity[]> {
+    const movies = await this.movieService.findAllMovies()
 
     return movies
+  }
+
+  @Get('cinemaHall/:cinemaHallId')
+  @ApiOperation({ description: 'Get all available movies for cinema hall (by cinema hall id)' })
+  @ApiNotFoundResponse({ type: NotFoundResponseDto })
+  @ApiOkResponse({ type: MovieEntity })
+  async findMoviesForCinemaHall(
+    @Param('cinemaHallId', ParseIntPipe) cinemaHallId: number,
+    @GetMovieQuery('fields') queryFields?: Record<string, boolean>,
+  ) {
+    const moviesForCinemaHall = await this.movieService.findMoviesForCinemaHall({
+      cinemaHallId,
+      fields: queryFields,
+    })
+
+    return moviesForCinemaHall
   }
 
   @Get(':movieId')

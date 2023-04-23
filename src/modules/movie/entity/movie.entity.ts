@@ -61,7 +61,10 @@ export class MovieEntity {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'https://www.youtube.com/embed/NmzuHjWmXOc' })
+  @ApiProperty({
+    example:
+      'https://storage.yandexcloud.net/bucket-midapa/The%20Shawshank%20Redemption%20(1994)%20Official%20Trailer%20%231%20-%20Morgan%20Freeman%20Movie%20HD.mp4',
+  })
   trailer: string
 
   @IsArray()
