@@ -1,4 +1,4 @@
 import { MovieQueryDto } from '../dto'
-import { GetQueryDecorator } from 'src/common/decorators/get-query.decorator'
+import { GetQueryDecorator } from '../../../common/decorators/get-query.decorator'
 
 export const GetMovieQuery = GetQueryDecorator(MovieQueryDto)

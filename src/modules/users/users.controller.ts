@@ -21,7 +21,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express'
 import { GetCurrentUserId } from '../auth-jwt/decorators'
 import { User } from '@prisma/client'
-import { Serialize } from 'src/common/interceptors'
+import { Serialize } from '../../common/interceptors'
 
 @UseGuards(AtGuard)
 @Controller('users')
