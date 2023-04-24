@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { User, AuthProviderEnum, GenderEnum, LanguageEnum, RoleEnum } from '@prisma/client'
 import { Type } from 'class-transformer'
 import { IsInt, IsDate, IsString, IsEnum, IsOptional, IsEmail } from 'class-validator'
-import { NullableToUndefinable } from 'src/common/types/utils'
+import { NullableToUndefinable } from '../../../common/types/utils'
 
 export class UserEntity implements NullableToUndefinable<User> {
   constructor(user: User) {

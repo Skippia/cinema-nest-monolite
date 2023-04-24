@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { MovieSession, CurrencyEnum } from '@prisma/client'
 import { Type } from 'class-transformer'
 import { IsInt, IsDate, IsString, IsEnum, IsOptional } from 'class-validator'
-import { HallTypeEnum } from 'src/modules/seats-in-cinema-hall/utils/types'
+import { HallTypeEnum } from '../../../modules/seats-in-cinema-hall/utils/types'
 
 export class MovieSessionEntity implements MovieSession {
   constructor(
