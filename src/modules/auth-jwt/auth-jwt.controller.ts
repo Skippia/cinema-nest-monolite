@@ -8,30 +8,36 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiOkResponse, ApiNoContentResponse } from '@nestjs/swagger'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { CreateUserDto } from '../users/dto/create-user.dto'
 import { AuthJwtService } from './auth-jwt.service'
 import { GetCurrentUser, GetCurrentUserId } from './decorators'
 import { AtGuard, RtGuard } from './guards'
 import { Response } from 'express'
-import { SigninDto, TokensDto } from './dto'
+import { SigninDto } from './dto'
+import { User } from '@prisma/client'
+import { UserEntity } from '../users/entity'
+import { Serialize } from 'src/common/interceptors'
+import { S3Service } from '../s3/s3.service'
+import { logoutFromSystem } from './helpers'
 
 @Controller('auth')
 @ApiTags('Authorization JWT')
 @UseFilters(PrismaClientExceptionFilter)
 export class AuthJwtController {
-  constructor(private authJwtService: AuthJwtService) {}
+  constructor(private authJwtService: AuthJwtService, private readonly s3Service: S3Service) {}
 
   @Post('local/signup')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ description: 'Signup locally' })
-  @ApiOkResponse({ type: TokensDto })
+  @ApiOkResponse({ type: UserEntity })
+  @Serialize(UserEntity)
   async signupLocal(
     @Res({ passthrough: true }) res: Response,
     @Body() dto: CreateUserDto,
-  ): Promise<void> {
-    const { access_token, refresh_token, rt_session_id, user_id } =
+  ): Promise<User> {
+    const { access_token, refresh_token, rt_session_id, user_id, newUser } =
       await this.authJwtService.signupLocal(dto)
 
     this.authJwtService.addTokensToCookies(res, {
@@ -40,12 +46,14 @@ export class AuthJwtController {
       rt_session_id,
       user_id,
     })
+
+    return newUser
   }
 
   @Post('local/signin')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ description: 'Signin locally' })
-  @ApiOkResponse({ type: TokensDto })
+  @ApiNoContentResponse()
   async signinLocal(
     @Res({ passthrough: true }) res: Response,
     @Body() dto: SigninDto,
@@ -63,9 +71,9 @@ export class AuthJwtController {
 
   @UseGuards(RtGuard)
   @Post('local/refresh')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ description: 'Refresh tokens' })
-  @ApiOkResponse({ type: TokensDto })
+  @ApiNoContentResponse()
   async refreshTokens(
     @GetCurrentUser('refreshToken') refreshToken: string,
     @GetCurrentUser('rtSessionId') rtSessionId: number,
@@ -96,7 +104,7 @@ export class AuthJwtController {
   ): Promise<boolean> {
     const isLogout = await this.authJwtService.logout(userId)
 
-    this.authJwtService.clearCookies(res)
+    logoutFromSystem(res)
 
     return isLogout
   }
