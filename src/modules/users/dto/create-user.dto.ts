@@ -1,4 +1,3 @@
-/* eslint-disable @darraghor/nestjs-typed/all-properties-have-explicit-defined */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { GenderEnum, LanguageEnum, Prisma } from '@prisma/client'
 import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator'
@@ -36,8 +35,4 @@ export class CreateUserDto implements Omit<Prisma.UserCreateInput, 'provider'> {
   @IsEnum(LanguageEnum)
   @ApiPropertyOptional({ enum: LanguageEnum, example: LanguageEnum.EN })
   language?: LanguageEnum
-
-  @IsOptional()
-  @ApiPropertyOptional({ type: 'file' })
-  avatar?: string
 }
