@@ -23,16 +23,16 @@ export class MovieController {
     return movies
   }
 
-  @Get('cinemaHall/:cinemaHallId')
-  @ApiOperation({ description: 'Get all available movies for cinema hall (by cinema hall id)' })
+  @Get('cinema/:cinemaId')
+  @ApiOperation({ description: 'Get all available movies for cinema (by cinema id)' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiOkResponse({ type: MovieEntity })
-  async findMoviesForCinemaHall(
-    @Param('cinemaHallId', ParseIntPipe) cinemaHallId: number,
+  async findMoviesForCinema(
+    @Param('cinemaId', ParseIntPipe) cinemaId: number,
     @GetMovieQuery('fields') queryFields?: Record<string, boolean>,
   ) {
-    const moviesForCinemaHall = await this.movieService.findMoviesForCinemaHall({
-      cinemaHallId,
+    const moviesForCinemaHall = await this.movieService.findMoviesForCinema({
+      cinemaId,
       fields: queryFields,
     })
 
