@@ -18,7 +18,7 @@ import { Response } from 'express'
 import { SigninDto } from './dto'
 import { User } from '@prisma/client'
 import { UserEntity } from '../users/entity'
-import { Serialize } from 'src/common/interceptors'
+import { Serialize } from '../../common/interceptors'
 import { S3Service } from '../s3/s3.service'
 import { logoutFromSystem } from './helpers'
 

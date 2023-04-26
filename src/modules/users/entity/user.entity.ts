@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { User, AuthProviderEnum, GenderEnum, LanguageEnum, RoleEnum } from '@prisma/client'
 import { IsInt, IsString, IsEnum, IsOptional, IsEmail } from 'class-validator'
-import { NullableToUndefinable } from 'src/common/types/utils'
+import { NullableToUndefinable } from '../../../common/types/utils'
 
 export class UserEntity
   implements Omit<NullableToUndefinable<User>, 'hashedPassword' | 'createdAt' | 'updatedAt'>

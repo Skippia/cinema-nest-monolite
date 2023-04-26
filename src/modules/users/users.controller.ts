@@ -21,11 +21,11 @@ import {
 } from '@nestjs/common'
 import { GetCurrentUserId } from '../auth-jwt/decorators'
 import { User } from '@prisma/client'
-import { Serialize } from 'src/common/interceptors'
+import { Serialize } from '../../common/interceptors'
 import { AtGuard } from '../auth-jwt/guards'
 import { Response } from 'express'
 import { logoutFromSystem } from '../auth-jwt/helpers'
-import { ApiImageFile } from 'src/common/file'
+import { ApiImageFile } from '../../common/file'
 
 @Controller('users')
 @ApiTags('Users')
