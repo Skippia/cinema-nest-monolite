@@ -14,7 +14,8 @@ describe('Movies in cinema endoints (e2e)', () => {
   const imdbId1 = 'tt0068646'
   const imdbId2 = 'tt0111161'
   const movieShape = expect.objectContaining({
-    id: expect.any(String),
+    id: expect.any(Number),
+    imdbId: expect.any(String),
     title: expect.any(String),
     description: expect.any(String),
     releaseYear: expect.any(Number),

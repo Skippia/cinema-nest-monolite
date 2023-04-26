@@ -39,8 +39,8 @@ describe('Movie Session endoints (e2e)', () => {
   let cinemaId2: number
   let cinemaHallId1: number
   let cinemaHallId2: number
-  const durationMovie1 = movies.find((m) => m.id === imdbId1)?.duration as number // 120 min for movie1
-  const durationMovie2 = movies.find((m) => m.id === imdbId2)?.duration as number // 160 min for movie2
+  const durationMovie1 = movies.find((m) => m.imdbId === imdbId1)?.duration as number // 120 min for movie1
+  const durationMovie2 = movies.find((m) => m.imdbId === imdbId2)?.duration as number // 160 min for movie2
   /**
    * Create:
    *   1 user

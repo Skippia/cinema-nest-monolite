@@ -5,6 +5,8 @@ import { Movie } from '../types/movie.type'
 
 export class MovieEntity {
   constructor(movie: Movie) {
+    this.id = movie.id
+    this.imdbId = movie.imdbId
     this.title = movie.title
     this.rating = movie.rating
     this.releaseYear = movie.releaseYear
@@ -14,16 +16,19 @@ export class MovieEntity {
     this.genres = movie.genres
     this.authors = movie.authors
     this.writers = movie.writers
-    this.id = movie.id
     this.actors = movie.actors
     this.duration = movie.duration
     this.countries = movie.countries
   }
 
   @IsInt()
+  @ApiProperty({ example: 1 })
+  id: number
+
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: 'tt0111161' })
-  id: string
+  imdbId: string
 
   @IsString()
   @IsNotEmpty()
