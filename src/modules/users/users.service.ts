@@ -26,9 +26,12 @@ export class UsersService {
     return user
   }
 
-  async createUser(dto: Partial<CreateUserDto> & { provider: AuthProviderEnum }): Promise<User> {
-    const { email, username, firstName, lastName, gender, language, password, avatar, provider } =
+  async createUser(
+    dto: Partial<CreateUserDto> & { provider: AuthProviderEnum; avatar?: string },
+  ): Promise<User> {
+    const { email, username, firstName, lastName, gender, language, password, provider, avatar } =
       dto
+
     let hashedPassword: string | undefined = undefined
 
     if (password) {
@@ -43,9 +46,9 @@ export class UsersService {
         lastName,
         gender,
         language,
-        avatar,
         hashedPassword,
         provider,
+        avatar,
       },
     })
 
@@ -64,17 +67,15 @@ export class UsersService {
     // 2. If avatar already exists - remove old
 
     if (user?.avatar) {
-      const fileName = this.getFileNameFromAvatarUrl(user.avatar)
-      await this.s3Service.deleteAvatarFile(fileName)
+      await this.s3Service.deleteAvatarFile(user.avatar)
     }
     // 3. If avatar doesn't exist - do nothing
 
     // 4. Add new avatar and update user db
 
-    const bucketKey = `${file.fieldname}${Date.now()}`
+    const fileName = `${file.fieldname}${Date.now()}`
 
-    await this.s3Service.uploadFile(file, bucketKey)
-    const avatarUrl = this.s3Service.getFileURL(bucketKey)
+    const avatarUrl = await this.s3Service.uploadFile(file, fileName)
 
     const updadedUser = await this.prisma.user.update({
       where: {
@@ -95,13 +96,10 @@ export class UsersService {
       throw new BadRequestException(`User with id ${userId} not found or doesn't have avatar`)
     }
 
-    // 1. Get filename for deleting
-    const fileName = this.getFileNameFromAvatarUrl(user.avatar)
+    // 1. Delete this file from bucket
+    await this.s3Service.deleteAvatarFile(user.avatar)
 
-    // 2. Delete this file from bucket
-    await this.s3Service.deleteAvatarFile(fileName)
-
-    // 3. Update user db
+    // 2. Update user db
     const updadedUser = await this.prisma.user.update({
       where: {
         id: userId,
@@ -114,7 +112,58 @@ export class UsersService {
     return updadedUser
   }
 
-  getFileNameFromAvatarUrl(avatarUrl: string) {
-    return avatarUrl?.split('/')?.at(-1) as string
+  async updateUserFirstName(userId: number, newfirstName: string) {
+    const updadedUser = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        firstName: newfirstName,
+      },
+    })
+
+    return updadedUser
+  }
+
+  async updateUserLastName(userId: number, newlastName: string) {
+    const updadedUser = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        lastName: newlastName,
+      },
+    })
+
+    return updadedUser
+  }
+
+  async updateUserUsername(userId: number, newUsername: string) {
+    const updadedUser = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        username: newUsername,
+      },
+    })
+
+    return updadedUser
+  }
+
+  async deleteUserAccount(userId: number): Promise<User> {
+    // 1. Remove account
+    const deletedUser = await this.prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    })
+
+    // 2. Avatar exists - remove it from yandex cloud
+    if (deletedUser.avatar) {
+      await this.s3Service.deleteAvatarFile(deletedUser.avatar)
+    }
+
+    return deletedUser
   }
 }

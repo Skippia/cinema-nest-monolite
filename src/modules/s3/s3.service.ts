@@ -4,7 +4,6 @@ import {
   S3Client,
   PutObjectCommand,
   PutObjectCommandInput,
-  PutObjectCommandOutput,
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3'
@@ -36,24 +35,28 @@ export class S3Service {
     })
   }
 
-  async uploadFile(file: Express.Multer.File, key: string) {
+  async uploadFile(file: Express.Multer.File, fileName: string): Promise<string> {
     const input: PutObjectCommandInput = {
       Body: file.buffer,
       Bucket: this.bucket,
-      Key: key,
+      Key: fileName,
       ContentType: file.mimetype,
     }
 
     try {
-      const response: PutObjectCommandOutput = await this.s3.send(new PutObjectCommand(input))
-      return response
+      await this.s3.send(new PutObjectCommand(input))
+
+      const avatarUrl = this.getFileURL(fileName)
+      return avatarUrl
     } catch (err) {
       console.log('Cannot save file to s3,', err)
       throw err
     }
   }
 
-  async deleteAvatarFile(keyFileInBucket: string) {
+  async deleteAvatarFile(avatarUrl: string) {
+    const keyFileInBucket = this.getFileNameFromAvatarUrl(avatarUrl)
+
     const input = {
       Bucket: this.bucket,
       Key: keyFileInBucket,
@@ -66,6 +69,10 @@ export class S3Service {
       console.log('Cannot delete file from s3,', err)
       throw err
     }
+  }
+
+  getFileNameFromAvatarUrl(avatarUrl: string) {
+    return avatarUrl?.split('/')?.at(-1) as string
   }
 
   getFileURL(keyFileInBucket: string) {

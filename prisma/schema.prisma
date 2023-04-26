@@ -23,6 +23,7 @@ enum GenderEnum {
 enum RoleEnum {
   USER
   ADMIN
+  OWNER
 }
 
 enum CurrencyEnum {
@@ -80,7 +81,7 @@ model RTSession {
 model CinemaHall {
   id            Int                @id @default(autoincrement())
   name          String
-  cinema        Cinema             @relation(fields: [cinemaId], references: [id])
+  cinema        Cinema             @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
   cinemaId      Int
   hallType      String
   movieSessions MovieSession[]
@@ -167,7 +168,7 @@ model SeatOnCinemaHall {
   seatId       Int
   type         TypeSeat   @relation(fields: [typeSeatId], references: [id], onDelete: Cascade)
   typeSeatId   Int
-  cinemaHall   CinemaHall @relation(fields: [cinemaHallId], references: [id])
+  cinemaHall   CinemaHall @relation(fields: [cinemaHallId], references: [id], onDelete: Cascade)
   cinemaHallId Int
 
   @@id([seatId, cinemaHallId])

@@ -4,7 +4,9 @@ import { Type } from 'class-transformer'
 import { IsInt, IsDate, IsString, IsEnum, IsOptional, IsEmail } from 'class-validator'
 import { NullableToUndefinable } from '../../../common/types/utils'
 
-export class UserEntity implements NullableToUndefinable<User> {
+export class UserEntity
+  implements Omit<NullableToUndefinable<User>, 'hashedPassword' | 'createdAt' | 'updatedAt'>
+{
   constructor(user: User) {
     this.id = user.id
     this.role = user.role
@@ -16,7 +18,6 @@ export class UserEntity implements NullableToUndefinable<User> {
     this.firstName = user.firstName ?? undefined
     this.lastName = user.lastName ?? undefined
     this.avatar = user.avatar ?? undefined
-    this.hashedPassword = user?.hashedPassword ?? undefined
     this.gender = user.gender ?? undefined
   }
 
@@ -50,11 +51,6 @@ export class UserEntity implements NullableToUndefinable<User> {
     example: 'https://storage.yandexcloud.net/bucket-midapa/file1681995479808',
   })
   avatar: string | undefined
-
-  @IsOptional()
-  @IsString()
-  @ApiPropertyOptional({ example: 'hashed-string' })
-  hashedPassword: string | undefined
 
   @IsString()
   @IsEnum(RoleEnum)
@@ -92,14 +88,4 @@ export class UserEntity implements NullableToUndefinable<User> {
     example: AuthProviderEnum.LOCAL,
   })
   provider: AuthProviderEnum
-
-  @Type(() => Date)
-  @IsDate()
-  @ApiProperty({ example: '2023-03-24T10:25:01.504Z' })
-  createdAt: Date
-
-  @Type(() => Date)
-  @IsDate()
-  @ApiProperty({ example: '2023-03-24T10:25:01.504Z' })
-  updatedAt: Date
 }

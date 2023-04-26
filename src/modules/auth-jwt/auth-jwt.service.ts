@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException, Res } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
-import { Prisma, RTSession, RoleEnum, AuthProviderEnum } from '@prisma/client'
+import { Prisma, RTSession, RoleEnum, AuthProviderEnum, User } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateUserDto } from '../users/dto/create-user.dto'
@@ -20,7 +20,9 @@ export class AuthJwtService {
     private config: ConfigService,
   ) {}
 
-  async signupLocal(dto: CreateUserDto): Promise<TokensWithClientData> {
+  async signupLocal(
+    dto: CreateUserDto & { avatar?: string },
+  ): Promise<TokensWithClientData & { newUser: User }> {
     try {
       const newUser = await this.usersService.createUser({
         ...dto,
@@ -36,7 +38,7 @@ export class AuthJwtService {
 
       const newRtSession = await this.createRtSession(newUser.id, tokens.refresh_token)
 
-      return { ...tokens, rt_session_id: newRtSession.id, user_id: newUser.id }
+      return { ...tokens, rt_session_id: newRtSession.id, user_id: newUser.id, newUser }
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -235,37 +237,30 @@ export class AuthJwtService {
   ): void {
     res.cookie('Authentication', access_token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_AT_MIN),
     })
 
     res.cookie('Refresh', refresh_token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
     })
 
     res.cookie('RtSessionId', rt_session_id, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
     })
 
     res.cookie('UserId', user_id, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
     })
-  }
-
-  clearCookies(res: Response) {
-    res.clearCookie('Authentication')
-    res.clearCookie('Refresh')
-    res.clearCookie('RtSessionId')
-    res.clearCookie('UserId')
   }
 }

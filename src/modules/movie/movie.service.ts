@@ -25,19 +25,20 @@ export class MovieService {
     }
   }
 
-  async findMoviesForCinemaHall({
-    cinemaHallId,
+  async findMoviesForCinema({
+    cinemaId,
     fields,
   }: {
-    cinemaHallId: number
+    cinemaId: number
     fields?: Record<string, boolean>
   }) {
-    // Select all unique available movies from movies sessions for cinema hall by cinema hall id
+    // Select all unique available movies from movies sessions for cinema by cinema id
 
     const movieIds = (await this.prisma.$queryRaw(Prisma.sql`
-      SELECT DISTINCT("movieId") FROM "CinemaHall" as "CH"
+      SELECT DISTINCT("movieId") FROM "Cinema" AS "C"
+      JOIN "CinemaHall" as "CH" ON "C"."id" = "CH"."cinemaId"
       JOIN "MovieSession" as "MS" ON "CH"."id" = "MS"."cinemaHallId"
-      WHERE "CH".id = ${cinemaHallId} 
+      WHERE "C"."id" = ${cinemaId}
     `)) as { movieId: number }[]
 
     const movies = (await Promise.all(
