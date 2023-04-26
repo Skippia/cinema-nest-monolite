@@ -3,6 +3,7 @@ import { TypeSeatEnum } from '@prisma/client'
 import { IsInt, IsBoolean, IsString, IsEnum } from 'class-validator'
 import { ArrElement } from '../../../common/types/utils'
 import { MergedFullCinemaBookingSeatingSchema } from '../../../common/types'
+import { ArrElement } from '../../../common/types/utils'
 
 export class FindMergedCinemaBookingSeatingSchemaDto
   implements ArrElement<MergedFullCinemaBookingSeatingSchema>
