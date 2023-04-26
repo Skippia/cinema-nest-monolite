@@ -25,6 +25,7 @@
     "build": "nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:docs-gen": "NODE_ENV=documentation nest start --watch",
     "run:local": "yarn pretest:int && dotenv -e .env.test yarn start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
