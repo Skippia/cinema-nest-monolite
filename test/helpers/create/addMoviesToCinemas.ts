@@ -5,7 +5,7 @@ export async function addMoviesToCinemas(
   prisma: PrismaService,
   movieCinemaMap: { movieId: number; cinemaId: number }[],
 ): Promise<MovieOnCinema[]> {
-  const movieCinemas = await Promise.all(
+  const movieCinemas = await prisma.$transaction(
     movieCinemaMap.map((movieCinema) =>
       prisma.movieOnCinema.create({
         data: movieCinema,

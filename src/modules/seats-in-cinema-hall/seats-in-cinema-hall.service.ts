@@ -70,6 +70,7 @@ export class SeatsInCinemaHallService {
       typeSeatId: number
     }[],
   ): Promise<SeatPosWithType[]> {
+    //TODO? Replace with $transaction
     const addedSeatsToCinemaHallDoubleArray = await Promise.all(
       data.map((el) => this.addSeatsSchemaToCinemaHall(cinemaHallId, el.schema, el.typeSeatId)),
     )
