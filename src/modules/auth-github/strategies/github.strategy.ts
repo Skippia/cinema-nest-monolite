@@ -9,8 +9,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_SECRET,
       callbackURL:
-        'https://modsen-cinema-pre-dev-a3-backend.vercel.app/api/v1/auth/github/callback',
-      passReqToCallback: true,
+        'https://modsen-cinema-pre-dev-a3-backend.vercel.app/api/v1/auth/github/redirect',
       scope: ['email', 'profile'],
     })
   }

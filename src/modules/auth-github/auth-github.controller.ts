@@ -26,7 +26,7 @@ export class AuthGithubController {
     private readonly authJwtService: AuthJwtService,
   ) {}
 
-  @Get('callback')
+  @Get()
   @HttpCode(HttpStatus.PERMANENT_REDIRECT)
   @ApiOperation({ description: 'Authorize through Github' })
   @ApiOkResponse()
