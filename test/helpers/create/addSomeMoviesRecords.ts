@@ -4,10 +4,11 @@ export async function addSomeMovieRecords(
   prisma: PrismaService,
   imdbIds: string[],
 ): Promise<number[]> {
-  const newMovieRecords = await Promise.all(
-    imdbIds.map((imdbId) =>
+  const newMovieRecords = await prisma.$transaction(
+    imdbIds.map((imdbId, idx) =>
       prisma.movieRecord.create({
         data: {
+          id: idx + 1,
           imdbId,
         },
       }),

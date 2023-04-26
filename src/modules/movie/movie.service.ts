@@ -21,7 +21,7 @@ export class MovieService {
     })
 
     if (movieRecord) {
-      return movies.find((movie) => movie.id === movieRecord.imdbId)
+      return movies.find((movie) => movie.id === movieRecord.id)
     }
   }
 

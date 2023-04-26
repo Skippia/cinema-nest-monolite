@@ -21,8 +21,8 @@ describe('Movie Session endoints (e2e)', () => {
   let app: INestApplication
   let prisma: PrismaService
 
-  const imdbId1 = 'tt0068646'
-  const imdbId2 = 'tt0111161'
+  const imdbId1 = 'tt0111161'
+  const imdbId2 = 'tt0068646'
 
   const movieSessionShape = expect.objectContaining({
     id: expect.any(Number),
@@ -39,8 +39,9 @@ describe('Movie Session endoints (e2e)', () => {
   let cinemaId2: number
   let cinemaHallId1: number
   let cinemaHallId2: number
-  const durationMovie1 = movies.find((m) => m.id === imdbId1)?.duration as number // 120 min for movie1
-  const durationMovie2 = movies.find((m) => m.id === imdbId2)?.duration as number // 160 min for movie2
+  const durationMovie1 = movies.find((m) => m.imdbId === imdbId1)?.duration as number // 120 min for movie1
+  const durationMovie2 = movies.find((m) => m.imdbId === imdbId2)?.duration as number // 160 min for movie2
+
   /**
    * Create:
    *   1 user
@@ -97,6 +98,7 @@ describe('Movie Session endoints (e2e)', () => {
     // Seats for creating hall seat schema
     await createTypeSeats(prisma)
     ;[movieId1, movieId2] = await addSomeMovieRecords(prisma, [imdbId1, imdbId2])
+
     const [cinema1, cinema2] = await createCinemas(prisma)
     cinemaId1 = cinema1.id
     cinemaId2 = cinema2.id

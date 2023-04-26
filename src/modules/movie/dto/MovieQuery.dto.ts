@@ -52,6 +52,10 @@ export class MovieQueryDto implements Partial<Record<MovieField, boolean>> {
 
   @IsOptional()
   @IsBoolean()
+  imdbId?: boolean
+
+  @IsOptional()
+  @IsBoolean()
   actors?: boolean
 
   @IsOptional()
