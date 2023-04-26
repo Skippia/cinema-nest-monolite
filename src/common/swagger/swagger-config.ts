@@ -13,7 +13,9 @@ export async function initSwagger(app: NestExpressApplication, globalPrefix: str
 
   const document = SwaggerModule.createDocument(app, config)
 
-  await extractDocsJson(document)
+  if (process.env.NODE_ENV === 'documentation') {
+    await extractDocsJson(document)
+  }
 
   SwaggerModule.setup('docs', app, document, {
     customJs: [

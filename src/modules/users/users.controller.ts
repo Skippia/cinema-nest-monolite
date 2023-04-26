@@ -27,7 +27,6 @@ import { Response } from 'express'
 import { logoutFromSystem } from '../auth-jwt/helpers'
 import { ApiImageFile } from '../../common/file'
 
-
 @Controller('users')
 @ApiTags('Users')
 @UseGuards(AtGuard)
