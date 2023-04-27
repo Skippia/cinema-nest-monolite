@@ -26,9 +26,9 @@ export class BookingService {
     private readonly movieSessionService: MovieSessionService,
   ) {}
 
-  async findOneBooking(uniqueCriteria: Prisma.BookingWhereUniqueInput): Promise<Booking | null> {
-    return await this.prisma.booking.findUnique({
-      where: uniqueCriteria,
+  async findOneBooking(criteria: Prisma.BookingWhereInput): Promise<Booking | null> {
+    return await this.prisma.booking.findFirst({
+      where: criteria,
     })
   }
 
