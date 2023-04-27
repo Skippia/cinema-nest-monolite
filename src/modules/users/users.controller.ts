@@ -26,18 +26,23 @@ import { AtGuard } from '../auth-jwt/guards'
 import { Response } from 'express'
 import { logoutFromSystem } from '../auth-jwt/helpers'
 import { ApiImageFile } from '../../common/file'
+import { ACGuard, UseRoles } from 'nest-access-control'
 
 @Controller('users')
 @ApiTags('Users')
-@UseGuards(AtGuard)
+@UseGuards(AtGuard, ACGuard)
 @UseFilters(PrismaClientExceptionFilter)
 export class UsersController {
   constructor(private readonly usersService: UsersService, private readonly s3Service: S3Service) {}
 
-  // TODO: admin only
+  @UseRoles({
+    resource: 'userData',
+    action: 'read',
+    possession: 'any',
+  })
   @Get()
   @ApiOperation({
-    description: 'Get all users',
+    description: 'Get all users (admin permission is required)',
   })
   @Serialize(UserEntity)
   @ApiOkResponse({ type: UserEntity, isArray: true })
@@ -47,22 +52,31 @@ export class UsersController {
     return users
   }
 
+  @UseRoles({
+    resource: 'userData',
+    action: 'read',
+    possession: 'own',
+  })
   @Get('current')
   @ApiOperation({
-    description: 'Get current user',
+    description: 'Get current user (for current user)',
   })
   @Serialize(UserEntity)
   @ApiOkResponse({ type: UserEntity })
-  async findCurrentUser(@GetCurrentUserId() userId: number): Promise<User | null | any> {
+  async findCurrentUser(@GetCurrentUserId() userId: number): Promise<User | null> {
     const user = await this.usersService.findOneUser({ id: userId })
 
     return user
   }
 
-  // TODO: admin only
+  @UseRoles({
+    resource: 'userData',
+    action: 'read',
+    possession: 'any',
+  })
   @Get(':userId')
   @ApiOperation({
-    description: 'Get user by userId',
+    description: 'Get user by userId (admin permission is required)',
   })
   @Serialize(UserEntity)
   @ApiOkResponse({ type: UserEntity })
@@ -76,9 +90,14 @@ export class UsersController {
     return user
   }
 
+  @UseRoles({
+    resource: 'userData',
+    action: 'update',
+    possession: 'own',
+  })
   @Put('avatar')
   @ApiOperation({
-    description: 'Update avatar for current user',
+    description: 'Update avatar (for current user)',
   })
   @ApiOkResponse({ type: UserEntity })
   @ApiImageFile('avatar', true)
@@ -106,9 +125,14 @@ export class UsersController {
     return updadedUser
   }
 
+  @UseRoles({
+    resource: 'userData',
+    action: 'delete',
+    possession: 'own',
+  })
   @Delete('avatar')
   @ApiOperation({
-    description: 'Delete avatar for current user',
+    description: 'Delete avatar (for current user)',
   })
   @Serialize(UserEntity)
   @ApiCreatedResponse({ type: UserEntity })
@@ -118,9 +142,14 @@ export class UsersController {
     return updadedUser
   }
 
+  @UseRoles({
+    resource: 'userData',
+    action: 'update',
+    possession: 'own',
+  })
   @Put('first-name/:newFirstName')
   @ApiOperation({
-    description: 'Update first name for current user',
+    description: 'Update first name (for current user)',
   })
   @ApiOkResponse({ type: UserEntity })
   @Serialize(UserEntity)
@@ -133,9 +162,14 @@ export class UsersController {
     return updadedUser
   }
 
+  @UseRoles({
+    resource: 'userData',
+    action: 'update',
+    possession: 'own',
+  })
   @Put('last-name/:newLastName')
   @ApiOperation({
-    description: 'Update last name for current user',
+    description: 'Update last name (for current user)',
   })
   @ApiOkResponse({ type: UserEntity })
   @Serialize(UserEntity)
@@ -148,9 +182,14 @@ export class UsersController {
     return updadedUser
   }
 
+  @UseRoles({
+    resource: 'userData',
+    action: 'update',
+    possession: 'own',
+  })
   @Put('username/:newUsername')
   @ApiOperation({
-    description: 'Update username for current user',
+    description: 'Update username (for current user)',
   })
   @ApiOkResponse({ type: UserEntity })
   @Serialize(UserEntity)
@@ -163,13 +202,18 @@ export class UsersController {
     return updadedUser
   }
 
+  @UseRoles({
+    resource: 'userData',
+    action: 'delete',
+    possession: 'any',
+  })
   @Delete(':userId')
   @ApiOperation({
-    description: 'Delete user account by admin',
+    description: 'Delete user account (admin permission is required)',
   })
   @ApiOkResponse({ type: UserEntity })
   @Serialize(UserEntity)
-  async deleteUserAccount(
+  async deleteUserAccountByAdmin(
     @Param('userId', ParseIntPipe) userId: number,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -181,14 +225,18 @@ export class UsersController {
     return deletedUser
   }
 
-  // TODO: admin only
+  @UseRoles({
+    resource: 'userData',
+    action: 'delete',
+    possession: 'own',
+  })
   @Delete()
   @ApiOperation({
-    description: 'Delete user account by admin',
+    description: 'Delete user account (for current user)',
   })
   @ApiOkResponse({ type: UserEntity })
   @Serialize(UserEntity)
-  async deleteUserAccountByAdmin(@GetCurrentUserId() userId: number) {
+  async deleteUserAccount(@GetCurrentUserId() userId: number) {
     const deletedUser = await this.usersService.deleteUserAccount(userId)
 
     return deletedUser

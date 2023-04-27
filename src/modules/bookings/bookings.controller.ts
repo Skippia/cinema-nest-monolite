@@ -11,7 +11,6 @@ import {
   UseFilters,
   ParseIntPipe,
   UseGuards,
-  ForbiddenException,
 } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
@@ -34,9 +33,10 @@ import { MergedFullCinemaBookingSeatingSchema, SeatPosWithType } from '../../com
 import { DeleteManyDto } from '../../common/dtos/common'
 import { AtGuard } from '../auth-jwt/guards'
 import { GetCurrentUserId } from '../auth-jwt/decorators'
+import { ACGuard, UseRoles } from 'nest-access-control'
 
 @Controller('bookings')
-@UseGuards(AtGuard)
+@UseGuards(AtGuard, ACGuard)
 @ApiTags('Bookings')
 @UseFilters(PrismaClientExceptionFilter)
 export class BookingsController {
@@ -46,9 +46,14 @@ export class BookingsController {
     private readonly movieSessionService: MovieSessionService,
   ) {}
 
+  @UseRoles({
+    resource: 'bookingData',
+    action: 'read',
+    possession: 'own',
+  })
   @Get('booking-schema/:movieSessionId')
   @ApiOperation({
-    description: 'Get booking schema for movie session (by movieSessionId)',
+    description: 'Get booking schema for movie session',
   })
   @ApiOkResponse({
     type: FindMergedCinemaBookingSeatingSchemaDto,
@@ -63,7 +68,11 @@ export class BookingsController {
     return cinemaBookingSeatingSchema
   }
 
-  // TODO: only for admin permission
+  @UseRoles({
+    resource: 'bookingData',
+    action: 'read',
+    possession: 'any',
+  })
   @Get('/users/:userId')
   @ApiOperation({ description: "Get user's bookings (admin permission is required)" })
   @ApiOkResponse({ type: BookingEntity })
@@ -81,8 +90,13 @@ export class BookingsController {
     return userBookingsEntities
   }
 
+  @UseRoles({
+    resource: 'bookingData',
+    action: 'read',
+    possession: 'own',
+  })
   @Get('/users')
-  @ApiOperation({ description: 'Get bookings for current user' })
+  @ApiOperation({ description: 'Get bookings (for current user)' })
   @ApiOkResponse({ type: BookingEntity })
   async findBookingsForCurrentUser(@GetCurrentUserId() userId: number): Promise<BookingEntity[]> {
     const userBookingsData = await this.bookingsService.findBookingsDataByUser(userId)
@@ -98,8 +112,13 @@ export class BookingsController {
     return userBookingsEntities
   }
 
+  @UseRoles({
+    resource: 'bookingData',
+    action: 'delete',
+    possession: 'own',
+  })
   @Delete('/users/:movieSessionId')
-  @ApiOperation({ description: 'Cancel all bookings for current user' })
+  @ApiOperation({ description: 'Cancel all bookings for movie session (for current user)' })
   @ApiOkResponse({ type: DeleteManyDto })
   async cancelAllBookingForMovieSessionForUser(
     @Param('movieSessionId', ParseIntPipe) movieSessionId: number,
@@ -119,16 +138,24 @@ export class BookingsController {
     return deletedBookings
   }
 
+  @UseRoles({
+    resource: 'bookingData',
+    action: 'read',
+    possession: 'own',
+  })
   @Get('seats/:bookingId')
-  @ApiOperation({ description: 'Get seats by bookingId' })
+  @ApiOperation({ description: 'Get seats by bookingId (for current user)' })
   @ApiOkResponse({ type: FindSeatBookingDto, isArray: true })
   async findSeatsByBookingId(
     @Param('bookingId', ParseIntPipe) bookingId: number,
+    @GetCurrentUserId() userId: number,
   ): Promise<SeatPosWithType[]> {
-    const booking = await this.bookingsService.findOneBooking({ id: bookingId })
+    const booking = await this.bookingsService.findOneBooking({ id: bookingId, userId })
 
     if (!booking) {
-      throw new NotFoundException(`Could not find booking with ${bookingId}.`)
+      throw new NotFoundException(
+        `Could not find booking with ${bookingId} or booking is not belong to you.`,
+      )
     }
 
     const movieSession = await this.movieSessionService.findOneMovieSession({
@@ -150,16 +177,24 @@ export class BookingsController {
     return seatsByBookingId
   }
 
+  @UseRoles({
+    resource: 'bookingData',
+    action: 'read',
+    possession: 'own',
+  })
   @Get(':bookingId')
-  @ApiOperation({ description: 'Get booking info by bookingId' })
+  @ApiOperation({ description: 'Get booking info by bookingId (for current user)' })
   @ApiOkResponse({ type: BookingEntity })
-  async getBookingByBookingId(
+  async findBookingByBookingId(
     @Param('bookingId', ParseIntPipe) bookingId: number,
+    @GetCurrentUserId() userId: number,
   ): Promise<BookingEntity> {
-    const booking = await this.bookingsService.findOneBooking({ id: bookingId })
+    const booking = await this.bookingsService.findOneBooking({ id: bookingId, userId })
 
     if (!booking) {
-      throw new NotFoundException(`Could not find booking with ${bookingId}.`)
+      throw new NotFoundException(
+        `Could not find booking with ${bookingId} or booking is not belong to you.`,
+      )
     }
 
     const movieSession = await this.movieSessionService.findOneMovieSession({
@@ -183,6 +218,54 @@ export class BookingsController {
     return clientBooking
   }
 
+  @UseRoles({
+    resource: 'bookingData',
+    action: 'delete',
+    possession: 'own',
+  })
+  @Delete(':bookingId')
+  @ApiOperation({ description: 'Cancel booking by bookingId (for current user)' })
+  @ApiOkResponse({ type: BookingEntity })
+  async cancelBooking(
+    @Param('bookingId', ParseIntPipe) bookingId: number,
+    @GetCurrentUserId() userId: number,
+  ): Promise<BookingEntity> {
+    const booking = await this.bookingsService.findOneBooking({ id: bookingId, userId })
+
+    if (!booking) {
+      throw new NotFoundException(
+        `Could not find booking with ${bookingId} or booking is not belong to you.`,
+      )
+    }
+
+    const movieSession = await this.movieSessionService.findOneMovieSession({
+      id: booking.movieSessionId,
+    })
+
+    if (!movieSession) {
+      throw new NotFoundException(`Could not movie session with ${booking.movieSessionId}.`)
+    }
+
+    const mergedFullCinemaBookingSeatingSchema =
+      await this.bookingsService.findCinemaBookingSeatingSchemaByMovieSessionId(movieSession.id)
+
+    const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
+      mergedFullCinemaBookingSeatingSchema,
+      bookingId,
+    )
+
+    const clientCanceledBooking = new BookingEntity(seatsByBookingId, booking)
+
+    await this.bookingsService.cancelBooking(bookingId)
+
+    return clientCanceledBooking
+  }
+
+  @UseRoles({
+    resource: 'bookingData',
+    action: 'create',
+    possession: 'own',
+  })
   @Post()
   @ApiOperation({ description: 'Create booking' })
   @ApiOkResponse({ type: BookingEntity })
@@ -259,45 +342,5 @@ export class BookingsController {
     const newClientBookingClientBooking = new BookingEntity(seatsByBookingId, newBooking)
 
     return newClientBookingClientBooking
-  }
-
-  @Delete(':bookingId')
-  @ApiOperation({ description: 'Cancel booking by bookingId' })
-  @ApiOkResponse({ type: BookingEntity })
-  async cancelBooking(
-    @Param('bookingId', ParseIntPipe) bookingId: number,
-    @GetCurrentUserId() userId: number,
-  ): Promise<BookingEntity> {
-    const booking = await this.bookingsService.findOneBooking({ id: bookingId })
-
-    if (!booking) {
-      throw new NotFoundException(`Could not find booking with ${bookingId}.`)
-    }
-
-    if (booking.userId !== userId) {
-      throw new ForbiddenException(`The booking with id = ${bookingId} doesn't belong to you.`)
-    }
-
-    const movieSession = await this.movieSessionService.findOneMovieSession({
-      id: booking.movieSessionId,
-    })
-
-    if (!movieSession) {
-      throw new NotFoundException(`Could not movie session with ${booking.movieSessionId}.`)
-    }
-
-    const mergedFullCinemaBookingSeatingSchema =
-      await this.bookingsService.findCinemaBookingSeatingSchemaByMovieSessionId(movieSession.id)
-
-    const seatsByBookingId = await this.bookingsService.findSeatsByBookingId(
-      mergedFullCinemaBookingSeatingSchema,
-      bookingId,
-    )
-
-    const clientCanceledBooking = new BookingEntity(seatsByBookingId, booking)
-
-    await this.bookingsService.cancelBooking(bookingId)
-
-    return clientCanceledBooking
   }
 }

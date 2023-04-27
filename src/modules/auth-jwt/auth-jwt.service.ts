@@ -33,7 +33,7 @@ export class AuthJwtService {
         userId: newUser.id,
         email: newUser.email as string,
         username: newUser.username ?? undefined,
-        role: newUser.role,
+        roles: [newUser.role],
       })
 
       const newRtSession = await this.createRtSession(newUser.id, tokens.refresh_token)
@@ -66,7 +66,7 @@ export class AuthJwtService {
     const tokens = await this.generateTokens({
       userId: user.id,
       email: user.email as string,
-      role: user.role,
+      roles: [user.role],
     })
 
     const newRtSession = await this.createRtSession(user.id, tokens.refresh_token)
@@ -91,13 +91,13 @@ export class AuthJwtService {
     rtSessionId: number
     refreshToken: string
   }): Promise<TokensWithClientData> {
-    const { sub: userId, email, role } = this.jwtService.decode(refreshToken) as JwtPayload
+    const { sub: userId, email, roles } = this.jwtService.decode(refreshToken) as JwtPayload
 
     // Generate new pair of tokens and new session
     const tokens = await this.generateTokens({
       userId,
       email,
-      role,
+      roles,
     })
 
     await this.updateRtSession({
@@ -153,18 +153,18 @@ export class AuthJwtService {
     userId,
     email,
     username,
-    role,
+    roles,
   }: {
     userId: number
     email?: string
     username?: string
-    role: RoleEnum
+    roles: RoleEnum[]
   }): Promise<Tokens> {
     const jwtPayload = {
       sub: userId,
       email,
       username,
-      role,
+      roles,
     } as JwtPayload
 
     const [at, rt] = await Promise.all([

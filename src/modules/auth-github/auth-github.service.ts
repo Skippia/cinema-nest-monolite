@@ -37,7 +37,7 @@ export class AuthGithubService {
     const tokens = await this.authJwtService.generateTokens({
       userId: user.id,
       username: user.username as string,
-      role: user.role,
+      roles: [user.role],
     })
 
     const newRtSession = await this.authJwtService.createRtSession(user.id, tokens.refresh_token)
