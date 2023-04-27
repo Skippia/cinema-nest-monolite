@@ -17,9 +17,12 @@ import { SeatsInCinemaHallModule } from './modules/seats-in-cinema-hall/seats-in
 import { CinemaHallModule } from './modules/cinema-hall/cinema-hall.module'
 import { BookingModule } from './modules/bookings/bookings.module'
 import { S3Module } from './modules/s3/s3.module'
+import { AccessControlModule } from 'nest-access-control'
+import { RBAC_POLICY } from './modules/auth-jwt/rbac-policy'
 
 @Module({
   imports: [
+    AccessControlModule.forRoles(RBAC_POLICY),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
