@@ -113,7 +113,7 @@ export class AuthJwtController {
     return isLogout
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS, { name: CronEnum.REMOVE_EXPIRED_RT_SESSIONS })
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { name: CronEnum.REMOVE_EXPIRED_RT_SESSIONS })
   async testEndpoint() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const job = this.schedulerRegistry.getCronJob(CronEnum.REMOVE_EXPIRED_RT_SESSIONS)
