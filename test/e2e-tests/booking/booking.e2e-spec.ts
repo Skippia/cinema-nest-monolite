@@ -40,11 +40,15 @@ describe('Movies in cinema endoints (e2e)', () => {
   let cookies: string[]
   let userId1: number
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let cinemaHallId1: number
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let cinemaHallId2: number
 
   let movieSession1: MovieSession
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let movieSession2: MovieSession
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let movieSession3: MovieSession
 
   /**

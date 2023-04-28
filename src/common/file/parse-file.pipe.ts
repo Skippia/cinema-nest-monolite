@@ -4,6 +4,7 @@ import { ArgumentMetadata, Injectable, PipeTransform, BadRequestException } from
 export class ParseFile implements PipeTransform {
   transform(
     files: Express.Multer.File | Express.Multer.File[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     metadata: ArgumentMetadata,
   ): Express.Multer.File | Express.Multer.File[] {
     if (files === undefined || files === null) {

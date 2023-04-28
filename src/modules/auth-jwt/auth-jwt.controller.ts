@@ -19,14 +19,17 @@ import { SigninDto } from './dto'
 import { User } from '@prisma/client'
 import { UserEntity } from '../users/entity'
 import { Serialize } from '../../common/interceptors'
-import { S3Service } from '../s3/s3.service'
 import { logoutFromSystem } from './helpers'
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule'
 
 @Controller('auth')
 @ApiTags('Authorization JWT')
 @UseFilters(PrismaClientExceptionFilter)
 export class AuthJwtController {
-  constructor(private authJwtService: AuthJwtService, private readonly s3Service: S3Service) {}
+  constructor(
+    private authJwtService: AuthJwtService,
+    private readonly schedulerRegistry: SchedulerRegistry,
+  ) {}
 
   @Post('local/signup')
   @HttpCode(HttpStatus.CREATED)

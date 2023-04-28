@@ -1,0 +1,3 @@
+export enum CronEnum {
+  REMOVE_EXPIRED_RT_SESSIONS = 'REMOVE_EXPIRED_RT_SESSIONS',
+}

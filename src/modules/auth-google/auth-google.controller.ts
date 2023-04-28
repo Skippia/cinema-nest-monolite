@@ -31,7 +31,7 @@ export class AuthGoogleController {
   @ApiOperation({ description: 'Authorize through Google' })
   @ApiOkResponse()
   @UseGuards(GoogleOauthGuard)
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
   async googleAuth(@Req() req: Request) {}
 
   @ApiOperation({ description: 'Redirected here after Google authorization' })

@@ -31,7 +31,7 @@ export class AuthGithubController {
   @ApiOperation({ description: 'Authorize through Github' })
   @ApiOkResponse()
   @UseGuards(GithubOauthGuard)
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
   async githubAuth(@Req() req: Request) {}
 
   @ApiOperation({ description: 'Redirected here after Github authorization' })

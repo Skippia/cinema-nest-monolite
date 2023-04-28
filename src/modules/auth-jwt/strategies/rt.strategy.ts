@@ -29,13 +29,12 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
     if (!refreshToken) throw new ForbiddenException('RT is mailformed')
     if (!rtSessionId) throw new ForbiddenException('Not found rtSessionId')
 
-    const isValidRt = await this.authJwtService.validRefreshToken({
+    // If token is not valid - will be trown an error
+    await this.authJwtService.validRefreshToken({
       userId: payload.sub,
       rtSessionId,
       refreshToken,
     })
-
-    if (!isValidRt) throw new ForbiddenException('RT is expired')
 
     return {
       ...payload,
