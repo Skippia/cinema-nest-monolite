@@ -21,6 +21,7 @@ import { UserEntity } from '../users/entity'
 import { Serialize } from '../../common/interceptors'
 import { logoutFromSystem } from './helpers'
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule'
+import { CronEnum } from '../../common/constants'
 
 @Controller('auth')
 @ApiTags('Authorization JWT')
@@ -110,5 +111,14 @@ export class AuthJwtController {
     logoutFromSystem(res)
 
     return isLogout
+  }
+
+  @Cron(CronExpression.EVERY_10_SECONDS, { name: CronEnum.REMOVE_EXPIRED_RT_SESSIONS })
+  async testEndpoint() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const job = this.schedulerRegistry.getCronJob(CronEnum.REMOVE_EXPIRED_RT_SESSIONS)
+
+    // Remove all expired RT sessions
+    await this.authJwtService.removeExpiredRtSessions()
   }
 }
