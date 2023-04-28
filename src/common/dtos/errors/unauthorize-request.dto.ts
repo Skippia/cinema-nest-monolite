@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsInt, IsString, IsNotEmpty } from 'class-validator'
-import { HttpError } from '../../../app.constants'
+import { HttpError } from '../../constants/error.constants'
 
 export class UnauthorizeRequestDto {
   @IsInt()

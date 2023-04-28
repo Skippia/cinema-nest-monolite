@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsInt, IsString, IsNotEmpty } from 'class-validator'
 import { HttpStatus } from '@nestjs/common'
-import { HttpError } from '../../../app.constants'
+import { HttpError } from '../../constants/error.constants'
 
 export class ConflictRequestDto {
   @IsInt()

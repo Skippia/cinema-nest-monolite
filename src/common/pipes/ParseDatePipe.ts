@@ -2,6 +2,7 @@ import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from
 
 @Injectable()
 export class ParseDatePipe implements PipeTransform<string, string> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   transform(maybeDate: string, metadata: ArgumentMetadata): string {
     function isDateOnly(dateString: string) {
       const date = new Date(maybeDate)

@@ -19,9 +19,11 @@ import { BookingModule } from './modules/bookings/bookings.module'
 import { S3Module } from './modules/s3/s3.module'
 import { AccessControlModule } from 'nest-access-control'
 import { RBAC_POLICY } from './modules/auth-jwt/rbac-policy'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     AccessControlModule.forRoles(RBAC_POLICY),
     ConfigModule.forRoot({
       isGlobal: true,
