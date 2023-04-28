@@ -12,7 +12,7 @@
     "db:clear": "ts-node -r tsconfig-paths/register prisma/clearDb.ts",
     "pretest:int": "yarn db:restart && dotenv -e .env.test -- prisma migrate reset --force",
     "test:e2e:restart": "yarn pretest:int && yarn test:e2e",
-    "test:e2e": "dotenv -e .env.test -- jest -i --no-cache --config ./test/jest-e2e.json --verbose",
+    "test:e2e": "dotenv -e .env.test -- jest -i --no-cache --config ./test/jest-e2e.json --verbose --forceExit",
     "studio": "npx prisma studio",
     "seed": "ts-node -r tsconfig-paths/register prisma/seed.ts",
     "prisma:format": "npx prisma format",

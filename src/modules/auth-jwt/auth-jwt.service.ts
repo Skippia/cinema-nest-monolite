@@ -77,7 +77,7 @@ export class AuthJwtService {
   async logout(userId: number): Promise<boolean> {
     await this.prisma.rTSession.deleteMany({
       where: {
-        userId: userId,
+        userId,
       },
     })
 
@@ -202,7 +202,7 @@ export class AuthJwtService {
     userId: number
     rtSessionId: number
     refreshToken: string
-  }) {
+  }): Promise<void> {
     const user = await this.usersService.findOneUser({ id: userId })
 
     // 1. Check if user with such RT exists
@@ -215,10 +215,7 @@ export class AuthJwtService {
 
     const isEqual = bcrypt.compareSync(refreshToken, rtSession.hashedRt)
 
-    // 3. Check if getted from client RT has the same hash as "hashed version" of this RT in DB
     if (!isEqual) throw new ForbiddenException('Your RT is malformed')
-
-    return isEqual
   }
 
   addTokensToCookies(
@@ -262,5 +259,17 @@ export class AuthJwtService {
       sameSite: 'none',
       expires: new Date(Date.now() + 1000 * 60 * EXPIRES_IN_RT_MIN),
     })
+  }
+
+  async removeExpiredRtSessions(): Promise<Prisma.BatchPayload> {
+    const deletedExpiredRtSessionsAmount = await this.prisma.rTSession.deleteMany({
+      where: {
+        rtExpDate: {
+          lte: new Date(),
+        },
+      },
+    })
+
+    return deletedExpiredRtSessionsAmount
   }
 }
