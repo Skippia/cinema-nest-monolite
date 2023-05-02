@@ -8,6 +8,10 @@ import path from 'path'
 import fs from 'fs/promises'
 import { S3Service } from '../s3/s3.service'
 
+// 1. Folder to save screenshot from trailer
+// const folderPathRoot = path.join('/home/lormida/tmp')
+const folderPathRoot = '/tmp'
+
 @Injectable()
 export class MovieService {
   constructor(private readonly prisma: PrismaService, private readonly s3Service: S3Service) {}
@@ -115,8 +119,6 @@ export class MovieService {
     else {
       const trailerUrl = movie.trailer
 
-      // 1. Folder to save screenshot from trailer
-      const folderPathRoot = path.join('/home/lormida/tmp')
       const folderPath = path.join(
         folderPathRoot,
         `${Date.now()}-${movieId}-${Math.round(Math.random() * 100)}`,
