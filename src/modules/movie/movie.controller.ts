@@ -1,11 +1,11 @@
 import { Controller, UseFilters, Get, Param, ParseIntPipe, NotFoundException } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger'
 import { NotFoundResponseDto } from '../../common/dtos/errors'
-import { Serialize } from '../../common/interceptors'
 import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { MovieEntity } from './entity'
 import { MovieService } from './movie.service'
 import { GetMovieQuery } from './decorators'
+import { Serialize } from 'src/common/interceptors'
 
 @Controller('movies')
 @ApiTags('Movie')
@@ -52,4 +52,20 @@ export class MovieController {
 
     return movie
   }
+
+  //   // eslint-disable-next-line @darraghor/nestjs-typed/api-method-should-specify-api-response
+  //   @Get('/test/preview')
+  //   async test() {
+  //     try {
+  //       Promise.all(
+  //         new Array(100)
+  //           .fill('*')
+  //           .map((el, idx) => idx + 1)
+  //           .map((id) => this.findOneMovie(id)),
+  //       )
+  //       return { status: 'success' }
+  //     } catch (e) {
+  //       console.log(e)
+  //     }
+  //   }
 }

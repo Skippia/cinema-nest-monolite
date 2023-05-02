@@ -4,16 +4,23 @@ import movies from '../../../data/movies.json'
 import { Movie } from './types'
 import { Prisma } from '@prisma/client'
 import { MovieField } from './dto'
+import path from 'path'
+import fs from 'fs/promises'
+import { S3Service } from '../s3/s3.service'
+
+// 1. Folder to save screenshot from trailer
+// const folderPathRoot = path.join('/home/lormida/tmp')
+const folderPathRoot = '/tmp'
 
 @Injectable()
 export class MovieService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly s3Service: S3Service) {}
 
   async findAllMovies(): Promise<Movie[]> {
     return movies
   }
 
-  async findOneMovie(id: number): Promise<Movie | undefined> {
+  async findOneMovie(id: number, redirect = false): Promise<Movie | undefined> {
     const movieRecord = await this.prisma.movieRecord.findUnique({
       where: {
         id,
@@ -21,7 +28,18 @@ export class MovieService {
     })
 
     if (movieRecord) {
-      return movies.find((movie) => movie.id === movieRecord.id)
+      const movie = movies.find((movie) => movie.id === movieRecord.id)
+
+      if (!movie) return
+
+      if (redirect) {
+        return movie
+      }
+
+      const thumbnailPreviewImageFromTrailer =
+        await this.generateOrReturnThumbnailPreviewUrlForMovie(id)
+
+      return { ...movie, thumbnailPreviewImageFromTrailer }
     }
   }
 
@@ -57,5 +75,91 @@ export class MovieService {
     })
 
     return moviesPartialData
+  }
+
+  async updateMovie(movieId: number, updatedMovie: Movie): Promise<Movie> {
+    const filePath = path.join(__dirname, '../../../data/movies.json').replace('dist/', '')
+    const idx = movies.findIndex((el) => el.id === movieId)
+
+    movies[idx] = updatedMovie as any
+
+    await fs.writeFile(filePath, JSON.stringify(movies))
+
+    return updatedMovie
+  }
+
+  async updateLinkImagePreviewImageForTrailer({
+    movieId,
+    urlFileNamePreviewImageFromTrailer,
+  }: {
+    movieId: number
+    urlFileNamePreviewImageFromTrailer: string
+  }): Promise<string> {
+    const movie = await this.findOneMovie(movieId, true)
+
+    const updatedMovie = {
+      ...movie,
+      thumbnailPreviewImageFromTrailer: urlFileNamePreviewImageFromTrailer,
+    } as Movie
+
+    await this.updateMovie(movieId, updatedMovie)
+
+    return urlFileNamePreviewImageFromTrailer
+  }
+
+  async generateOrReturnThumbnailPreviewUrlForMovie(movieId: number): Promise<string | undefined> {
+    const movie = (await this.findOneMovie(movieId, true)) as Movie
+
+    // Preview already exists - return it
+    if (movie.thumbnailPreviewImageFromTrailer) {
+      return movie.thumbnailPreviewImageFromTrailer
+    }
+
+    // Preview is not exist - generate it
+    else {
+      const trailerUrl = movie.trailer
+
+      const folderPath = path.join(
+        folderPathRoot,
+        `${Date.now()}-${movieId}-${Math.round(Math.random() * 100)}`,
+      )
+
+      // 2. Get name of future loaded screenshot
+      const fileNamePreviewImageFromTrailer =
+        this.s3Service.generateFileNameFromTrailerUrl(trailerUrl)
+
+      // 3. Download video and save in temporal folder (with `salt`)
+
+      const generatedLink = await this.s3Service.downloadVideoAndSaveInFolder({
+        callback: async () => {
+          // 4. Try to load this screenshot in cloud storage and get url link
+          const generatedLink = await this.s3Service.uploadImagePreviewImageFromTrailer({
+            folderPath,
+            fileName: fileNamePreviewImageFromTrailer,
+          })
+
+          // 5. Remove tmp screenshot along with folder
+          await fs.rmdir(folderPath, { recursive: true })
+
+          // During loading file to cloud storage has occured error
+          if (!generatedLink) {
+            return undefined
+          }
+
+          // 6. Update movie
+          this.updateLinkImagePreviewImageForTrailer({
+            movieId,
+            urlFileNamePreviewImageFromTrailer: generatedLink,
+          })
+
+          return generatedLink
+        },
+        trailerUrl,
+        folderPath,
+        fileName: fileNamePreviewImageFromTrailer,
+      })
+
+      return generatedLink
+    }
   }
 }

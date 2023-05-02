@@ -6,6 +6,7 @@ export interface Movie {
   rating: number
   releaseYear: number
   image: string
+  thumbnailPreviewImageFromTrailer?: string
   description: string
   trailer: string
   genres: string[]

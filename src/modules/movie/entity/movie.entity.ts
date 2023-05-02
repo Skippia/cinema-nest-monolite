@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsArray, IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 import { Movie } from '../types/movie.type'
 
 export class MovieEntity {
@@ -12,6 +12,7 @@ export class MovieEntity {
     this.releaseYear = movie.releaseYear
     this.image = movie.image
     this.description = movie.description
+    this.thumbnailPreviewImageFromTrailer = movie.thumbnailPreviewImageFromTrailer
     this.trailer = movie.trailer
     this.genres = movie.genres
     this.authors = movie.authors
@@ -63,6 +64,15 @@ export class MovieEntity {
       'https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_QL75_UX380_CR0,1,380,562_.jpg',
   })
   image: string
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @ApiPropertyOptional({
+    example:
+      'https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_QL75_UX380_CR0,1,380,562_.jpg',
+  })
+  thumbnailPreviewImageFromTrailer?: string
 
   @IsString()
   @IsNotEmpty()

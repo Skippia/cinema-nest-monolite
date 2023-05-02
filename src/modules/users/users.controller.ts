@@ -124,7 +124,6 @@ export class UsersController {
 
     return updadedUser
   }
-
   @UseRoles({
     resource: 'userData',
     action: 'delete',
