@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types */
+import fs from 'fs/promises'
 import { ConfigService } from '@nestjs/config'
 import { Injectable } from '@nestjs/common'
 import {
@@ -7,6 +9,9 @@ import {
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3'
+import path from 'path'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ffmpeg = require('fluent-ffmpeg')
 
 @Injectable()
 export class S3Service {
@@ -35,6 +40,13 @@ export class S3Service {
     })
   }
 
+  generateFileNameFromTrailerUrl(trailerUrl: string) {
+    const trailerName = this.getFileNameFromUrl(trailerUrl)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [name, _] = trailerName.split('.')
+    return `${name}-img-preview.png`
+  }
+
   async uploadFile(file: Express.Multer.File, fileName: string): Promise<string> {
     const input: PutObjectCommandInput = {
       Body: file.buffer,
@@ -55,7 +67,7 @@ export class S3Service {
   }
 
   async deleteAvatarFile(avatarUrl: string) {
-    const keyFileInBucket = this.getFileNameFromAvatarUrl(avatarUrl)
+    const keyFileInBucket = this.getFileNameFromUrl(avatarUrl)
 
     const input = {
       Bucket: this.bucket,
@@ -71,11 +83,99 @@ export class S3Service {
     }
   }
 
-  getFileNameFromAvatarUrl(avatarUrl: string) {
-    return avatarUrl?.split('/')?.at(-1) as string
+  getFileNameFromUrl(avatarUrl: string) {
+    return decodeURIComponent(avatarUrl?.split('/')?.at(-1) as string)
   }
 
   getFileURL(keyFileInBucket: string) {
-    return `${this.endpoint}/${this.bucket}/${keyFileInBucket}`
+    return `${this.endpoint}/${this.bucket}/${encodeURIComponent(keyFileInBucket)}`
+  }
+
+  downloadVideoAndSaveInFolder({
+    trailerUrl,
+    fileName,
+    folderPath,
+  }: {
+    trailerUrl: string
+    fileName: string
+    folderPath: string
+  }) {
+    ffmpeg()
+      .input(trailerUrl)
+      .on('filenames', (filenames: any) => console.log('Filenames', filenames))
+      .on('end', function () {
+        console.log('Screenshots taken')
+      })
+      .on('error', function (err: any) {
+        console.error('error ', err)
+      })
+      .takeScreenshots(
+        {
+          filename: fileName,
+          timemarks: [10],
+        },
+        folderPath,
+      )
+  }
+
+  async uploadImagePreviewImageFromTrailer({
+    folderPath,
+    fileName,
+  }: {
+    folderPath: string
+    fileName: string
+  }): Promise<string> {
+    const debounce = (fn: Function, ms = 300): any => {
+      let timeoutId: ReturnType<typeof setTimeout>
+      return function (this: any, ...args: any[]) {
+        clearTimeout(timeoutId)
+        timeoutId = setTimeout(() => fn.apply(this, args), ms)
+      }
+    }
+
+    async function createPath(path: string) {
+      try {
+        await fs.access(path)
+      } catch (err) {
+        if ((err as any)?.code === 'ENOENT') {
+          // check if directory doesn't exist
+          await fs.mkdir(path, { recursive: true })
+        } else {
+          throw err // re-throw the error if it's not "directory doesn't exist"
+        }
+      }
+    }
+
+    await createPath(folderPath)
+
+    //@ts-expect-error 123
+    for await (const { filename } of debounce(fs.watch(folderPath))) {
+      // 1. If right file was added to tracked folder
+      if (filename === fileName) {
+        // 2. Get full path to file that should be uploaded
+        const filePath = path.join(folderPath, fileName)
+
+        const data = await fs.readFile(filePath)
+
+        // 3. Create an Express.Multer.File object from the buffer
+        const file = {
+          fieldname: 'file',
+          originalname: fileName,
+          encoding: 'utf-8',
+          mimetype: 'image/png',
+          buffer: data,
+          size: data.length,
+        }
+
+        // 4. Upload file to yandex cloud storage
+        await this.uploadFile(file as Express.Multer.File, fileName)
+
+        break
+      }
+    }
+    // 5. Generate url link based on filename
+    const fileUrl = this.getFileURL(fileName)
+
+    return fileUrl
   }
 }
