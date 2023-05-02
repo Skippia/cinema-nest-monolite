@@ -59,6 +59,10 @@ export class MovieService {
       WHERE "C"."id" = ${cinemaId}
     `)) as { movieId: number }[]
 
+    if (movieIds.length === 0) {
+      return []
+    }
+
     const movies = (await Promise.all(
       movieIds.map((el) => this.findOneMovie(el.movieId)),
     )) as Movie[]
