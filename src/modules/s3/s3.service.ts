@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+import { debounce } from './../../common/helpers/debounce'
 import fs from 'fs/promises'
 import { ConfigService } from '@nestjs/config'
 import { Injectable } from '@nestjs/common'
@@ -10,6 +10,7 @@ import {
   DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3'
 import path from 'path'
+import { createPath } from './helpers'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ffmpeg = require('fluent-ffmpeg')
 
@@ -125,30 +126,9 @@ export class S3Service {
     folderPath: string
     fileName: string
   }): Promise<string> {
-    const debounce = (fn: Function, ms = 300): any => {
-      let timeoutId: ReturnType<typeof setTimeout>
-      return function (this: any, ...args: any[]) {
-        clearTimeout(timeoutId)
-        timeoutId = setTimeout(() => fn.apply(this, args), ms)
-      }
-    }
-
-    async function createPath(path: string) {
-      try {
-        await fs.access(path)
-      } catch (err) {
-        if ((err as any)?.code === 'ENOENT') {
-          // check if directory doesn't exist
-          await fs.mkdir(path, { recursive: true })
-        } else {
-          throw err // re-throw the error if it's not "directory doesn't exist"
-        }
-      }
-    }
-
     await createPath(folderPath)
 
-    //@ts-expect-error 123
+    //@ts-expect-error idk how to avoid it
     for await (const { filename } of debounce(fs.watch(folderPath))) {
       // 1. If right file was added to tracked folder
       if (filename === fileName) {

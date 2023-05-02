@@ -77,8 +77,7 @@ export class MovieService {
     const filePath = path.join(__dirname, '../../../data/movies.json').replace('dist/', '')
     const idx = movies.findIndex((el) => el.id === movieId)
 
-    // @ts-expect-error since static analysis bothers
-    movies[idx] = updatedMovie
+    movies[idx] = updatedMovie as any
 
     await fs.writeFile(filePath, JSON.stringify(movies))
 
@@ -127,6 +126,7 @@ export class MovieService {
       const fileNamePreviewImageFromTrailer =
         this.s3Service.generateFileNameFromTrailerUrl(trailerUrl)
 
+      console.log('download video')
       // 3. Download video and save in temporal folder (with `salt`)
       this.s3Service.downloadVideoAndSaveInFolder({
         trailerUrl,
