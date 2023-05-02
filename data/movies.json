@@ -71,8 +71,7 @@
     ],
     "duration": 120,
     "countries": ["Indonesia", "United Kingdom"],
-    "id": 2,
-    "thumbnailPreviewImageFromTrailer": "https://storage.yandexcloud.net/bucket-midapa/The%20Godfather%20Trailer%20(HD)-img-preview.png"
+    "id": 2
   },
   {
     "title": "The Dark Knight",
@@ -3722,7 +3721,6 @@
     ],
     "duration": 98,
     "countries": ["United Kingdom"],
-    "id": 100,
-    "thumbnailPreviewImageFromTrailer": "https://storage.yandexcloud.net/bucket-midapa/Vertigo%20Official%20Trailer%20%231%20-%20(1958)%20HD-img-preview.png"
+    "id": 100
   }
 ]

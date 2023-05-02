@@ -5,7 +5,7 @@ import { PrismaClientExceptionFilter } from '../prisma/prisma-client-exception'
 import { MovieEntity } from './entity'
 import { MovieService } from './movie.service'
 import { GetMovieQuery } from './decorators'
-import { Serialize } from 'src/common/interceptors'
+import { Serialize } from '../../common/interceptors'
 
 @Controller('movies')
 @ApiTags('Movie')

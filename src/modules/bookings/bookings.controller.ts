@@ -95,7 +95,7 @@ export class BookingsController {
     action: 'read',
     possession: 'own',
   })
-  @Get('/users')
+  @Get('/users/current')
   @ApiOperation({ description: 'Get bookings (for current user)' })
   @ApiOkResponse({ type: BookingEntity })
   async findBookingsForCurrentUser(@GetCurrentUserId() userId: number): Promise<BookingEntity[]> {
