@@ -71,28 +71,6 @@ export class BookingsController {
   @UseRoles({
     resource: 'bookingData',
     action: 'read',
-    possession: 'any',
-  })
-  @Get('/users/:userId')
-  @ApiOperation({ description: "Get user's bookings (admin permission is required)" })
-  @ApiOkResponse({ type: BookingEntity })
-  async findBookingsByUser(
-    @Param('userId', ParseIntPipe) userId: number,
-  ): Promise<BookingEntity[]> {
-    const userBookingsData = await this.bookingsService.findBookingsDataByUser(userId)
-
-    const userBookings = await this.bookingsService.findUserBookingsWithSeats(userBookingsData)
-
-    const userBookingsEntities = userBookings.map(
-      ({ seatsByBookingId, booking }) => new BookingEntity(seatsByBookingId, booking),
-    )
-
-    return userBookingsEntities
-  }
-
-  @UseRoles({
-    resource: 'bookingData',
-    action: 'read',
     possession: 'own',
   })
   @Get('/users/current')
@@ -106,6 +84,28 @@ export class BookingsController {
     )
 
     const userBookingsEntities = userBookingsWithSeats.map(
+      ({ seatsByBookingId, booking }) => new BookingEntity(seatsByBookingId, booking),
+    )
+
+    return userBookingsEntities
+  }
+
+  @UseRoles({
+    resource: 'bookingData',
+    action: 'read',
+    possession: 'any',
+  })
+  @Get('/users/:userId')
+  @ApiOperation({ description: "Get user's bookings (admin permission is required)" })
+  @ApiOkResponse({ type: BookingEntity })
+  async findBookingsByUser(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<BookingEntity[]> {
+    const userBookingsData = await this.bookingsService.findBookingsDataByUser(userId)
+
+    const userBookings = await this.bookingsService.findUserBookingsWithSeats(userBookingsData)
+
+    const userBookingsEntities = userBookings.map(
       ({ seatsByBookingId, booking }) => new BookingEntity(seatsByBookingId, booking),
     )
 
