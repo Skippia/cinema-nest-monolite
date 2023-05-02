@@ -103,7 +103,7 @@ export class MovieService {
     return urlFileNamePreviewImageFromTrailer
   }
 
-  async generateOrReturnThumbnailPreviewUrlForMovie(movieId: number): Promise<string> {
+  async generateOrReturnThumbnailPreviewUrlForMovie(movieId: number): Promise<string | undefined> {
     const movie = (await this.findOneMovie(movieId, true)) as Movie
 
     // Preview already exists - return it
@@ -126,27 +126,35 @@ export class MovieService {
       const fileNamePreviewImageFromTrailer =
         this.s3Service.generateFileNameFromTrailerUrl(trailerUrl)
 
-      console.log('download video')
       // 3. Download video and save in temporal folder (with `salt`)
-      this.s3Service.downloadVideoAndSaveInFolder({
+
+      const generatedLink = await this.s3Service.downloadVideoAndSaveInFolder({
+        callback: async () => {
+          // 4. Try to load this screenshot in cloud storage and get url link
+          const generatedLink = await this.s3Service.uploadImagePreviewImageFromTrailer({
+            folderPath,
+            fileName: fileNamePreviewImageFromTrailer,
+          })
+
+          // 5. Remove tmp screenshot along with folder
+          await fs.rmdir(folderPath, { recursive: true })
+
+          // During loading file to cloud storage has occured error
+          if (!generatedLink) {
+            return undefined
+          }
+
+          // 6. Update movie
+          this.updateLinkImagePreviewImageForTrailer({
+            movieId,
+            urlFileNamePreviewImageFromTrailer: generatedLink,
+          })
+
+          return generatedLink
+        },
         trailerUrl,
         folderPath,
         fileName: fileNamePreviewImageFromTrailer,
-      })
-
-      // 4. Load this screenshot in cloud storage and get url link
-      const generatedLink = await this.s3Service.uploadImagePreviewImageFromTrailer({
-        folderPath,
-        fileName: fileNamePreviewImageFromTrailer,
-      })
-
-      // 5. Remove tmp screenshot along with folder
-      await fs.rmdir(folderPath, { recursive: true })
-
-      // 6. Update movie
-      this.updateLinkImagePreviewImageForTrailer({
-        movieId,
-        urlFileNamePreviewImageFromTrailer: generatedLink,
       })
 
       return generatedLink

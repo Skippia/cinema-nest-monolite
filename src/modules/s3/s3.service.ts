@@ -1,4 +1,3 @@
-import { debounce } from './../../common/helpers/debounce'
 import fs from 'fs/promises'
 import { ConfigService } from '@nestjs/config'
 import { Injectable } from '@nestjs/common'
@@ -10,7 +9,6 @@ import {
   DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3'
 import path from 'path'
-import { createPath } from './helpers'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ffmpeg = require('fluent-ffmpeg')
 
@@ -59,8 +57,8 @@ export class S3Service {
     try {
       await this.s3.send(new PutObjectCommand(input))
 
-      const avatarUrl = this.getFileURL(fileName)
-      return avatarUrl
+      const url = this.getFileURL(fileName)
+      return url
     } catch (err) {
       console.log('Cannot save file to s3,', err)
       throw err
@@ -96,27 +94,34 @@ export class S3Service {
     trailerUrl,
     fileName,
     folderPath,
+    callback,
   }: {
     trailerUrl: string
     fileName: string
     folderPath: string
-  }) {
-    ffmpeg()
-      .input(trailerUrl)
-      .on('filenames', (filenames: any) => console.log('Filenames', filenames))
-      .on('end', function () {
-        console.log('Screenshots taken')
-      })
-      .on('error', function (err: any) {
-        console.error('error ', err)
-      })
-      .takeScreenshots(
-        {
-          filename: fileName,
-          timemarks: [10],
-        },
-        folderPath,
-      )
+    callback: (...args: any[]) => Promise<string | undefined>
+  }): Promise<string | undefined> {
+    return new Promise((resolve, reject) => {
+      ffmpeg()
+        .input(trailerUrl)
+        .on('end', async () => {
+          // Screenshot was saved and file is available for reading - run callback
+          const generatedLink = await callback()
+
+          resolve(generatedLink)
+        })
+        .on('error', function (err: any) {
+          console.error('error ', err)
+          reject()
+        })
+        .takeScreenshots(
+          {
+            filename: fileName,
+            timemarks: [10],
+          },
+          folderPath,
+        )
+    })
   }
 
   async uploadImagePreviewImageFromTrailer({
@@ -125,37 +130,25 @@ export class S3Service {
   }: {
     folderPath: string
     fileName: string
-  }): Promise<string> {
-    await createPath(folderPath)
+  }): Promise<string | undefined> {
+    // 1. Get full path to file that should be uploaded
+    const filePath = path.join(folderPath, fileName)
 
-    //@ts-expect-error idk how to avoid it
-    for await (const { filename } of debounce(fs.watch(folderPath))) {
-      // 1. If right file was added to tracked folder
-      if (filename === fileName) {
-        // 2. Get full path to file that should be uploaded
-        const filePath = path.join(folderPath, fileName)
+    const data = await fs.readFile(filePath)
 
-        const data = await fs.readFile(filePath)
-
-        // 3. Create an Express.Multer.File object from the buffer
-        const file = {
-          fieldname: 'file',
-          originalname: fileName,
-          encoding: 'utf-8',
-          mimetype: 'image/png',
-          buffer: data,
-          size: data.length,
-        }
-
-        // 4. Upload file to yandex cloud storage
-        await this.uploadFile(file as Express.Multer.File, fileName)
-
-        break
-      }
+    // 2. Create an Express.Multer.File object from the buffer
+    const file = {
+      fieldname: 'file',
+      originalname: fileName,
+      encoding: 'utf-8',
+      mimetype: 'image/png',
+      buffer: data,
+      size: data.length,
     }
-    // 5. Generate url link based on filename
-    const fileUrl = this.getFileURL(fileName)
 
-    return fileUrl
+    // 3. Upload file to yandex cloud storage
+    const loadedUrl = await this.uploadFile(file as Express.Multer.File, fileName)
+
+    return loadedUrl
   }
 }

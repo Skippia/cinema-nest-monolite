@@ -52,4 +52,20 @@ export class MovieController {
 
     return movie
   }
+
+  //   // eslint-disable-next-line @darraghor/nestjs-typed/api-method-should-specify-api-response
+  //   @Get('/test/preview')
+  //   async test() {
+  //     try {
+  //       Promise.all(
+  //         new Array(100)
+  //           .fill('*')
+  //           .map((el, idx) => idx + 1)
+  //           .map((id) => this.findOneMovie(id)),
+  //       )
+  //       return { status: 'success' }
+  //     } catch (e) {
+  //       console.log(e)
+  //     }
+  //   }
 }
