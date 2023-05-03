@@ -288,6 +288,10 @@ export class BookingsController {
 
     const daysGapRelatevilyNow = getDaysGapRelatevilyNow(movieSession.startDate)
 
+    if (daysGapRelatevilyNow < 0) {
+      throw new BadRequestException(`This movie session was ${-daysGapRelatevilyNow} day(s) ago`)
+    }
+
     // 2. Check date for booking (if it's allowed)
     const isBookingAllowed = daysGapRelatevilyNow < MIN_DAYS_UNTIL_BOOKING
 

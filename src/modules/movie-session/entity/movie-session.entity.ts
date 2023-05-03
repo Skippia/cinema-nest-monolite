@@ -6,7 +6,11 @@ import { HallTypeEnum } from '../../../modules/seats-in-cinema-hall/utils/types'
 
 export class MovieSessionEntity implements MovieSession {
   constructor(
-    movieSession: MovieSession & { hallType: HallTypeEnum; amountAvailableSeats?: number },
+    movieSession: MovieSession & {
+      hallType: HallTypeEnum
+      amountAvailableSeats?: number
+      amountReservedSeats?: number
+    },
   ) {
     this.id = movieSession.id
     this.startDate = movieSession.startDate
@@ -17,6 +21,7 @@ export class MovieSessionEntity implements MovieSession {
     this.currency = movieSession.currency
     this.hallType = movieSession?.hallType
     this.amountAvailableSeats = movieSession?.amountAvailableSeats
+    this.amountReservedSeats = movieSession?.amountReservedSeats
   }
 
   @IsInt()
@@ -49,6 +54,11 @@ export class MovieSessionEntity implements MovieSession {
   @IsInt()
   @ApiPropertyOptional({ example: 5 })
   amountAvailableSeats?: number
+
+  @IsOptional()
+  @IsInt()
+  @ApiPropertyOptional({ example: 2 })
+  amountReservedSeats?: number
 
   @IsString()
   @IsEnum(CurrencyEnum)
