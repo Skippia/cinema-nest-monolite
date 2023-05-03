@@ -21,6 +21,10 @@ export class MovieSessionService {
       moviesSessionsWithHall.map((el) => this.getAmountAvailableSeatsInMovieSession(el.id)),
     )
 
+    const amountReservedSeatsArray = await Promise.all(
+      moviesSessionsWithHall.map((el) => this.getAmountReservedSeatsInMovieSession(el.id)),
+    )
+
     const moviesSessions = moviesSessionsWithHall.map((el, idx) => ({
       id: el.id,
       price: el.price,
@@ -31,6 +35,7 @@ export class MovieSessionService {
       cinemaHallId: el.cinemaHallId,
       hallType: el.cinemaHall.hallType as HallTypeEnum,
       amountAvailableSeats: amountAvailableSeatsArray[idx],
+      amountReservedSeats: amountReservedSeatsArray[idx],
     }))
 
     return moviesSessions as FullMovieSession[]
@@ -68,7 +73,11 @@ export class MovieSessionService {
       movieSessionWithHall.id,
     )
 
-    return { ...movieSession, amountAvailableSeats }
+    const amountReservedSeats = await this.getAmountReservedSeatsInMovieSession(
+      movieSessionWithHall.id,
+    )
+
+    return { ...movieSession, amountAvailableSeats, amountReservedSeats }
   }
 
   async createMovieSession({
@@ -179,20 +188,38 @@ export class MovieSessionService {
   }
 
   async getAmountAvailableSeatsInMovieSession(movieSessionId: number): Promise<number> {
+    // All seats for this session in cinema hall - amount of seats for all bookings on this movie session
     const amountAvailableSeatsInMovieSession = (await this.prisma.$queryRaw(Prisma.sql`
     SELECT 
       CAST(
         (SELECT COUNT(*) FROM "SeatOnCinemaHall"
         WHERE "SeatOnCinemaHall"."cinemaHallId" =
           (
-            SELECT "cinemaHallId" FROM "MovieSession" as "M"
-            JOIN "CinemaHall" as "CH" ON "M"."cinemaHallId" = "CH"."id"
-            WHERE "M"."id" = ${movieSessionId}
+            SELECT "cinemaHallId" FROM "MovieSession" as "MS"
+            JOIN "CinemaHall" as "CH" ON "MS"."cinemaHallId" = "CH"."id"
+            WHERE "MS"."id" = ${movieSessionId}
           )
         ) 
+
         -
+
         (SELECT COUNT(*) FROM "Booking" AS "B"
-        JOIN "SeatOnBooking" as "SB" ON "B"."movieSessionId" = "SB"."bookingId"
+        JOIN "SeatOnBooking" as "SB" ON "B"."id" = "SB"."bookingId"
+        WHERE "B"."movieSessionId" = ${movieSessionId}
+        ) as INTEGER
+      ) AS "result";
+    `)) as { result: number }[]
+
+    return amountAvailableSeatsInMovieSession[0].result
+  }
+
+  async getAmountReservedSeatsInMovieSession(movieSessionId: number): Promise<number> {
+    // All seats for this session in cinema hall - amount of seats for each booking on this movie session
+    const amountAvailableSeatsInMovieSession = (await this.prisma.$queryRaw(Prisma.sql`
+    SELECT 
+      CAST(        
+        (SELECT COUNT(*) FROM "Booking" AS "B"
+        JOIN "SeatOnBooking" as "SB" ON "B"."id" = "SB"."bookingId"
         WHERE "B"."movieSessionId" = ${movieSessionId}
         ) as INTEGER
       ) AS "result";
