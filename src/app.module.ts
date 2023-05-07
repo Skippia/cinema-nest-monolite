@@ -27,6 +27,7 @@ import { ScheduleModule } from '@nestjs/schedule'
     AccessControlModule.forRoles(RBAC_POLICY),
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: './.env',
     }),
     PrismaModule,
     SeatModule,

@@ -1,13 +1,14 @@
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy, VerifyCallback } from 'passport-google-oauth20'
 import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor() {
+  constructor(config: ConfigService) {
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
+      clientID: config.get<string>('GOOGLE_CLIENT_ID'),
+      clientSecret: config.get<string>('GOOGLE_SECRET'),
       callbackURL:
         'https://modsen-cinema-pre-dev-a3-backend.vercel.app/api/v1/auth/google/redirect',
       scope: ['email', 'profile'],

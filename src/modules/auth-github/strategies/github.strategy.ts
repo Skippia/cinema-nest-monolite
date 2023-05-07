@@ -1,13 +1,14 @@
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy } from 'passport-github2'
 import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
-  constructor() {
+  constructor(config: ConfigService) {
     super({
-      clientID: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientID: config.get<string>('GITHUB_CLIENT_ID'),
+      clientSecret: config.get<string>('GITHUB_SECRET'),
       callbackURL:
         'https://modsen-cinema-pre-dev-a3-backend.vercel.app/api/v1/auth/github/redirect',
       scope: ['email', 'profile'],
