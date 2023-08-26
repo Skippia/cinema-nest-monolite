@@ -22,12 +22,11 @@ export class S3Service {
   private readonly s3: S3Client
 
   constructor(private readonly config: ConfigService) {
-    this.bucket = this.config.get<string>('YC_BUCKET') || 'bucket-midapa'
-    this.region = this.config.get<string>('YC_REGION') || 'ru-central1-a'
-    this.endpoint = this.config.get<string>('YC_ENDPOINT') || 'https://storage.yandexcloud.net'
-    this.accessKeyId = this.config.get<string>('YC_ACCESS_KEY_ID') || 'YCAJEUe6itia3Bq9hQltVZav8'
-    this.secretAccessKey =
-      this.config.get<string>('YC_SECRET_ACCESS_KEY') || 'YCOkPbcz8mqqXvt_nq3x42OH8XTl9Ebwu-Wgvquh'
+    this.bucket = this.config.get<string>('YC_BUCKET')
+    this.region = this.config.get<string>('YC_REGION')
+    this.endpoint = this.config.get<string>('YC_ENDPOINT')
+    this.accessKeyId = this.config.get<string>('YC_ACCESS_KEY_ID')
+    this.secretAccessKey = this.config.get<string>('YC_SECRET_ACCESS_KEY')
 
     this.s3 = new S3Client({
       region: this.region,

@@ -5,7 +5,7 @@ import path from 'path'
 
 export async function initSwagger(app: NestExpressApplication, globalPrefix: string) {
   const config = new DocumentBuilder()
-    .setTitle('Modsen Cinema')
+    .setTitle('Cinema')
     .setDescription('The Cinema API')
     .setVersion('1.0.0')
     .setBasePath(globalPrefix)
