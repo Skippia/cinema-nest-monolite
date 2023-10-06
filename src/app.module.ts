@@ -20,6 +20,7 @@ import { S3Module } from './modules/s3/s3.module'
 import { AccessControlModule } from 'nest-access-control'
 import { RBAC_POLICY } from './modules/auth-jwt/rbac-policy'
 import { ScheduleModule } from '@nestjs/schedule'
+import * as Joi from 'joi'
 
 @Module({
   imports: [
@@ -28,6 +29,25 @@ import { ScheduleModule } from '@nestjs/schedule'
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: './.env',
+      validationSchema: Joi.object({
+        DATABASE_URL: Joi.string().required(),
+        AT_SECRET: Joi.string().required(),
+        RT_SECRET: Joi.string().required(),
+
+        GOOGLE_CLIENT_ID: Joi.string().required(),
+        GOOGLE_SECRET: Joi.string().required(),
+        GOOGLE_CALLBACK_URI: Joi.string().required(),
+
+        GITHUB_CLIENT_ID: Joi.string().required(),
+        GITHUB_SECRET: Joi.string().required(),
+        GITHUB_CALLBACK_URI: Joi.string().required(),
+
+        YC_BUCKET: Joi.string().required(),
+        YC_REGION: Joi.string().required(),
+        YC_ENDPOINT: Joi.string().required(),
+        YC_ACCESS_KEY_ID: Joi.string().required(),
+        YC_SECRET_ACCESS_KEY: Joi.string().required(),
+      }),
     }),
     PrismaModule,
     SeatModule,

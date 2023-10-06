@@ -74,4 +74,5 @@ main()
   .finally(async () => {
     // close Prisma Client at the end
     await prisma.$disconnect()
+    process.exit(0)
   })
