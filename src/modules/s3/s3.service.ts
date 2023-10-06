@@ -22,11 +22,11 @@ export class S3Service {
   private readonly s3: S3Client
 
   constructor(private readonly config: ConfigService) {
-    this.bucket = this.config.get<string>('YC_BUCKET')
-    this.region = this.config.get<string>('YC_REGION')
-    this.endpoint = this.config.get<string>('YC_ENDPOINT')
-    this.accessKeyId = this.config.get<string>('YC_ACCESS_KEY_ID')
-    this.secretAccessKey = this.config.get<string>('YC_SECRET_ACCESS_KEY')
+    this.bucket = this.config.get<string>('YC_BUCKET') as string
+    this.region = this.config.get<string>('YC_REGION') as string
+    this.endpoint = this.config.get<string>('YC_ENDPOINT') as string
+    this.accessKeyId = this.config.get<string>('YC_ACCESS_KEY_ID') as string
+    this.secretAccessKey = this.config.get<string>('YC_SECRET_ACCESS_KEY') as string
 
     this.s3 = new S3Client({
       region: this.region,

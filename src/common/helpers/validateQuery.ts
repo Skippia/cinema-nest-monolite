@@ -2,7 +2,7 @@ import { ValidationError, validate } from 'class-validator'
 
 export async function validateQuery(
   query: Record<string, boolean>,
-  QueryDtoClass: Class,
+  QueryDtoClass: { new (...args: any[]): any },
 ): Promise<{
   isValidMovieQuery: boolean
   errors: ValidationError[] | []

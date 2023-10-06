@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext, BadRequestException } from '@nestjs/common'
 import { validateQuery } from '../helpers/validateQuery'
 
-export const GetQueryDecorator = (classDto: Class) =>
+export const GetQueryDecorator = (classDto: { new (...args: any[]): any }) =>
   createParamDecorator(async (data: string, context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest()
 
