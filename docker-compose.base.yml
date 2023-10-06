@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    container_name: db-container
+    ports:
+      - '5433:5432'
+    volumes:
+      - cinema-app-db-data:/var/lib/postgresql/data
+      - ./backups:/backups
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  directus:
+    image: directus/directus:latest
+    ports:
+      - 8055:8055
+    volumes:
+      - ./database:/directus/database:rw
+      - ./uploads:/directus/uploads:rw
+    environment:
+      KEY: ${DIRECTUS_KEY}
+      SECRET: ${DIRECTUS_SECRET}
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD}
+      WEBSOCKETS_ENABLED: ${DIRECTUS_WEBSOCKETS_ENABLED}
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL}
+      HOST: ${DIRECTUS_HOST}
+      PORT: ${DIRECTUS_PORT}
+      DB_DATABASE: ${DIRECTUS_DB_DATABASE}
+      DB_USER: ${DIRECTUS_DB_USER}
+      DB_PASSWORD: ${DIRECTUS_DB_PASSWORD}
+      DB_CLIENT: ${DIRECTUS_DB_CLIENT}
+      DB_HOST: ${DIRECTUS_DB_HOST}
+      DB_PORT: ${DIRECTUS_DB_PORT}
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+
+
+volumes:
+  express_db_data_container:
+    driver: local

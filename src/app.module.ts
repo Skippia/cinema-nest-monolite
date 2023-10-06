@@ -28,6 +28,7 @@ import * as Joi from 'joi'
     AccessControlModule.forRoles(RBAC_POLICY),
     ConfigModule.forRoot({
       isGlobal: true,
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
       envFilePath: './.env',
       validationSchema: Joi.object({
         DATABASE_URL: Joi.string().required(),
