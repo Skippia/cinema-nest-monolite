@@ -52,5 +52,7 @@ services:
 
 
 volumes:
-  express_db_data_container:
+  cinema-app-db-data:
+    driver: local
+  pgadmin-data:
     driver: local

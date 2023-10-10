@@ -35,7 +35,5 @@ services:
 volumes:
   cinema-app-db-data:
     driver: local
-  # directus-data:
-    # driver: local
   pgadmin-data:
     driver: local
